@@ -1,18 +1,29 @@
-<script>
+<script lang="ts">
+    import type { Peer } from "../lib/voice";
+    import { voiceChannelId, voicePeers } from "../stores/voice_stores";
     import VoiceMember from "./VoiceMember.svelte";
 
-    export let onclick;
-    export let members;
+    export let name: string = 'Voice Channel';
+    export let id: string;
+
+    let all_peers = [];
+
+    voicePeers.subscribe((v) => {
+        if ($voiceChannelId !== id) return;
+        all_peers = Object.values(v);
+    })
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="channel" on:click={onclick}>
-    <p class="channel-name">Voice Channel</p>
-    <div class="members">
-        {#each members as member}
-            <VoiceMember name={member} />
-        {/each}
-    </div>
+<div class="channel" on:click={() => voiceChannelId.update((v) => id)}>
+    <p class="channel-name">{name}</p>
+    {#if $voiceChannelId === id}
+        <div class="members">
+            {#each all_peers as peer}
+                <VoiceMember bind:peer />
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style>
