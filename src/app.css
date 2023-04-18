@@ -1,0 +1,38 @@
+@import url('https://fonts.cdnfonts.com/css/whitney-2');
+
+:root {
+  --text-color: rgba(255, 255, 255, 0.87);
+  --bg-0: #313338;
+  --bg-1: #2B2D31;
+  --bg-3: #1E1F22;
+
+  font-family: Whitney, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--text-color);
+  background-color: var(--bg-0);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+.b {
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
