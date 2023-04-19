@@ -4,7 +4,7 @@
         voiceChannelCurrent,
         voiceState,
         voicePeers,
-    } from "../../stores/voice_stores";
+    } from "../../lib/stores";
 
     import { VoiceState } from "../../lib/voice";
     import { onMount } from "svelte";

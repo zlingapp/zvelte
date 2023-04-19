@@ -1,5 +1,11 @@
 import { writable } from 'svelte/store';
-import { VoiceState, type Peer, type VoiceChannelInfo } from '../lib/voice';
+import type { LocalUser } from './auth';
+import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
+
+// ---- login stuff ---
+export const localUser = writable<LocalUser>(null);
+
+// ---- voice ----
 
 export const voiceState = writable(VoiceState.DISCONNECTED);
 

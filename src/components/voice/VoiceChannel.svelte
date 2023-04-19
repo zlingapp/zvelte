@@ -4,7 +4,7 @@
         voiceChannelTarget,
         voiceChannelCurrent,
         voicePeers,
-    } from "../../stores/voice_stores";
+    } from "../../lib/stores";
     import VoiceMember from "./VoiceMember.svelte";
     import MajesticonsMicrophone from '~icons/majesticons/microphone'
 

@@ -4,17 +4,22 @@
         Producer,
         Transport,
     } from "mediasoup-client/lib/types";
-    import { auth_fetch, json_fetch } from "../../lib/voice_api";
 
     import { Device } from "mediasoup-client";
-    import { VoiceState, type Peer, type VoiceChannelInfo } from "../../lib/voice";
+    import {
+        auth_fetch, json_fetch,
+        VoiceState,
+        type Peer,
+        type VoiceChannelInfo,
+    } from "../../lib/voice";
+
     import {
         voiceChannelTarget,
         voiceChannelCurrent as currentChannelStore,
         voicePeers as voicePeersStore,
         voiceState,
         voiceChannelCurrent,
-    } from "../../stores/voice_stores";
+    } from "../../lib/stores";
 
     let device: Device = null;
 
@@ -218,8 +223,12 @@
                 video: false,
             });
         } catch (e) {
-            console.error('Permission to audio/video devices denied, disconnecting...')
-            alert("You must allow access to your microphone to use voice chat! Make sure you haven't denied access to your microphone in your browser settings.");
+            console.error(
+                "Permission to audio/video devices denied, disconnecting..."
+            );
+            alert(
+                "You must allow access to your microphone to use voice chat! Make sure you haven't denied access to your microphone in your browser settings."
+            );
             await reset();
             return;
         }
@@ -241,7 +250,11 @@
         // add self to voice peers
         await add_peer(identity, true, producer);
 
-        let already_in_vc = await auth_fetch(identity, token, "/api/voice/peers");
+        let already_in_vc = await auth_fetch(
+            identity,
+            token,
+            "/api/voice/peers"
+        );
 
         // consume existing
         for (const peer of already_in_vc) {

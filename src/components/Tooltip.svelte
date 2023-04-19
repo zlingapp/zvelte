@@ -13,7 +13,8 @@
     }
 
     .tooltip {
-        visibility: hidden;
+        opacity: 0;
+        transition: opacity ease-in 0.06s;
 
         background-color: var(--bg-3);
         color: #fff;
@@ -48,6 +49,6 @@
     }
 
     .has-tooltip:hover > .tooltip {
-        visibility: visible;
+        opacity: 1;
     }
 </style>

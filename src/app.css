@@ -11,6 +11,10 @@
   --yellow: #ffc800;
   --gray: #888b8f;
 
+  --accent-color: #845EC2;
+  --disabled: #888b8f3f;
+  --disabled-text: rgba(255, 255, 255, 0.3);
+
   font-family: Whitney, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -40,4 +44,8 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
   margin: 0;
+}
+
+a {
+  color: var(--accent-color);
 }

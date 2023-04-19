@@ -1,13 +1,10 @@
 <script lang="ts">
-    export let latency: number;
-
-
     import HealthiconsHighBars from "~icons/healthicons/high-bars";
-
     import HealthiconsMediumBars from '~icons/healthicons/medium-bars'
-
     import HealthiconsLowBars from '~icons/healthicons/low-bars'
     import Tooltip from "../Tooltip.svelte";
+    
+    export let latency: number;
 </script>
 
 <Tooltip text={latency + 'ms'}>
