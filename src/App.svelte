@@ -1,7 +1,7 @@
 <script lang="ts">
-    import VoiceChannel from "./components/VoiceChannel.svelte";
-    import VoiceControls from "./components/VoiceControls.svelte";
-    import VoiceManager from "./components/VoiceManager.svelte";
+    import VoiceChannel from "./components/voice/VoiceChannel.svelte";
+    import VoiceControls from "./components/voice/VoiceControls.svelte";
+    import VoiceManager from "./components/voice/VoiceManager.svelte";
 </script>
 
 <main>

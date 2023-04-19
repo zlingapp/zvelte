@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import type { Peer } from "../lib/voice";
+    import type { Peer } from "../../lib/voice";
     import type { Consumer } from "mediasoup-client/lib/Consumer";
 
     export let peer: Peer;

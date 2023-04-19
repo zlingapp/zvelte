@@ -4,17 +4,17 @@
         Producer,
         Transport,
     } from "mediasoup-client/lib/types";
-    import { auth_fetch, json_fetch } from "../lib/voice_api";
+    import { auth_fetch, json_fetch } from "../../lib/voice_api";
 
     import { Device } from "mediasoup-client";
-    import { VoiceState, type Peer, type VoiceChannelInfo } from "../lib/voice";
+    import { VoiceState, type Peer, type VoiceChannelInfo } from "../../lib/voice";
     import {
         voiceChannelTarget,
         voiceChannelCurrent as currentChannelStore,
         voicePeers as voicePeersStore,
         voiceState,
         voiceChannelCurrent,
-    } from "../stores/voice_stores";
+    } from "../../stores/voice_stores";
 
     let device: Device = null;
 

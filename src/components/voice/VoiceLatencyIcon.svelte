@@ -7,7 +7,7 @@
     import HealthiconsMediumBars from '~icons/healthicons/medium-bars'
 
     import HealthiconsLowBars from '~icons/healthicons/low-bars'
-    import Tooltip from "./Tooltip.svelte";
+    import Tooltip from "../Tooltip.svelte";
 </script>
 
 <Tooltip text={latency + 'ms'}>

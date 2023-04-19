@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Peer } from "../lib/voice";
+    import type { Peer } from "../../lib/voice";
     import {
         voiceChannelTarget,
         voiceChannelCurrent,
         voicePeers,
-    } from "../stores/voice_stores";
+    } from "../../stores/voice_stores";
     import VoiceMember from "./VoiceMember.svelte";
     import MajesticonsMicrophone from '~icons/majesticons/microphone'
 
