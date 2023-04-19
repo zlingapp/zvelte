@@ -37,10 +37,8 @@
     }
 </script>
 
-<div class="user-controls">
-    {#if $voiceState == VoiceState.DISCONNECTED}
-        <span class="status">Disconnected</span>
-    {:else if $voiceState == VoiceState.DISCONNECTING}
+<div class="voice-controls">
+    {#if $voiceState == VoiceState.DISCONNECTING}
         <div>
             <span class="status yellow">Disconnecting</span>
             <span class="channel-name">{$voiceChannelCurrent?.name}</span>
@@ -80,8 +78,7 @@
 </div>
 
 <style>
-    .user-controls {
-        min-height: 64px;
+    .voice-controls {
         background-color: var(--bg-1);
         box-shadow: 2px -2px 3px 0 rgba(0, 0, 0, 0.2);
 

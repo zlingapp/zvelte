@@ -20,7 +20,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="channel" on:click={join}>
     <p class="channel-name"><MajesticonsMicrophone /><span>{name}</span></p>
-    {#if $voiceChannelCurrent?.id === id}
+    {#if $voiceChannelCurrent?.id === id && $voicePeers.size > 0}
         <div class="members">
             {#each [...$voicePeers.values()] as peer}
                 <VoiceMember bind:peer />
