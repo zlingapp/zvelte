@@ -79,7 +79,7 @@
         try {
             voiceState.set(VoiceState.GETTING_IDENTITY);
 
-            let data = await json_fetch(`/api/join?c=${channel_id}`);
+            let data = await json_fetch(`/api/voice/join?c=${channel_id}`);
             identity = data.identity;
             token = data.token;
 
@@ -88,7 +88,7 @@
             let ws_url = new URL(
                 `ws${location.protocol === "https:" ? "s" : ""}://${
                     location.host
-                }/api/ws/`,
+                }/api/voice/ws/`,
                 location.href
             );
             ws_url.searchParams.set("i", identity);
@@ -194,7 +194,7 @@
         $voiceState = VoiceState.DISCONNECTING;
 
         try {
-            await auth_fetch(identity, token, `/api/leave`, null, false);
+            await auth_fetch(identity, token, `/api/voice/leave`, null, false);
         } catch (e) {
             console.error("graceful disconnect failed,", e);
         }
@@ -241,7 +241,7 @@
         // add self to voice peers
         await add_peer(identity, true, producer);
 
-        let already_in_vc = await auth_fetch(identity, token, "/api/peers");
+        let already_in_vc = await auth_fetch(identity, token, "/api/voice/peers");
 
         // consume existing
         for (const peer of already_in_vc) {
@@ -262,7 +262,7 @@
             await auth_fetch(
                 identity,
                 token,
-                `/api/transport/create?type=send`,
+                `/api/voice/transport/create?type=send`,
                 { method: "POST" }
             )
         );
@@ -275,7 +275,7 @@
                     await auth_fetch(
                         identity,
                         token,
-                        `/api/transport/connect?type=send`,
+                        `/api/voice/transport/connect?type=send`,
                         {
                             method: "POST",
                             headers: {
@@ -324,7 +324,7 @@
                     const { id } = await auth_fetch(
                         identity,
                         token,
-                        `/api/produce`,
+                        `/api/voice/produce`,
                         {
                             method: "POST",
                             headers: {
@@ -351,7 +351,7 @@
             await auth_fetch(
                 identity,
                 token,
-                `/api/transport/create?type=recv`,
+                `/api/voice/transport/create?type=recv`,
                 { method: "POST" }
             )
         );
@@ -364,7 +364,7 @@
                     await auth_fetch(
                         identity,
                         token,
-                        `/api/transport/connect?type=recv`,
+                        `/api/voice/transport/connect?type=recv`,
                         {
                             method: "POST",
                             headers: {
@@ -493,7 +493,7 @@
         if (peer === undefined) return;
 
         let consumer = await recv_transport.consume(
-            await auth_fetch(identity, token, "/api/consume", {
+            await auth_fetch(identity, token, "/api/voice/consume", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
