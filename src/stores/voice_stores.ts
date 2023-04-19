@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 import { VoiceState, type Peer, type VoiceChannelInfo } from '../lib/voice';
-import { mapStore } from './map_store';
 
 export const voiceState = writable(VoiceState.DISCONNECTED);
 

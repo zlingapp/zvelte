@@ -1,30 +1,82 @@
 <script lang="ts">
-    import { voiceChannelTarget, voiceChannelCurrent, voiceState } from "../stores/voice_stores";
-    import { VoiceState } from "../lib/voice";
+    import {
+        voiceChannelTarget,
+        voiceChannelCurrent,
+        voiceState,
+        voicePeers,
+    } from "../stores/voice_stores";
 
-    export let voiceIdentity: string;
+    import { VoiceState } from "../lib/voice";
+    import { onMount } from "svelte";
+    import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
+    import DisconnectIcon from "~icons/majesticons/phone-missed-call";
+    import Tooltip from "./Tooltip.svelte";
+
+    let statsInterval: number;
+    let latencyMs: number = 0;
+
+    $: me = [...$voicePeers.values()].find((p) => p.is_me);
+
+    onMount(() => {
+        statsInterval = setInterval(async () => {
+            if (!me) return;
+            let stats = await me.producer.getStats();
+
+            stats.forEach((report) => {
+                if (report.type === "remote-inbound-rtp") {
+                    if (report.roundTripTime) {
+                        latencyMs = report.roundTripTime * 1000;
+                    }
+                }
+            });
+        }, 1000);
+    });
+
+    function leave() {
+        voiceChannelTarget.update((v) => null);
+    }
 </script>
 
 <div class="user-controls">
     {#if $voiceState == VoiceState.DISCONNECTED}
-        <p>Disconnected</p>
+        <span class="status">Disconnected</span>
     {:else if $voiceState == VoiceState.DISCONNECTING}
-        <p>Leaving +{$voiceChannelCurrent}...</p>
-    {:else if $voiceState == VoiceState.CONNECTING}
-        <p>Connecting to #{$voiceChannelTarget}...</p>
+        <div>
+            <span class="status yellow">Disconnecting</span>
+            <span class="channel-name">{$voiceChannelCurrent?.name}</span>
+        </div>
+    {:else if $voiceState == VoiceState.CONNECTING || $voiceState == VoiceState.GETTING_IDENTITY}
+        <div>
+            <span class="status yellow">RTC Connecting</span>
+            <span class="channel-name">
+                {$voiceChannelTarget?.name || $voiceChannelCurrent?.name}
+            </span>
+        </div>
     {:else if $voiceState == VoiceState.CONNECTED}
-        <p>Connected</p>
-        <button
-            class="disconnect"
-            on:click={() => voiceChannelTarget.update((v) => null)}
-            >Disconnect</button
-        >
+        <div style="flex-grow: 1;">
+            <div class="status green">
+                <VoiceLatencyIcon latency={latencyMs} />
+                <span>Connected</span>
+            </div>
+            <div class="channel-name">
+                {$voiceChannelCurrent?.name}
+            </div>
+        </div>
+        <Tooltip text="Leave Channel">
+            <button class="disconnect" on:click={leave}>
+                <div class="dc-icon">
+                    <DisconnectIcon />
+                </div>
+            </button>
+        </Tooltip>
+    {:else if $voiceState == VoiceState.PERMISSION_REQUEST}
+        <div>
+            <span class="status yellow">Permission Request</span>
+            <span class="channel-name">
+                {$voiceChannelTarget?.name || $voiceChannelCurrent?.name}
+            </span>
+        </div>
     {/if}
-    <!-- {#if voiceIdentity}
-        <pre class="user-name">{voiceIdentity}</pre>
-    {:else}
-        <p class="user-name">No Identity</p>
-    {/if} -->
 </div>
 
 <style>
@@ -37,18 +89,44 @@
         padding: 12px 16px;
 
         display: flex;
-        justify-content: center;
-        flex-direction: column;
+        /* justify-content: center; */
     }
     .disconnect {
-        margin-top: 8px;
-        padding: 10px 20px;
-        font-family: inherit;
-        font-weight: 600;
-        color: inherit;
-        background-color: #c94b44;
-        border: none;
-        border-radius: 6px;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        background: var(--bg1);
+
+        box-sizing: border-box;
+        border: 4px solid var(--bg-0);
+        border-radius: 10px;
+
+        color: var(--gray);
+        line-height: 0;
         cursor: pointer;
+    }
+
+    .dc-icon {
+        transform: scale(125%);
+    }
+
+    .status {
+        font-weight: bold;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        user-select: none;
+    }
+
+    .green {
+        color: var(--green);
+    }
+    .yellow {
+        color: var(--yellow);
+    }
+
+    .channel-name {
+        font-size: 0.8em;
+        color: var(--gray);
     }
 </style>

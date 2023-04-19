@@ -13,6 +13,7 @@
         voiceChannelCurrent as currentChannelStore,
         voicePeers as voicePeersStore,
         voiceState,
+        voiceChannelCurrent,
     } from "../stores/voice_stores";
 
     let device: Device = null;
@@ -178,6 +179,8 @@
         voicePeers = voicePeers;
         voiceState.set(VoiceState.DISCONNECTED);
 
+        $voiceChannelCurrent = null;
+
         device = null;
     }
 
@@ -208,10 +211,18 @@
         voiceState.set(VoiceState.PERMISSION_REQUEST);
 
         // get all the tracks
-        let local_stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: false,
-        });
+        let local_stream;
+        try {
+            local_stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: false,
+            });
+        } catch (e) {
+            console.error('Permission to audio/video devices denied, disconnecting...')
+            alert("You must allow access to your microphone to use voice chat! Make sure you haven't denied access to your microphone in your browser settings.");
+            await reset();
+            return;
+        }
         const audio_track = local_stream.getAudioTracks()[0];
 
         voiceState.set(VoiceState.CONNECTING);
@@ -228,7 +239,7 @@
         producer = await send_transport.produce({ track: audio_track });
 
         // add self to voice peers
-        await add_peer(identity, true, producer.track);
+        await add_peer(identity, true, producer);
 
         let already_in_vc = await auth_fetch(identity, token, "/api/peers");
 
@@ -439,14 +450,14 @@
      * @param is_me Set to true if this is the local peer
      * @param local_track The local track to use for the local speaking status
      */
-    async function add_peer(identity, is_me?, local_track?: MediaStreamTrack) {
+    async function add_peer(identity, is_me?, producer?: Producer) {
         if (voicePeers.has(identity)) return false;
 
         voicePeers.set(identity, {
             is_me: is_me === true,
             identity,
             consumers: new Map(),
-            local_track,
+            producer,
         });
         voicePeers = voicePeers;
 

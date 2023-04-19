@@ -6,6 +6,11 @@
   --bg-1: #2B2D31;
   --bg-3: #1E1F22;
 
+  --green: #00b576;
+  --red: #c94b44;
+  --yellow: #ffc800;
+  --gray: #888b8f;
+
   font-family: Whitney, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;

@@ -1,4 +1,4 @@
-import type { Consumer } from "mediasoup-client/lib/types";
+import type { Consumer, Producer } from "mediasoup-client/lib/types";
 
 export enum VoiceState {
     PERMISSION_REQUEST,
@@ -13,7 +13,7 @@ export interface Peer {
     identity: string;
     consumers: Map<string, Consumer>;
     is_me: Boolean;
-    local_track?: MediaStreamTrack; // used only for the local peer
+    producer: Producer; // used only for the local peer
 }
 
 export interface VoiceChannelInfo {

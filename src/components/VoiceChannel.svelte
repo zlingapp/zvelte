@@ -1,15 +1,25 @@
 <script lang="ts">
     import type { Peer } from "../lib/voice";
-    import { voiceChannelTarget, voiceChannelCurrent, voicePeers } from "../stores/voice_stores";
+    import {
+        voiceChannelTarget,
+        voiceChannelCurrent,
+        voicePeers,
+    } from "../stores/voice_stores";
     import VoiceMember from "./VoiceMember.svelte";
+    import MajesticonsMicrophone from '~icons/majesticons/microphone'
 
-    export let name: string = 'Voice Channel';
+    export let name: string = "Voice Channel";
     export let id: string;
+
+    function join() {
+        if ($voiceChannelCurrent?.id === id) return;
+        voiceChannelTarget.update((v) => ({ id, name }));
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="channel" on:click={() => voiceChannelTarget.update((v) => ({ id, name }))}>
-    <p class="channel-name">{name}</p>
+<div class="channel" on:click={join}>
+    <p class="channel-name"><MajesticonsMicrophone /><span>{name}</span></p>
     {#if $voiceChannelCurrent?.id === id}
         <div class="members">
             {#each [...$voicePeers.values()] as peer}
@@ -30,6 +40,9 @@
 
     .channel-name {
         padding-left: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .channel:hover {

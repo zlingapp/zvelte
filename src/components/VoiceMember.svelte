@@ -28,7 +28,7 @@
     }
 
     $: consumer = peer.consumers.values().next().value;
-    $: if (consumer || peer.local_track) {
+    $: if (consumer || peer.producer) {
         if (intervalHandle != null) {
             clearInterval(intervalHandle);
             intervalHandle = null;
@@ -36,8 +36,8 @@
 
         const stream = new MediaStream();
 
-        if (peer.local_track) {
-            stream.addTrack(peer.local_track);
+        if (peer.producer) {
+            stream.addTrack(peer.producer.track);
         } else if (consumer) {
             stream.addTrack(consumer.track);
         }
@@ -72,6 +72,7 @@
         height: 20px;
         border-radius: 50%;
         background-color: gray;
+        margin-right: 5px;
     }
 
     .lit {

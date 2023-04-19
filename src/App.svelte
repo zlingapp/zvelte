@@ -2,12 +2,10 @@
     import VoiceChannel from "./components/VoiceChannel.svelte";
     import VoiceControls from "./components/VoiceControls.svelte";
     import VoiceManager from "./components/VoiceManager.svelte";
-
-    let voiceIdentity;
 </script>
 
 <main>
-    <VoiceManager bind:identity={voiceIdentity} />
+    <VoiceManager />
     <div class="server-list" />
 
     <div class="sidebar">
@@ -21,7 +19,7 @@
             <VoiceChannel id="chan_c" name="Channel C" />
         </div>
 
-        <VoiceControls voiceIdentity={voiceIdentity} />
+        <VoiceControls />
     </div>
 
     <div class="content">
@@ -41,7 +39,7 @@
 <style>
     main {
         display: flex;
-        height: 100vh;
+        height: 100svh;
         width: 100vw;
     }
 
