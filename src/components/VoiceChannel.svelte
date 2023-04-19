@@ -1,25 +1,18 @@
 <script lang="ts">
     import type { Peer } from "../lib/voice";
-    import { voiceChannelId, voicePeers } from "../stores/voice_stores";
+    import { voiceChannelTarget, voiceChannelCurrent, voicePeers } from "../stores/voice_stores";
     import VoiceMember from "./VoiceMember.svelte";
 
     export let name: string = 'Voice Channel';
     export let id: string;
-
-    let all_peers = [];
-
-    voicePeers.subscribe((v) => {
-        if ($voiceChannelId !== id) return;
-        all_peers = Object.values(v);
-    })
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="channel" on:click={() => voiceChannelId.update((v) => id)}>
+<div class="channel" on:click={() => voiceChannelTarget.update((v) => ({ id, name }))}>
     <p class="channel-name">{name}</p>
-    {#if $voiceChannelId === id}
+    {#if $voiceChannelCurrent?.id === id}
         <div class="members">
-            {#each all_peers as peer}
+            {#each [...$voicePeers.values()] as peer}
                 <VoiceMember bind:peer />
             {/each}
         </div>
@@ -42,5 +35,12 @@
     .channel:hover {
         background-color: #404249;
         color: #fff;
+    }
+
+    .members {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
     }
 </style>

@@ -5,11 +5,18 @@ export enum VoiceState {
     GETTING_IDENTITY,
     CONNECTING,
     CONNECTED,
+    DISCONNECTING,
     DISCONNECTED,
 }
 
 export interface Peer {
+    identity: string;
+    consumers: Map<string, Consumer>;
     is_me: Boolean;
-    identity: String;
-    consumers: Map<String, Consumer>;
+    local_track?: MediaStreamTrack; // used only for the local peer
+}
+
+export interface VoiceChannelInfo {
+    name: string;
+    id: string;
 }

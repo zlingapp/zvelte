@@ -7,6 +7,7 @@
 
     let analyzer: AnalyserNode = null;
     let speaking: Boolean = false;
+    let intervalHandle: number = null;
 
     function isSoundDetected() {
         const bufferLength = analyzer.frequencyBinCount;
@@ -26,11 +27,20 @@
         return soundDetected;
     }
 
-    onMount(() => {
-        let consumer: Consumer = peer.consumers.values().next().value; // todo: make this fancier
+    $: consumer = peer.consumers.values().next().value;
+    $: if (consumer || peer.local_track) {
+        if (intervalHandle != null) {
+            clearInterval(intervalHandle);
+            intervalHandle = null;
+        }
 
         const stream = new MediaStream();
-        stream.addTrack(consumer.track);
+
+        if (peer.local_track) {
+            stream.addTrack(peer.local_track);
+        } else if (consumer) {
+            stream.addTrack(consumer.track);
+        }
 
         const audioContext = new AudioContext();
         const mediaStreamSource = audioContext.createMediaStreamSource(stream);
@@ -39,15 +49,15 @@
         analyzer.smoothingTimeConstant = 0;
         mediaStreamSource.connect(analyzer);
 
-        setInterval(() => {
+        intervalHandle = setInterval(() => {
             speaking = isSoundDetected();
         }, 100);
-    });
+    }
 </script>
 
 <div class="voice-member">
     <div class="avatar" class:lit={speaking} />
-    <pre class="name">{peer.identity} {#if peer.is_me} (You) {/if}</pre>
+    <p class="name">{peer.identity.slice(0,8)}</p>
 </div>
 
 <style>
@@ -65,6 +75,8 @@
     }
 
     .lit {
-        background-color: #00b576;
+        /* border with gap */
+        outline: 4px solid #00b576;
+        outline-offset: 2px;
     }
 </style>

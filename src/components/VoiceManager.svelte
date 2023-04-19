@@ -7,13 +7,13 @@
     import { auth_fetch, json_fetch } from "../lib/voice_api";
 
     import { Device } from "mediasoup-client";
-    import { VoiceState, type Peer } from "../lib/voice";
+    import { VoiceState, type Peer, type VoiceChannelInfo } from "../lib/voice";
     import {
-        voiceChannelId,
-        voicePeers,
+        voiceChannelTarget,
+        voiceChannelCurrent as currentChannelStore,
+        voicePeers as voicePeersStore,
         voiceState,
     } from "../stores/voice_stores";
-    import { tick } from "svelte";
 
     let device: Device = null;
 
@@ -27,23 +27,51 @@
     export let producer: Producer = null;
 
     let recv_transport: Transport = null;
+    let voicePeers: Map<string, Peer> = new Map();
 
-    $: current_peers = [...$voicePeers.values()];
+    let currentChannel: VoiceChannelInfo = null;
+
+    // list of peers
+    $: current_peers = [...voicePeers.values()];
+    // every consumer ever
     $: all_consumers = current_peers.flatMap((peer) => [
         ...peer.consumers.values(),
     ]);
+    // update stores based on local state
+    // it is crucial that this is done like this, otherwise the stores will not update sometimes
+    // also, we don't want the outside to be able to mess up the voicemanager state!
+    $: voicePeersStore.set(voicePeers);
+    $: currentChannelStore.set(currentChannel);
 
-    voiceChannelId.subscribe(async (v) => {
+    // whenever voiceChannelTarget changes, we need to join, leave or switch to a channel
+    voiceChannelTarget.subscribe(async (target) => {
+        // ignore undefined, it represents "no change"
+        if (target === undefined) return;
+
+        // if we are already connected, disconnect
         if ($voiceState != VoiceState.DISCONNECTED) {
-            disconnect();
+            await disconnect();
+        }
+
+        // if the target is null, we are disconnecting for good
+        // we've already called disconnect(), so the work is done!
+        if (target === null) {
+            currentChannel = null;
             return;
         }
 
-        if (v == null) return;
-
-        await join(v);
+        // otherwise, we are joining a channel and need to connect
+        currentChannel = target;
+        // reset the target to a "no change" state
+        $voiceChannelTarget = undefined;
+        // do the connection
+        await join(target.id);
     });
 
+    /**
+     * Start the connection process to a voice channel
+     * @param channel_id The channel to connect to
+     */
     async function join(channel_id: string) {
         if ($voiceState != VoiceState.DISCONNECTED) return;
 
@@ -68,33 +96,51 @@
             // connect to websocket
             socket = new WebSocket(ws_url);
 
+            // the moment the socket opens, begin the initialization process
             socket.onopen = async () => {
-                // carry on
-                await initialize_producer(data.rtp);
-            };
-            socket.onclose = async () => {
-                // reset
-                console.log("Event socket closed!");
-                await disconnect();
+                await start_connection(data.rtp);
             };
 
+            // whenever the socket closes, we need to disconnect
+            socket.onclose = async () => {
+                if (
+                    $voiceState != VoiceState.DISCONNECTING &&
+                    $voiceState != VoiceState.DISCONNECTED
+                ) {
+                    await disconnect();
+                }
+            };
+
+            // server events
             socket.onmessage = async (e) => {
                 let data = JSON.parse(e.data);
                 await on_server_event(data);
             };
 
-            heartbeat_handle = setInterval(async () => {
-                socket.send("heartbeat");
-            }, 5000);
+            // in browsers, websockets disconnect after 30 seconds of inactivity
+            // which means we need to send a message periodically to keep the connection alive
+            heartbeat_handle = setInterval(
+                () => socket.send("heartbeat"),
+                5000
+            );
         } catch (error) {
+            // something went wrong, in the identity getting or socket construction???
             console.error(error);
             await reset();
         }
     }
 
+    /**
+     * Resets the voice manager to a disconnected state, clearning all the variables,
+     * closing all the transports and consumers, socket connetion, etc.
+     *
+     * DOES NOT NOTIFY THE SERVER OF DISCONNECTION!
+     * Use disconnect() for that, which calls reset() internally.
+     */
     async function reset() {
         identity = null;
         token = null;
+        $voiceState = VoiceState.DISCONNECTING;
 
         if (heartbeat_handle != null) {
             clearInterval(heartbeat_handle);
@@ -102,7 +148,8 @@
         }
 
         if (socket) {
-            await socket.close();
+            socket.onclose = undefined;
+            socket.close();
             socket = null;
         }
 
@@ -122,17 +169,26 @@
             recv_transport = null;
         }
 
-        for (let peer of $voicePeers.values()) {
+        for (let peer of voicePeers.values()) {
             remove_peer(peer);
         }
-        device = null;
+        // for some reason voicePeers is not being reset
 
-        voicePeers.clear();
+        voicePeers = new Map();
+        voicePeers = voicePeers;
         voiceState.set(VoiceState.DISCONNECTED);
+
+        device = null;
     }
 
+    /**
+     * Gracefully disconnects from the voice server, notifying the server of the disconnection.
+     *
+     * Calls reset() internally.
+     */
     async function disconnect() {
         if (!identity || !token) return;
+        $voiceState = VoiceState.DISCONNECTING;
 
         try {
             await auth_fetch(identity, token, `/api/leave`, null, false);
@@ -143,6 +199,52 @@
         await reset();
     }
 
+    /**
+     * Starts the connection process, creating the mediasoup device, and the send and receive transports.
+     *
+     * @param rtp_capabilities The RTP capabilities of the server
+     */
+    async function start_connection(routerRtpCapabilities) {
+        voiceState.set(VoiceState.PERMISSION_REQUEST);
+
+        // get all the tracks
+        let local_stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false,
+        });
+        const audio_track = local_stream.getAudioTracks()[0];
+
+        voiceState.set(VoiceState.CONNECTING);
+
+        // load mediasoup devices
+        device = new Device();
+        await device.load({ routerRtpCapabilities });
+
+        // set up transports
+        await initialize_send_transport();
+        await initialize_recv_transport();
+
+        // start producer
+        producer = await send_transport.produce({ track: audio_track });
+
+        // add self to voice peers
+        await add_peer(identity, true, producer.track);
+
+        let already_in_vc = await auth_fetch(identity, token, "/api/peers");
+
+        // consume existing
+        for (const peer of already_in_vc) {
+            await add_peer(peer.identity);
+            for (const producerId of peer.producers) {
+                await consume(peer.identity, producerId);
+            }
+        }
+    }
+
+    /**
+     * Creates a send transport with the server, and wires up its events.
+     * After this, `send_transport` should be populated.
+     */
     async function initialize_send_transport() {
         // voice_status = "ST Creating..."; // ST = Send Transport
         send_transport = device.createSendTransport(
@@ -230,84 +332,10 @@
         );
     }
 
-    async function initialize_producer(routerRtpCapabilities) {
-        voiceState.set(VoiceState.PERMISSION_REQUEST);
-
-        // produce
-        let local_stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: false,
-        });
-        const audio_track = local_stream.getAudioTracks()[0];
-
-        voiceState.set(VoiceState.CONNECTING);
-
-        device = new Device();
-        await device.load({ routerRtpCapabilities });
-
-        // add self to list of peers
-        await add_peer(identity);
-
-        await initialize_send_transport();
-        await initialize_recv_transport();
-
-        // voice_status = "Starting producer...";
-        producer = await send_transport.produce({ track: audio_track });
-
-        let already_in_vc = await auth_fetch(identity, token, "/api/peers");
-
-        // consume existing
-        for (const peer of already_in_vc) {
-            await add_peer(peer.identity);
-            for (const producerId of peer.producers) {
-                await consume(peer.identity, producerId);
-            }
-        }
-    }
-
-    async function add_peer(identity) {
-        if ($voicePeers.has(identity)) return false;
-
-        await tick();
-        voicePeers.set(identity, {
-            is_me: false,
-            identity,
-            consumers: new Map(),
-        });
-        await tick();
-
-        return true;
-    }
-
-    async function remove_peer(identity) {
-        let peer = $voicePeers.get(identity);
-        if (peer == null) return false;
-
-        for (let consumer of peer.consumers.values()) {
-            await consumer.close();
-        }
-
-        return true;
-    }
-
-    async function on_server_event(data: any) {
-        switch (data.type) {
-            case "client_connected":
-                await add_peer(data.identity);
-                break;
-            case "client_disconnected":
-                await remove_peer(data.identity);
-                break;
-            case "new_producer":
-                // todo: consume me!
-                console.log("New producer:", data, "starting consume...");
-                await consume(data.identity, data.producer_id);
-                break;
-        }
-    }
-
+    /**
+     * Sets up the receive transport and hooks events.
+     */
     async function initialize_recv_transport() {
-        // voice_status = "RT Creating..."; // ST = Send Transport
         recv_transport = device.createRecvTransport(
             await auth_fetch(
                 identity,
@@ -366,8 +394,91 @@
         });
     }
 
+    /**
+     * Hooks events from the server, and handles them.
+     */
+    async function on_server_event(data: any) {
+        switch (data.type) {
+            // server told us about a new peer
+            case "client_connected":
+                if (data.identity == identity) {
+                    console.warn(
+                        'Received "client_connected" for self, ignoring...'
+                    );
+                    return;
+                }
+                await add_peer(data.identity);
+                break;
+            case "client_disconnected":
+                if (data.identity == identity) {
+                    // are you trying to tell me something?
+                    console.warn(
+                        'Received "client_disconnected" for self, ignoring...'
+                    );
+                    return;
+                }
+                await remove_peer(data.identity);
+                break;
+            case "new_producer":
+                console.log("New producer, starting consume...", data);
+                // peer published a new producer, time to start consooming
+                await consume(data.identity, data.producer_id);
+                break;
+        }
+    }
+
+    /**
+     * Adds a `Peer` to the voicePeers map, and signals reactivity (voicePeers = voicePeers).
+     *
+     * If this is the local peer:
+     * - The `local_track` should be provided so that it can be used to show the local speaking status in the UI.
+     *   Not setting it is not fatal, but it will make the UI not show the local speaking status.
+     * - `is_me` shoulb be set to true.
+     *
+     * @param identity The peer's identity
+     * @param is_me Set to true if this is the local peer
+     * @param local_track The local track to use for the local speaking status
+     */
+    async function add_peer(identity, is_me?, local_track?: MediaStreamTrack) {
+        if (voicePeers.has(identity)) return false;
+
+        voicePeers.set(identity, {
+            is_me: is_me === true,
+            identity,
+            consumers: new Map(),
+            local_track,
+        });
+        voicePeers = voicePeers;
+
+        return true;
+    }
+
+    /**
+     * Removes a `Peer` from the voicePeers map, and signals reactivity (voicePeers = voicePeers).
+     * @param identity The peer's identity
+     */
+    async function remove_peer(identity) {
+        let peer = voicePeers.get(identity);
+        if (peer == null) return false;
+
+        for (let consumer of peer.consumers.values()) {
+            await consumer.close();
+        }
+
+        voicePeers.delete(identity);
+        voicePeers = voicePeers;
+
+        return true;
+    }
+
+    /**
+     * Consumes a producer from a peer. Updates the voicePeers map, and signals reactivity (voicePeers = voicePeers).
+     *
+     * @param peerIdentity The peer's identity
+     * @param producerId The producer's ID
+     */
     async function consume(peerIdentity: string, producerId: string) {
-        let peer = $voicePeers.get(peerIdentity);
+        let peer = voicePeers.get(peerIdentity);
         if (peer === undefined) return;
 
         let consumer = await recv_transport.consume(
@@ -388,9 +499,12 @@
         }
 
         peer.consumers.set(consumer.id, consumer);
-        voicePeers.set(peerIdentity, peer); // tickle the map so it updates state everywhere
+        voicePeers = voicePeers;
     }
 
+    /**
+     * Useful hook for Svelte to update the audio element's srcObject.
+     */
     function srcObject(node, stream) {
         node.srcObject = stream;
         return {
