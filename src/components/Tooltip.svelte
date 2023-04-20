@@ -16,7 +16,7 @@
         opacity: 0;
         transition: opacity ease-in 0.06s;
 
-        background-color: var(--bg-3);
+        background-color: var(--bg-2);
         color: #fff;
 
         text-align: center;
@@ -45,7 +45,7 @@
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: var(--bg-3) transparent transparent transparent;
+        border-color: var(--bg-2) transparent transparent transparent;
     }
 
     .has-tooltip:hover > .tooltip {

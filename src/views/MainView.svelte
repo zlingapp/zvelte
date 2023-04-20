@@ -6,62 +6,77 @@
     import { onMount } from "svelte";
     import { localUser } from "../lib/stores";
     import { navigate } from "svelte-routing";
-    
-    onMount(() => {
-        if ($localUser == null) {
-            navigate("/login");
-        }
-    });
+    import LocalUserControls from "../components/LocalUserControls.svelte";
+    import { ensureLoggedIn } from "../lib/auth";
+
+    onMount(ensureLoggedIn);
 </script>
 
-<main>
-    <VoiceManager />
-    <div class="server-list" />
+{#if $localUser}
+    <main>
+        <VoiceManager />
+        <div class="server-list" />
 
-    <div class="sidebar">
-        <div class="server-head">
-            <p class="server-name">Server Name</p>
+        <div class="sidebar">
+            <div class="server-head">
+                <p class="server-name">Server Name</p>
+            </div>
+
+            <div class="server-channels">
+                <VoiceChannel id="chan_a" name="Channel A" />
+                <VoiceChannel id="chan_b" name="Channel B" />
+                <VoiceChannel id="chan_c" name="Channel C" />
+            </div>
+
+            <div class="bottom-user-drawer">
+                <VoiceControls />
+                <LocalUserControls />
+            </div>
         </div>
 
-        <div class="server-channels">
-            <VoiceChannel id="chan_a" name="Channel A" />
-            <VoiceChannel id="chan_b" name="Channel B" />
-            <VoiceChannel id="chan_c" name="Channel C" />
-        </div>
-
-        <VoiceControls />
-    </div>
-
-    <div class="content">
-        <div class="head">
-            <div class="channel-title" />
-            <div class="actions" />
-        </div>
-        <div class="body">
-            <div class="message-pane" />
-            <!-- <div class="sidebar">
+        <div class="content">
+            <div class="head">
+                <div class="channel-title" />
+                <div class="actions" />
+            </div>
+            <div class="body">
+                <div class="message-pane" />
+                <!-- <div class="sidebar">
                 <div class="user-list" />
             </div> -->
+            </div>
         </div>
-    </div>
-</main>
+    </main>
+{/if}
 
 <style>
     main {
         display: flex;
         height: 100svh;
         width: 100vw;
+
+        background-image: url("/login-background.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
     }
 
     .server-list {
         width: 72px;
-        background-color: var(--bg-3);
+        background-color: var(--bg-2);
     }
     .sidebar {
         width: 240px;
         background-color: var(--bg-1);
         display: flex;
         flex-direction: column;
+    }
+    .bottom-user-drawer {
+        background-color: var(--bg-1);
+        box-shadow: 2px -2px 3px 0 rgba(0, 0, 0, 0.2);
+
+        box-sizing: border-box;
+        padding: 12px 16px;
     }
     .server-head {
         height: 48px;

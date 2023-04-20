@@ -6,7 +6,7 @@
         voicePeers,
     } from "../../lib/stores";
 
-    import { VoiceState } from "../../lib/voice";
+    import { VoiceState, disconnectFromVoice } from "../../lib/voice";
     import { onMount } from "svelte";
     import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
     import DisconnectIcon from "~icons/majesticons/phone-missed-call";
@@ -20,7 +20,14 @@
     onMount(() => {
         statsInterval = setInterval(async () => {
             if (!me) return;
-            let stats = await me.producer.getStats();
+            
+            let stats;
+            try {
+                stats = await me.producer.getStats();
+            } catch (e) {
+                clearInterval(statsInterval);
+                return;
+            }
 
             stats.forEach((report) => {
                 if (report.type === "remote-inbound-rtp") {
@@ -31,13 +38,9 @@
             });
         }, 1000);
     });
-
-    function leave() {
-        voiceChannelTarget.update((v) => null);
-    }
 </script>
 
-<div class="voice-controls">
+<div class="voice-controls" class:divide={$voiceState != VoiceState.DISCONNECTED}>
     {#if $voiceState == VoiceState.DISCONNECTING}
         <div>
             <span class="status yellow">Disconnecting</span>
@@ -61,7 +64,7 @@
             </div>
         </div>
         <Tooltip text="Leave Channel">
-            <button class="disconnect" on:click={leave}>
+            <button class="disconnect" on:click={disconnectFromVoice}>
                 <div class="dc-icon">
                     <DisconnectIcon />
                 </div>
@@ -79,15 +82,16 @@
 
 <style>
     .voice-controls {
-        background-color: var(--bg-1);
-        box-shadow: 2px -2px 3px 0 rgba(0, 0, 0, 0.2);
-
-        box-sizing: border-box;
-        padding: 12px 16px;
-
         display: flex;
         /* justify-content: center; */
     }
+
+    .divide {
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        margin-bottom: 16px;
+    }
+
     .disconnect {
         padding: 8px;
         width: 40px;

@@ -1,4 +1,5 @@
 import type { Consumer, Producer } from "mediasoup-client/lib/types";
+import { voiceChannelTarget } from "./stores";
 
 export enum VoiceState {
     PERMISSION_REQUEST,
@@ -50,4 +51,8 @@ export async function auth_fetch(identity, token, url, init?: RequestInit, expec
     } else {
         return response.json();
     }
+}
+
+export function disconnectFromVoice() {
+    voiceChannelTarget.update((v) => null);
 }

@@ -4,6 +4,7 @@
     import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
     import { localUser } from "../lib/stores";
     import { onMount, tick } from "svelte";
+    import { tryObtainLocalUser } from "../lib/auth";
 
     export let register: boolean = false;
 
@@ -22,8 +23,8 @@
         /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,16}$/;
 
-    onMount(() => {
-        if ($localUser != null) {
+    onMount(async () => {
+        if (await tryObtainLocalUser()) {
             navigate("/");
         }
     });
@@ -132,7 +133,7 @@
     <div class="login-pane">
         <div class="title">
             {#if register}
-                <h2>Let's get you started!</h2>
+                <h2>Register Account</h2>
                 <p>Fill out your information below.</p>
             {:else}
                 <h2>Welcome back!</h2>
@@ -225,9 +226,11 @@
     .login-pane {
         margin: auto;
 
-        background-color: var(--bg-1);
-        border-radius: 6px;
+        /* background-color: var(--bg-1); */
+        border-radius: 12px;
         box-sizing: border-box;
+
+        backdrop-filter: blur(200px);
 
         box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
             rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
@@ -239,7 +242,7 @@
         justify-content: center;
         gap: 25px;
 
-        padding: 50px 120px;
+        padding: 50px;
     }
 
     .title {
@@ -264,8 +267,10 @@
         width: 100%;
         box-sizing: border-box;
 
-        background-color: var(--bg-3);
-        border: none;
+        /* background-color: var(--bg-3); */
+        /* backdrop-filter: blur(200px); */
+        background: rgba(255, 255, 255, 0.09);
+        border: 3px solid rgba(255, 255, 255, 0.09);
         padding: 12px 16px;
         border-radius: 6px;
 
@@ -326,7 +331,7 @@
     /* on mobile devices */
     @media (max-width: 768px) {
         main {
-            background: none;
+            /* background: none; */
         }
 
         .login-pane {
