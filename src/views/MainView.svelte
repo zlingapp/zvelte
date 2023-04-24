@@ -8,6 +8,7 @@
     import { navigate } from "svelte-routing";
     import LocalUserControls from "../components/LocalUserControls.svelte";
     import { ensureLoggedIn } from "../lib/auth";
+    import ServerList from "../components/ServerList.svelte";
 
     onMount(ensureLoggedIn);
 </script>
@@ -15,7 +16,7 @@
 {#if $localUser}
     <main>
         <VoiceManager />
-        <div class="server-list" />
+        <ServerList />
 
         <div class="sidebar">
             <div class="server-head">
@@ -59,11 +60,6 @@
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
-    }
-
-    .server-list {
-        width: 72px;
-        background-color: var(--bg-2);
     }
     .sidebar {
         width: 240px;

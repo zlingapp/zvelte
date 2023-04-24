@@ -262,25 +262,6 @@
         min-width: 360px;
     }
 
-    input {
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-
-        /* background-color: var(--bg-3); */
-        /* backdrop-filter: blur(200px); */
-        background: rgba(255, 255, 255, 0.09);
-        border: 3px solid rgba(255, 255, 255, 0.09);
-        padding: 12px 16px;
-        border-radius: 6px;
-
-        color: var(--text-color);
-    }
-
-    input:focus {
-        outline: none;
-    }
-
     button {
         margin-top: 20px;
         background-color: var(--accent-color);
@@ -300,13 +281,6 @@
         color: var(--disabled-text);
         background-color: var(--disabled);
         cursor: not-allowed;
-    }
-
-    label {
-        color: var(--gray);
-        text-transform: uppercase;
-        font-weight: 600;
-        font-size: 12px;
     }
 
     .error {

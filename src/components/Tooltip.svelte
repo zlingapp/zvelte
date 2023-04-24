@@ -1,10 +1,21 @@
 <script lang="ts">
-    export let text: string;
+    export let text: string = "";
+    export let selectable: boolean = false;
+
+    export let direction: "top" | "right" = "top";
 </script>
 
 <div class="has-tooltip">
     <slot />
-    <span class="tooltip">{text}</span>
+    <span
+        class="tooltip"
+        class:top={direction == "top"}
+        class:right={direction == "right"}
+        class:selectable
+    >
+        {text}
+        <slot name="text" />
+    </span>
 </div>
 
 <style>
@@ -16,7 +27,7 @@
         opacity: 0;
         transition: opacity ease-in 0.06s;
 
-        background-color: var(--bg-2);
+        background-color: black;
         color: #fff;
 
         text-align: center;
@@ -25,9 +36,6 @@
         padding: 8px 12px;
 
         position: absolute;
-        top: -48px;
-        left: 50%;
-        transform: translate(-50%, 0);
         width: max-content;
 
         /* Position the tooltip */
@@ -37,7 +45,13 @@
         user-select: none;
     }
 
-    .tooltip::after {
+    .tooltip.top {
+        top: -48px;
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
+
+    .tooltip.top::after {
         content: "";
         position: absolute;
         top: 100%;
@@ -45,10 +59,32 @@
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: var(--bg-2) transparent transparent transparent;
+        border-color: black transparent transparent transparent;
+    }
+
+    .tooltip.right {
+        left: 100%;
+        top: calc(50% - 2px);
+        transform: translate(10px, -50%);
+    }
+
+    .tooltip.right::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 100%; /* To the left of the tooltip */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent black transparent transparent;
     }
 
     .has-tooltip:hover > .tooltip {
         opacity: 1;
+    }
+
+    .has-tooltip:hover > .tooltip.selectable {
+        pointer-events: initial;
+        user-select: initial;
     }
 </style>

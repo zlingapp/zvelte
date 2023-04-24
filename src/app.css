@@ -49,3 +49,29 @@ p {
 a {
   color: var(--accent-color);
 }
+
+input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  /* background-color: var(--bg-3); */
+  /* backdrop-filter: blur(200px); */
+  background: rgba(255, 255, 255, 0.09);
+  border: 3px solid rgba(255, 255, 255, 0.09);
+  padding: 12px 16px;
+  border-radius: 6px;
+
+  color: var(--text-color);
+}
+
+input:focus {
+  outline: none;
+}
+
+label {
+  color: var(--gray);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 12px;
+}
