@@ -1,9 +1,16 @@
 import { writable } from 'svelte/store';
 import type { LocalUser } from './auth';
+import type { Channel, TextChannel } from './channel';
+import type { Guild } from './guild';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 
 // ---- login stuff ---
 export const localUser = writable<LocalUser>(null);
+
+// --- guild state ---
+
+export const currentGuild = writable<Guild>(null);
+export const currentChannel = writable<TextChannel>(null);
 
 // ---- voice ----
 

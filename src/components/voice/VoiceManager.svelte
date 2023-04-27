@@ -7,7 +7,8 @@
 
     import { Device } from "mediasoup-client";
     import {
-        auth_fetch, json_fetch,
+        auth_fetch,
+        json_fetch,
         VoiceState,
         type Peer,
         type VoiceChannelInfo,
@@ -542,18 +543,20 @@
     }
 </script>
 
-<div>
-    {#each all_consumers as c}
-        <audio
-            autoplay
-            use:srcObject={(() => {
-                if (c == null) return; // happens
+{#if all_consumers.length > 0}
+    <div>
+        {#each all_consumers as c}
+            <audio
+                autoplay
+                use:srcObject={(() => {
+                    if (c == null) return; // happens
 
-                let stream = new MediaStream();
-                stream.addTrack(c.track);
+                    let stream = new MediaStream();
+                    stream.addTrack(c.track);
 
-                return stream;
-            })()}
-        />
-    {/each}
-</div>
+                    return stream;
+                })()}
+            />
+        {/each}
+    </div>
+{/if}

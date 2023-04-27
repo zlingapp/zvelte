@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { localUser } from "../lib/stores";
+    import { currentGuild, localUser } from "../lib/stores";
     import Button from "./Button.svelte";
     import IconUpload from "./IconUpload.svelte";
     import Modal from "./Modal.svelte";
@@ -8,7 +8,7 @@
     import Tooltip from "./Tooltip.svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
 
-    let guilds: { name: string; guild_id: string }[] = [];
+    let guilds: { name: string; id: string }[] = [];
 
     async function fetchGuilds() {
         let resp = await fetch("/api/guilds/list");
@@ -57,9 +57,12 @@
         <Tooltip direction="right" selectable>
             <div class="guild-tooltip" slot="text">
                 <div class="guild-tooltip-name">{guild.name}</div>
-                <div class="guild-tooltip-id">{guild.guild_id}</div>
+                <div class="guild-tooltip-id">{guild.id}</div>
             </div>
-            <div class="guild-icon">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div class="guild-icon" class:current={guild.id == $currentGuild?.id} on:click={() => {
+                $currentGuild = {...guild};
+            }}>
                 {guild.name[0].toUpperCase()}
             </div>
         </Tooltip>
@@ -153,6 +156,10 @@
     .guild-tooltip-id {
         font-size: 12px;
         color: var(--gray);
+    }
+
+    .current {
+        outline: 3px solid rgba(255, 255, 255, 0.2);
     }
 
     button.guild-icon {
