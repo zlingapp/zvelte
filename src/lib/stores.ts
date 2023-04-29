@@ -25,3 +25,7 @@ export const voiceChannelTarget = writable<VoiceChannelInfo>(null);
 export const voiceChannelCurrent = writable<VoiceChannelInfo>(null);
 
 export const voicePeers = writable<Map<string, Peer>>(new Map());
+
+// ---- misc ----
+
+export const eventSocket = writable<WebSocket>(null);

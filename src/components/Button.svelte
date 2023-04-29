@@ -5,9 +5,7 @@
     export let onClick = () => {};
 </script>
 
-<button class:green class:danger on:click={onClick}>
-    <slot />
-</button>
+<button class:green class:danger on:click={onClick}><slot /></button>
 
 <style>
     button {
@@ -17,7 +15,7 @@
         border-radius: 6px;
         color: inherit;
         font-weight: 600;
-        background-color: var(--bg-2);
+        background-color: var(--bg-1);
         word-wrap: break-word;
         overflow: hidden;
         cursor: pointer;
@@ -29,5 +27,9 @@
 
     .danger {
         background-color: var(--red);
+    }
+
+    button:hover {
+        filter: brightness(1.2);
     }
 </style>

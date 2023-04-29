@@ -1,8 +1,71 @@
 <script lang="ts">
     import type { TextChannel } from "../lib/channel";
-    import MajesticonsHashtagLine from '~icons/majesticons/hashtag-line';
+    import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
+    import MessageCaret from "./text/MessageCaret.svelte";
+    import { eventSocket } from "../lib/stores";
+    import { afterUpdate, onMount } from "svelte";
+    import Message from "./text/Message.svelte";
 
     export let channel: TextChannel;
+    let channelOld: TextChannel;
+
+    let messages = [];
+    let messagesList: HTMLDivElement;
+
+    async function fetch_message_history() {
+        let resp = await fetch(
+            `/api/channels/history?` +
+                new URLSearchParams({
+                    c: channel?.id,
+                }).toString()
+        );
+        messages = await resp.json();
+    }
+
+    onMount(() => {
+        eventSocket.subscribe((sock) => {
+            sock.addEventListener("message", async (event) => {
+                let msg = JSON.parse(event.data);
+
+                if (
+                    msg.topic.type !== "channel" &&
+                    msg.topic.id !== channel?.id
+                ) {
+                    console.warn("ignoring uninteresting topic", msg);
+                    return;
+                }
+
+                if (msg.event.type === "message") {
+                    console.log("new message: ", msg.event);
+                    messages = [...messages, msg.event];
+                }
+            });
+        });
+    });
+
+    afterUpdate(() => {
+        if (messagesList && messagesList.children.length > 0)
+            messagesList.scrollTo(0, messagesList.scrollHeight);
+    });
+
+    $: {
+        if (channelOld?.id !== channel?.id) {
+            messages = [];
+            // subscribe to new channel, unsubscribe from old channel
+            let msg: any = {
+                sub: ["channel:" + channel?.id],
+            };
+            if (channelOld != null) {
+                msg = { ...msg, unsub: ["channel:" + channelOld.id] };
+            }
+
+            $eventSocket?.send(JSON.stringify(msg));
+            channelOld = channel;
+
+            // get message history
+            fetch_message_history();
+        }
+    }
 </script>
 
 <div class="channel-content">
@@ -16,7 +79,14 @@
         <div class="actions" />
     </div>
     <div class="body">
-        <div class="message-pane" />
+        <div class="middle-pane">
+            <div class="messages" bind:this={messagesList}>
+                {#each messages as msg, idx}
+                    <Message message={msg} detailed={messages[idx - 1]?.author.id != msg.author.id} />
+                {/each}
+            </div>
+            <MessageCaret />
+        </div>
         <slot name="sidebar" />
     </div>
 </div>
@@ -28,7 +98,7 @@
         display: flex;
         flex-direction: column;
     }
-    
+
     .head {
         height: 48px;
         display: flex;
@@ -56,8 +126,27 @@
         display: flex;
         height: 100px;
     }
-    .message-pane {
+    .middle-pane {
         flex-grow: 1;
         background-color: var(--bg-0);
+        display: flex;
+        flex-direction: column;
+    }
+    .messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        box-sizing: border-box;
+        padding-block-end: 20px;
+    }
+
+    .messages::-webkit-scrollbar {
+        width: 16px;
+        height: 16px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+        background-color: var(--bg-2);
+        border: 4px solid var(--bg-0);
+        border-radius: 8px;
     }
 </style>

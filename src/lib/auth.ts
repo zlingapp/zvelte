@@ -34,7 +34,9 @@ export async function tryObtainLocalUser() {
 export async function ensureLoggedIn() {
     if (!(await tryObtainLocalUser())) {
         navigate("/login");
+        return false;
     }
+    return true;
 }
 
 export async function logOut() {

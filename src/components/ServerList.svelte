@@ -118,7 +118,7 @@
 
 <style>
     .server-list {
-        width: 72px;
+        min-width: 72px;
         background-color: var(--bg-2);
         display: flex;
         flex-direction: column;

@@ -10,10 +10,11 @@
 
     export let name: string = "Voice Channel";
     export let id: string;
+    export let guild_name: string;
 
     function join() {
         if ($voiceChannelCurrent?.id === id) return;
-        voiceChannelTarget.update((v) => ({ id, name }));
+        voiceChannelTarget.update((v) => ({ id, name, guild_name }));
     }
 </script>
 

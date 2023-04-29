@@ -50,7 +50,7 @@
         <div>
             <span class="status yellow">RTC Connecting</span>
             <span class="channel-name">
-                {$voiceChannelTarget?.name || $voiceChannelCurrent?.name}
+                {$voiceChannelTarget?.name || $voiceChannelCurrent?.name} | {$voiceChannelTarget?.guild_name || $voiceChannelCurrent?.guild_name}
             </span>
         </div>
     {:else if $voiceState == VoiceState.CONNECTED}
@@ -60,7 +60,7 @@
                 <span>Connected</span>
             </div>
             <div class="channel-name">
-                {$voiceChannelCurrent?.name}
+                {$voiceChannelCurrent?.name} | {$voiceChannelCurrent?.guild_name}
             </div>
         </div>
         <Tooltip text="Leave Channel">

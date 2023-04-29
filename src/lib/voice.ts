@@ -18,6 +18,7 @@ export interface Peer {
 }
 
 export interface VoiceChannelInfo {
+    guild_name: string;
     name: string;
     id: string;
 }

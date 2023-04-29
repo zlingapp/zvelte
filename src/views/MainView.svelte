@@ -4,7 +4,12 @@
     import VoiceManager from "../components/voice/VoiceManager.svelte";
 
     import { onMount } from "svelte";
-    import { currentChannel, currentGuild, localUser } from "../lib/stores";
+    import {
+        currentChannel,
+        currentGuild,
+        eventSocket,
+        localUser,
+    } from "../lib/stores";
     import { navigate } from "svelte-routing";
     import LocalUserControls from "../components/LocalUserControls.svelte";
     import { ensureLoggedIn } from "../lib/auth";
@@ -13,7 +18,38 @@
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
 
-    onMount(ensureLoggedIn);
+    function connectWebSocket() {
+        let ws_url = new URL(
+            `ws${location.protocol === "https:" ? "s" : ""}://${
+                location.host
+            }/api/events/ws/`,
+            location.href
+        );
+
+        $eventSocket = new WebSocket(ws_url);
+
+        // the moment the socket opens, begin the initialization process
+        $eventSocket.onopen = async () => {};
+
+        // whenever the socket closes, we need to disconnect
+        $eventSocket.onclose = async () => {
+            clearInterval(heartbeat_handle);
+            connectWebSocket();
+        };
+
+        // in browsers, websockets disconnect after 30 seconds of inactivity
+        // which means we need to send a message periodically to keep the connection alive
+        let heartbeat_handle = setInterval(
+            () => $eventSocket.send("heartbeat"),
+            5000
+        );
+    }
+
+    onMount(async () => {
+        if (await ensureLoggedIn()) {
+            connectWebSocket();
+        }
+    });
 
     $: currentChannelInCurrentGuild = $currentGuild?.channels?.find(
         (c) => c.id === $currentChannel?.id
@@ -78,7 +114,8 @@
         flex-direction: column;
     }
     .bottom-user-drawer {
-        background-color: var(--bg-1);
+        /* background-color: var(--bg-1); */
+        background-color: #232428;
         box-shadow: 0px -2px 3px 0 rgba(0, 0, 0, 0.2);
 
         box-sizing: border-box;
@@ -108,6 +145,7 @@
         justify-content: center;
     }
     .server-channels {
+        position: relative;
         flex-grow: 1;
     }
 
