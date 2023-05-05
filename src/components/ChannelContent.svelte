@@ -6,6 +6,7 @@
     import { afterUpdate, onMount } from "svelte";
     import Message from "./text/Message.svelte";
 
+    export let guild_id: string;
     export let channel: TextChannel;
     let channelOld: TextChannel;
 
@@ -13,12 +14,13 @@
     let messagesList: HTMLDivElement;
 
     async function fetch_message_history() {
-        let resp = await fetch(
-            `/api/channels/history?` +
-                new URLSearchParams({
-                    c: channel?.id,
-                }).toString()
-        );
+        let channel_id = channel?.id;
+        if (channel_id == null) {
+            console.warn('channel_id of', channel, 'was null, cannot get history');
+            return;
+        }
+
+        let resp = await fetch(`/api/guilds/${guild_id}/channels/${channel_id}/messages`);
         messages = await resp.json();
     }
 

@@ -11,7 +11,7 @@
     let guilds: { name: string; id: string }[] = [];
 
     async function fetchGuilds() {
-        let resp = await fetch("/api/guilds/list");
+        let resp = await fetch("/api/guilds");
         if (resp.status != 200) {
             return;
         }
@@ -34,19 +34,19 @@
     }
 
     let createModal = false;
-    let createServerName = `${$localUser?.username.split("#")[0]}'s Server`;
+    let createServerName = `${$localUser?.name.split("#")[0]}'s Server`;
 
     async function createServer() {
         createModal = false;
         // todo: validate createServerName
 
-        let url =
-            `/api/guilds/create?` +
-            new URLSearchParams({
-                name: createServerName,
-            });
-
-        let reply = await fetch(url, { method: "POST" });
+        let reply = await fetch("/api/guilds", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: createServerName }),
+        });
         // alert((await reply.json()).guild_id);
         await fetchGuilds();
     }
@@ -60,18 +60,24 @@
                 <div class="guild-tooltip-id">{guild.id}</div>
             </div>
             <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <div class="guild-icon" class:current={guild.id == $currentGuild?.id} on:click={() => {
-                $currentGuild = {...guild};
-            }}>
+            <div
+                class="guild-icon"
+                class:current={guild.id == $currentGuild?.id}
+                on:click={() => {
+                    $currentGuild = { ...guild };
+                }}
+            >
                 {guild.name[0].toUpperCase()}
             </div>
         </Tooltip>
     {/each}
 
-    <div class="divider"></div>
+    <div class="divider" />
 
     <Tooltip text="Create Server" direction="right">
-        <button class="guild-icon" on:click={() => (addModal = true)}><MaterialSymbolsAdd /></button>
+        <button class="guild-icon" on:click={() => (addModal = true)}
+            ><MaterialSymbolsAdd /></button
+        >
     </Tooltip>
 
     <Modal bind:show={addModal}>

@@ -3,7 +3,7 @@
     import { localUser } from "../lib/stores";
     import Tooltip from "./Tooltip.svelte";
 
-    $: [name, tag] = $localUser?.username.split('#');
+    $: [name, tag] = $localUser?.name.split('#');
 </script>
 
 <div class="user-controls">

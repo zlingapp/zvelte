@@ -11,10 +11,7 @@
     import VoiceChannel from "./voice/VoiceChannel.svelte";
 
     async function get_channel_list() {
-        let resp = await fetch(
-            `/api/channels/list?` +
-                new URLSearchParams({ id: $currentGuild.id }).toString()
-        );
+        let resp = await fetch(`/api/guilds/${$currentGuild.id}/channels`);
         let channels: Channel[] = await resp.json();
         currentGuild.update((g) => ({ ...g, channels }));
 
@@ -34,8 +31,6 @@
 
             await get_channel_list();
         });
-
-        await get_channel_list();
     });
 
     function switch_channel(channel: Channel) {
@@ -48,20 +43,19 @@
             return;
         }
 
-        let resp = await fetch(`/api/channels/create`, {
+        let resp = await fetch(`/api/guilds/${$currentGuild.id}/channels`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                type,
                 name,
-                guild_id: $currentGuild.id,
+                type
             }),
         });
 
         if (!resp.ok) {
-            alert("Failed to create channel");
+            alert(`Failed to create channel: ${await resp.text()}`);
             return;
         }
 
@@ -82,7 +76,11 @@
                     onClick={() => switch_channel(channel)}
                 />
             {:else if channel.type == "voice"}
-                <VoiceChannel name={channel.name} id={channel.id} guild_name={$currentGuild.name} />
+                <VoiceChannel
+                    name={channel.name}
+                    id={channel.id}
+                    guild_name={$currentGuild.name}
+                />
             {/if}
         {/each}
     {:else}

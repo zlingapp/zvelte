@@ -5,7 +5,7 @@ import { disconnectFromVoice } from "./voice";
 
 export interface LocalUser {
     id: string;
-    username: string;
+    name: string;
     avatar: string;
     session_token: string;
 }

@@ -19,16 +19,12 @@
             return;
         }
 
-        await fetch(`/api/channels/send`, {
+        await fetch(`/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                guild_id: $currentGuild.id,
-                channel_id: $currentChannel.id,
-                content: value,
-            }),
+            body: JSON.stringify({ content: value }),
         });
 
         value = "";

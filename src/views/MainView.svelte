@@ -19,6 +19,10 @@
     import ChannelList from "../components/ChannelList.svelte";
 
     function connectWebSocket() {
+        if ($eventSocket && $eventSocket?.readyState !== WebSocket.CLOSED) {
+            return;
+        }
+
         let ws_url = new URL(
             `ws${location.protocol === "https:" ? "s" : ""}://${
                 location.host
@@ -86,7 +90,7 @@
 
         <section class="content">
             {#if $currentChannel && currentChannelInCurrentGuild}
-                <ChannelContent channel={$currentChannel}>
+                <ChannelContent channel={$currentChannel} guild_id={$currentGuild.id}>
                     <div slot="sidebar" class="sidebar">
                         <div class="user-list" />
                     </div>
