@@ -18,6 +18,7 @@
     import ChannelContent from "../components/ChannelContent.svelte";
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
+    import HeaderWarning from "../components/HeaderWarning.svelte";
 
     function connectWebSocket() {
         if ($eventSocket && $eventSocket?.readyState !== WebSocket.CLOSED) {
@@ -66,6 +67,10 @@
 </script>
 
 {#if $localUser}
+<div class="wrapper">
+    {#if !$eventSocket && $eventSocket?.readyState != WebSocket.OPEN}
+        <HeaderWarning />
+    {/if}
     <main>
         <VoiceManager />
         <ServerList />
@@ -111,13 +116,20 @@
             {/if}
         </section>
     </main>
+</div>
 {/if}
 
 <style>
-    main {
+    .wrapper {
         display: flex;
+        flex-direction: column;
         height: 100svh;
         width: 100vw;
+    }
+
+    main {
+        display: flex;
+        flex-grow: 1;
     }
     .sidebar {
         width: 240px;

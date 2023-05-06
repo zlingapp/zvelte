@@ -109,7 +109,7 @@
 
         background-color: var(--bg-0);
         box-shadow: 0px 2px 3px 0 rgba(0, 0, 0, 0.3);
-        z-index: 100;
+        z-index: 1;
 
         padding-left: 12px;
         gap: 6px;

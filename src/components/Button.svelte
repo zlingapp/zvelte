@@ -1,11 +1,12 @@
 <script lang="ts">
     export let green: boolean = false;
     export let danger: boolean = false;
+    export let outline: boolean = false;
 
     export let onClick = () => {};
 </script>
 
-<button class:green class:danger on:click={onClick}><slot /></button>
+<button class:green class:danger class:outline on:click={onClick}><slot /></button>
 
 <style>
     button {
@@ -27,6 +28,10 @@
 
     .danger {
         background-color: var(--red);
+    }
+
+    .outline {
+        border: 2px solid white;
     }
 
     button:hover {
