@@ -1,4 +1,5 @@
 import type { Consumer, Producer } from "mediasoup-client/lib/types";
+import { auth_fetch } from "./auth";
 import { voiceChannelTarget } from "./stores";
 
 export enum VoiceState {
@@ -34,7 +35,7 @@ export async function voice_auth_fetch(identity, token, url, init?: RequestInit,
         "RTC-Token": token,
     }
 
-    const response = await fetch(url, init);
+    const response = await auth_fetch(url, init);
     if (!response.ok) {
         throw new Error(response.statusText);
     }
