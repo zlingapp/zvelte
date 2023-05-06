@@ -4,6 +4,7 @@
 
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
+    import { auth_fetch } from "../../lib/auth";
 
     let value;
     let sendButton: HTMLDivElement;
@@ -19,7 +20,7 @@
             return;
         }
 
-        await fetch(`/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`, {
+        await auth_fetch(`/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

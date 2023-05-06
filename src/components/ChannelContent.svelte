@@ -20,7 +20,7 @@
             return;
         }
 
-        let resp = await fetch(`/api/guilds/${guild_id}/channels/${channel_id}/messages`);
+        let resp = await auth_fetch(`/api/guilds/${guild_id}/channels/${channel_id}/messages`);
         messages = await resp.json();
     }
 

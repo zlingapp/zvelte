@@ -7,8 +7,7 @@
 
     import { Device } from "mediasoup-client";
     import {
-        auth_fetch,
-        json_fetch,
+        voice_auth_fetch,
         VoiceState,
         type Peer,
         type VoiceChannelInfo,
@@ -21,6 +20,7 @@
         voiceState,
         voiceChannelCurrent,
     } from "../../lib/stores";
+    import { auth_fetch } from "../../lib/auth";
 
     let device: Device = null;
 
@@ -85,7 +85,8 @@
         try {
             voiceState.set(VoiceState.GETTING_IDENTITY);
 
-            let data = await json_fetch(`/api/voice/join?c=${channel_id}`);
+            const resp = await auth_fetch(`/api/voice/join?c=${channel_id}`);
+            const data = await resp.json();
             identity = data.identity;
             token = data.token;
 
@@ -200,7 +201,7 @@
         $voiceState = VoiceState.DISCONNECTING;
 
         try {
-            await auth_fetch(identity, token, `/api/voice/leave`, null, false);
+            await voice_auth_fetch(identity, token, `/api/voice/leave`, null, false);
         } catch (e) {
             console.error("graceful disconnect failed,", e);
         }
@@ -251,7 +252,7 @@
         // add self to voice peers
         await add_peer(identity, true, producer);
 
-        let already_in_vc = await auth_fetch(
+        let already_in_vc = await voice_auth_fetch(
             identity,
             token,
             "/api/voice/peers"
@@ -273,7 +274,7 @@
     async function initialize_send_transport() {
         // voice_status = "ST Creating..."; // ST = Send Transport
         send_transport = device.createSendTransport(
-            await auth_fetch(
+            await voice_auth_fetch(
                 identity,
                 token,
                 `/api/voice/transport/create?type=send`,
@@ -286,7 +287,7 @@
             "connect",
             async ({ dtlsParameters }, callback, errback) => {
                 try {
-                    await auth_fetch(
+                    await voice_auth_fetch(
                         identity,
                         token,
                         `/api/voice/transport/connect?type=send`,
@@ -335,7 +336,7 @@
             async ({ kind, rtpParameters }, callback, errback) => {
                 try {
                     console.log("Requesting producer...");
-                    const { id } = await auth_fetch(
+                    const { id } = await voice_auth_fetch(
                         identity,
                         token,
                         `/api/voice/produce`,
@@ -362,7 +363,7 @@
      */
     async function initialize_recv_transport() {
         recv_transport = device.createRecvTransport(
-            await auth_fetch(
+            await voice_auth_fetch(
                 identity,
                 token,
                 `/api/voice/transport/create?type=recv`,
@@ -375,7 +376,7 @@
             "connect",
             async ({ dtlsParameters }, callback, errback) => {
                 try {
-                    await auth_fetch(
+                    await voice_auth_fetch(
                         identity,
                         token,
                         `/api/voice/transport/connect?type=recv`,
@@ -507,7 +508,7 @@
         if (peer === undefined) return;
 
         let consumer = await recv_transport.consume(
-            await auth_fetch(identity, token, "/api/voice/consume", {
+            await voice_auth_fetch(identity, token, "/api/voice/consume", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

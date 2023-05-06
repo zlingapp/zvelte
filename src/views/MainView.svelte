@@ -5,6 +5,7 @@
 
     import { onMount } from "svelte";
     import {
+        apiToken,
         currentChannel,
         currentGuild,
         eventSocket,
@@ -26,7 +27,7 @@
         let ws_url = new URL(
             `ws${location.protocol === "https:" ? "s" : ""}://${
                 location.host
-            }/api/events/ws/`,
+            }/api/events/ws/?auth=${$apiToken}`,
             location.href
         );
 
@@ -90,7 +91,10 @@
 
         <section class="content">
             {#if $currentChannel && currentChannelInCurrentGuild}
-                <ChannelContent channel={$currentChannel} guild_id={$currentGuild.id}>
+                <ChannelContent
+                    channel={$currentChannel}
+                    guild_id={$currentGuild.id}
+                >
                     <div slot="sidebar" class="sidebar">
                         <div class="user-list" />
                     </div>

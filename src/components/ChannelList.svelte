@@ -9,9 +9,10 @@
     import { text } from "svelte/internal";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import VoiceChannel from "./voice/VoiceChannel.svelte";
+    import { auth_fetch } from "../lib/auth";
 
     async function get_channel_list() {
-        let resp = await fetch(`/api/guilds/${$currentGuild.id}/channels`);
+        let resp = await auth_fetch(`/api/guilds/${$currentGuild.id}/channels`);
         let channels: Channel[] = await resp.json();
         currentGuild.update((g) => ({ ...g, channels }));
 
@@ -43,7 +44,7 @@
             return;
         }
 
-        let resp = await fetch(`/api/guilds/${$currentGuild.id}/channels`, {
+        let resp = await auth_fetch(`/api/guilds/${$currentGuild.id}/channels`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

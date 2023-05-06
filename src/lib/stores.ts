@@ -5,6 +5,7 @@ import type { Guild } from './guild';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 
 // ---- login stuff ---
+export const apiToken = writable<string>(null);
 export const localUser = writable<LocalUser>(null);
 
 // --- guild state ---

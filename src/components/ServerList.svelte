@@ -7,11 +7,12 @@
     import { each } from "svelte/internal";
     import Tooltip from "./Tooltip.svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
+    import { auth_fetch } from "../lib/auth";
 
     let guilds: { name: string; id: string }[] = [];
 
     async function fetchGuilds() {
-        let resp = await fetch("/api/guilds");
+        let resp = await auth_fetch("/api/guilds");
         if (resp.status != 200) {
             return;
         }
@@ -40,7 +41,7 @@
         createModal = false;
         // todo: validate createServerName
 
-        let reply = await fetch("/api/guilds", {
+        let reply = await auth_fetch("/api/guilds", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
