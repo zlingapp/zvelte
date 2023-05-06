@@ -5,6 +5,7 @@
     import { eventSocket } from "../lib/stores";
     import { afterUpdate, onMount } from "svelte";
     import Message from "./text/Message.svelte";
+    import { auth_fetch } from "../lib/auth";
 
     export let guild_id: string;
     export let channel: TextChannel;
