@@ -5,7 +5,7 @@
 
     import { onMount } from "svelte";
     import {
-        apiToken,
+        apiTokens,
         currentChannel,
         currentGuild,
         eventSocket,
@@ -20,29 +20,34 @@
     import ChannelList from "../components/ChannelList.svelte";
     import HeaderWarning from "../components/HeaderWarning.svelte";
 
+    let socketAlert = false;
+
     function connectWebSocket() {
         if ($eventSocket && $eventSocket?.readyState !== WebSocket.CLOSED) {
             return;
         }
 
-        if ($apiToken == null) {
+        if ($apiTokens == null) {
             return;
         }
 
         let ws_url = new URL(
             `ws${location.protocol === "https:" ? "s" : ""}://${
                 location.host
-            }/api/events/ws/?auth=${$apiToken}`,
+            }/api/events/ws/?auth=${$apiTokens.accessToken}`,
             location.href
         );
 
         $eventSocket = new WebSocket(ws_url);
 
         // the moment the socket opens, begin the initialization process
-        $eventSocket.onopen = async () => {};
+        $eventSocket.onopen = async () => {
+            socketAlert = false;
+        };
 
         // whenever the socket closes, we need to disconnect
         $eventSocket.onclose = async () => {
+            socketAlert = true;
             clearInterval(heartbeat_handle);
             connectWebSocket();
         };
@@ -68,7 +73,7 @@
 
 {#if $localUser}
 <div class="wrapper">
-    {#if !$eventSocket && $eventSocket?.readyState != WebSocket.OPEN}
+    {#if !$eventSocket && $eventSocket?.readyState != WebSocket.OPEN || socketAlert}
         <HeaderWarning />
     {/if}
     <main>

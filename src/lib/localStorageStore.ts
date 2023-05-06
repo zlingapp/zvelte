@@ -3,7 +3,7 @@ import { get, writable } from "svelte/store";
 export function localStorageWritable<T>(localStorageKey: string, value?: T) {
     const store = writable<T>(value);
 
-    if (localStorage[localStorageKey]) {
+    if (localStorage[localStorageKey] && localStorage[localStorageKey] != "undefined") {
         const stored = JSON.parse(localStorage[localStorageKey]);
         store.set(stored);
     }

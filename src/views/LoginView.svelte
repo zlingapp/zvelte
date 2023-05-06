@@ -2,9 +2,9 @@
     import { link, navigate } from "svelte-routing";
     import IcOutlineClose from "~icons/ic/outline-close";
     import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
-    import { apiToken, localUser } from "../lib/stores";
+    import { apiTokens, localUser } from "../lib/stores";
     import { onMount, tick } from "svelte";
-    import { tryObtainLocalUser } from "../lib/auth";
+    import { tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
 
     export let register: boolean = false;
 
@@ -114,7 +114,14 @@
 
         if (res.status == 200) {
             let data = await res.json();
-            $apiToken = data.token;
+            
+            $apiTokens = {
+                accessToken: data.accessToken,
+                accessExpires: tokenExpiryTimestamp(data.accessToken),
+                refreshToken: data.refreshToken,
+                refreshExpires: tokenExpiryTimestamp(data.refreshToken),
+            };
+
             $localUser = data.user;
             navigate("/");
             return;
