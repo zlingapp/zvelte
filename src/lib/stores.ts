@@ -2,10 +2,11 @@ import { writable } from 'svelte/store';
 import type { LocalUser } from './auth';
 import type { Channel, TextChannel } from './channel';
 import type { Guild } from './guild';
+import { localStorageWritable } from './localStorageStore';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 
 // ---- login stuff ---
-export const apiToken = writable<string>(null);
+export const apiToken = localStorageWritable<string>("api_token", null);
 export const localUser = writable<LocalUser>(null);
 
 // --- guild state ---

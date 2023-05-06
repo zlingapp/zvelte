@@ -29,7 +29,7 @@ export async function auth_fetch(input: RequestInfo | URL, init?: RequestInit): 
 export async function tryObtainLocalUser() {
     if (get(localUser) == null) {
         try {
-            let res = await fetch("/api/auth/whoami");
+            let res = await auth_fetch("/api/auth/whoami");
 
             if (res.status == 200) {
                 localUser.set(await res.json());
@@ -57,5 +57,6 @@ export async function logOut() {
     disconnectFromVoice();
     await fetch("/api/auth/logout");
     localUser.set(null);
+    apiToken.set(null);
     navigate("/login");
 }

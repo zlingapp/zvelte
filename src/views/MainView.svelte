@@ -24,6 +24,10 @@
             return;
         }
 
+        if ($apiToken == null) {
+            return;
+        }
+
         let ws_url = new URL(
             `ws${location.protocol === "https:" ? "s" : ""}://${
                 location.host
