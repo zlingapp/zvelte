@@ -24,6 +24,10 @@
         
     }
 
+    .message:hover {
+        background-color: #2E3035;
+    }
+
     .detailed {
         margin-top: 1.0625rem;
     }
@@ -48,7 +52,8 @@
         color: var(--header-primary);
         vertical-align: baseline;
         position: relative;
-        overflow: hidden;
+        word-wrap: break-word;
+        word-break: break-all;
     }
 
     .header {

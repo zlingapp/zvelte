@@ -127,7 +127,6 @@
     .body {
         flex-grow: 1;
         display: flex;
-        height: 100px;
     }
     .middle-pane {
         flex-grow: 1;
@@ -135,6 +134,7 @@
         display: flex;
         flex-direction: column;
     }
+    
     .messages {
         flex-grow: 1;
         overflow-y: auto;

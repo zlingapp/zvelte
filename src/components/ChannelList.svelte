@@ -16,11 +16,14 @@
         let channels: Channel[] = await resp.json();
         currentGuild.update((g) => ({ ...g, channels }));
 
-        if (channels?.length > 0 && $currentChannel == null) {
+        const currentChannelInCurrentGuild = $currentGuild?.channels?.find(
+            (c) => c.id === $currentChannel?.id
+        )
+
+        if (channels?.length > 0 && currentChannelInCurrentGuild == null) {
             // auto-open the first channel or if there aren't any text channels, set to null
-            currentChannel.set(
-                (channels.find((c) => c.type == "text") as TextChannel) || null
-            );
+            let auto = (channels.find((c) => c.type == "text") as TextChannel) || null;
+            $currentChannel = auto;
         }
     }
 
