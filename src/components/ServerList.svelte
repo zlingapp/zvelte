@@ -150,6 +150,8 @@
         width: 48px;
         height: 48px;
         border-radius: 50%;
+
+        transition: border-radius 90ms ease-in-out;
     }
 
     .guild-tooltip {
@@ -167,6 +169,7 @@
 
     .current {
         outline: 3px solid rgba(255, 255, 255, 0.2);
+        border-radius: 40%;
     }
 
     button.guild-icon {

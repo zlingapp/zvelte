@@ -21,9 +21,12 @@
         )
 
         if (channels?.length > 0 && currentChannelInCurrentGuild == null) {
-            // auto-open the first channel or if there aren't any text channels, set to null
+            // auto-open the first text channel or if there aren't any text channels, set to null
             let auto = (channels.find((c) => c.type == "text") as TextChannel) || null;
             $currentChannel = auto;
+        } else {
+            // if there are no channels, set to null
+            $currentChannel = null;
         }
     }
 

@@ -104,7 +104,7 @@
         </div>
 
         <section class="content">
-            {#if $currentChannel && currentChannelInCurrentGuild}
+            {#if $currentChannel}
                 <ChannelContent
                     channel={$currentChannel}
                     guild_id={$currentGuild.id}
