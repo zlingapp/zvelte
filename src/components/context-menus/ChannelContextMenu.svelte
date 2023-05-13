@@ -1,24 +1,36 @@
 <script lang="ts">
+    export let onMarkAsRead: () => void;
+    export let onCopyLink: () => void;
+    export let onEditChannel: () => void;
+    export let onDuplicateChannel: () => void;
+    export let onDeleteChannel: () => void;
+    export let onCopyId: () => void;
 </script>
 
-<div class="action unimportant">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="action unimportant" on:click={onMarkAsRead}>
     Mark As Read
 </div>
-<div class="action">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="action" on:click={onCopyLink}>
     Copy Link
 </div>
 <div class="divider" /> 
-<div class="action">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="action" on:click={onEditChannel}>
     Edit Channel
 </div>
-<div class="action">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="action" on:click={onDuplicateChannel}>
     Duplicate Channel
 </div>
-<div class="action dangerous">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="action dangerous" on:click={onDeleteChannel}>
     Delete Channel
 </div>
 <div class="divider" /> 
-<div class="action unimportant">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="action unimportant" on:click={onCopyId}>
     Copy Channel ID
 </div>
 

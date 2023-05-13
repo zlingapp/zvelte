@@ -8,6 +8,7 @@
     import Tooltip from "./Tooltip.svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import { auth_fetch } from "../lib/auth";
+    import { unimplemented } from "../lib/dev";
 
     let guilds: { name: string; id: string }[] = [];
 
@@ -32,6 +33,7 @@
 
     async function joinExisting() {
         addModal = false;
+        unimplemented();
     }
 
     let createModal = false;
@@ -175,5 +177,13 @@
     button.guild-icon {
         border: none;
         color: var(--green);
+    }
+
+    .divider {
+        padding: 0;
+        margin: 0;
+        width: 32px;
+        height: 1px;
+        background-color: var(--bg-3);
     }
 </style>

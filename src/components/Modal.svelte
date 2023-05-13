@@ -1,7 +1,8 @@
 <script lang="ts">
-    import MaterialSymbolsCloseRounded from '~icons/material-symbols/close-rounded'
+    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
     export let show: boolean = false;
+    export let onClose: () => void = () => show = false;
 
     let dialog: HTMLDialogElement;
 
@@ -13,27 +14,29 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<dialog
-    bind:this={dialog}
-    on:close={() => (show = false)}
-    on:click|self={() => dialog.close()}
->
-    <div on:click|stopPropagation>
-        <div class="title">
-            <slot name="title" />
-            <span style="flex-grow: 1;"></span>
-            <button class="close" on:click={() => show = false}>
-                <MaterialSymbolsCloseRounded />
-            </button>
+{#if show}
+    <dialog
+        bind:this={dialog}
+        on:close={onClose}
+        on:click|self={() => dialog.close()}
+    >
+        <div on:click|stopPropagation>
+            <div class="title">
+                <slot name="title" />
+                <span style="flex-grow: 1;" />
+                <button class="close" on:click={() => dialog.close()}>
+                    <MaterialSymbolsCloseRounded />
+                </button>
+            </div>
+            <div class="content">
+                <slot name="content" />
+            </div>
+            <div class="actions">
+                <slot name="actions" />
+            </div>
         </div>
-        <div class="content">
-            <slot name="content" />
-        </div>
-        <div class="actions">
-            <slot name="actions" />
-        </div>
-    </div>
-</dialog>
+    </dialog>
+{/if}
 
 <style>
     dialog {
@@ -44,7 +47,8 @@
         background-color: var(--bg-0);
         color: inherit;
 
-        box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+            rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
     }
 
     dialog > div > div {
@@ -95,12 +99,12 @@
         margin-right: 3px;
 
         background: none;
-        
+
         color: var(--gray);
         line-height: 0;
-        
+
         transform: scale(1.5);
-        
+
         cursor: pointer;
 
         width: fit-content;

@@ -1,23 +1,65 @@
 <script lang="ts">
-    import MajesticonsHashtagLine from '~icons/majesticons/hashtag-line'
-    import ContextMenu from '../context-menus/base/ContextMenu.svelte';
-    import ChannelContextMenu from '../context-menus/ChannelContextMenu.svelte';
-    import type { Channel, TextChannel } from '../../lib/channel';
-    import { currentChannel } from '../../lib/stores';
+    import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
+    import ContextMenu from "../context-menus/base/ContextMenu.svelte";
+    import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
+    import type { Channel, TextChannel } from "../../lib/channel";
+    import { currentChannel } from "../../lib/stores";
+    import { unimplemented } from "../../lib/dev";
 
     export let channel: Channel; // pretend this says TextChannel, svelte's type system is slightly broken
+    export let menuOpen = false;
 
     function switch_channel() {
         $currentChannel = channel as TextChannel;
     }
+
+    function onMarkAsRead() {
+        unimplemented();
+        menuOpen = false;
+    }
+
+    function onCopyLink() {
+        unimplemented();
+        menuOpen = false;
+    }
+
+    function onEditChannel() {
+        unimplemented();
+        menuOpen = false;
+    }
+
+    function onDuplicateChannel() {
+        unimplemented();
+        menuOpen = false;
+    }
+
+    function onDeleteChannel() {
+        unimplemented();
+        menuOpen = false;
+    }
+
+    async function onCopyChannelId() {
+        await navigator.clipboard.writeText(channel.id);
+        menuOpen = false;
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<ContextMenu>
+<ContextMenu bind:open={menuOpen}>
     <div class="channel" on:click={switch_channel}>
-        <p class="channel-name"><MajesticonsHashtagLine /><span>{channel.name}</span></p>
+        <p class="channel-name">
+            <MajesticonsHashtagLine /><span>{channel.name}</span>
+        </p>
     </div>
-    <ChannelContextMenu slot="menu" />
+    <ChannelContextMenu
+        onCopyId={onCopyChannelId}
+        {onCopyLink}
+        {onDeleteChannel}
+        {onDuplicateChannel}
+        {onEditChannel}
+        {onMarkAsRead}
+        slot="menu"
+    />
 </ContextMenu>
 
 <style>

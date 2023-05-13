@@ -31,8 +31,3 @@
 .unimportant {
     color: var(--gray);
 }
-
-.unimportant:hover {
-    background-color: var(--gray);
-    color: white;
-}

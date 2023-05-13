@@ -10,6 +10,7 @@
         currentGuild,
         eventSocket,
         localUser,
+        showInErrorModal,
     } from "../lib/stores";
     import { navigate } from "svelte-routing";
     import LocalUserControls from "../components/LocalUserControls.svelte";
@@ -19,6 +20,9 @@
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
     import HeaderWarning from "../components/HeaderWarning.svelte";
+    import Modal from "../components/Modal.svelte";
+    import Button from "../components/Button.svelte";
+    import ErrorModal from "../components/ErrorModal.svelte";
 
     let socketAlert = false;
 
@@ -66,11 +70,9 @@
         }
     });
 
-    $: currentChannelInCurrentGuild = $currentGuild?.channels?.find(
-        (c) => c.id === $currentChannel?.id
-    );
 </script>
 
+<ErrorModal />
 {#if $localUser}
     <div class="wrapper" on:contextmenu|preventDefault>
         {#if (!$eventSocket && $eventSocket?.readyState != WebSocket.OPEN) || socketAlert}

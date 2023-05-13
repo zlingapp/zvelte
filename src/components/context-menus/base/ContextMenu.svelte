@@ -4,13 +4,11 @@
     import { contextMenu } from "../../../lib/stores";
     import { onMount } from "svelte";
 
-    let open = false;
+    export let open = false;
     let x = 0;
     let y = 0;
 
     function onContext(e) {
-        e.preventDefault();
-        
         // this doesn't really mean anything, it's just to trigger the store event lol
         $contextMenu = !$contextMenu;
 
@@ -19,19 +17,19 @@
         y = e.clientY;
     }
 
-    function onClickOutside() {
+    function close() {
         open = false;
     }
 
     onMount(() => {
         contextMenu.subscribe((c) => {
-            onClickOutside();
+            close();
         });
     });
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div on:contextmenu={onContext}>
+<div on:contextmenu|preventDefault|stopPropagation={onContext}>
     <slot />
 </div>
 {#if open}
@@ -39,7 +37,7 @@
         class="context"
         style="left: {x}px; top: {y}px;"
         use:clickOutside
-        on:click_outside={onClickOutside}
+        on:click_outside={close}
     >
         <slot name="menu" />
     </div>
@@ -57,5 +55,6 @@
         padding: 10px 8px;
 
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        user-select: none;
     }
 </style>

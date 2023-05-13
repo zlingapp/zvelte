@@ -1,17 +1,41 @@
 <script lang="ts">
+    import { unimplemented } from "../../lib/dev";
+    import { localUser } from "../../lib/stores";
+    import ContextMenu from "../context-menus/base/ContextMenu.svelte";
+    import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
+    import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
+
     export let message: any;
     export let detailed: boolean = true;
 </script>
 
-<div class="message" class:detailed>
-    {#if detailed}
-        <img class="avatar" src={message.author.avatar} alt="avatar" />
-        <div class="header">
-            {message.author.username.split("#")[0]} <span class="time">{message.created_at}</span>
-        </div>
-    {/if}
-    <div class="content">{message.content}</div>
-</div>
+<ContextMenu>
+    <div class="message" class:detailed>
+        {#if detailed}
+            <ContextMenu>
+                <img class="avatar" src={message.author.avatar} alt="avatar" />
+            </ContextMenu>
+            <div class="header">
+                {message.author.username.split("#")[0]}
+                <span class="time">{message.created_at}</span>
+            </div>
+        {/if}
+        <div class="content">{message.content}</div>
+    </div>
+    <MessageContextMenu
+        onMarkAsRead={unimplemented}
+        onCopyLink={unimplemented}
+        onEdit={unimplemented}
+        onDelete={unimplemented}
+        onCopyId={unimplemented}
+        onCopyText={unimplemented}
+        onReply={unimplemented}
+        onPin={unimplemented}
+        editAllowed={message.author.id === $localUser.id}
+        modAllowed={message.author.id === $localUser.id}
+        slot="menu"
+    />
+</ContextMenu>
 
 <style>
     .message {
@@ -21,11 +45,10 @@
         padding-top: 0.125rem;
         padding-bottom: 0.125rem;
         padding-right: 48px;
-        
     }
 
     .message:hover {
-        background-color: #2E3035;
+        background-color: #2e3035;
     }
 
     .detailed {
@@ -70,6 +93,6 @@
     .time {
         font-size: 0.75rem;
         line-height: 1.375rem;
-        color: #949BA4;
+        color: #949ba4;
     }
 </style>

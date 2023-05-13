@@ -34,3 +34,6 @@ export const eventSocket = writable<WebSocket>(null);
 
 // event for when the user clicks a context menu
 export const contextMenu = writable(null);
+
+// string to show in an error modal
+export const showInErrorModal = writable(null);

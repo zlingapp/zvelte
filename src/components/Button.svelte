@@ -2,11 +2,12 @@
     export let green: boolean = false;
     export let danger: boolean = false;
     export let outline: boolean = false;
+    export let grow: boolean = false;
 
     export let onClick = () => {};
 </script>
 
-<button class:green class:danger class:outline on:click={onClick}><slot /></button>
+<button class:grow class:green class:danger class:outline on:click={onClick}><slot /></button>
 
 <style>
     button {
@@ -32,6 +33,10 @@
 
     .outline {
         border: 2px solid white;
+    }
+
+    .grow {
+        flex-grow: 1;
     }
 
     button:hover {
