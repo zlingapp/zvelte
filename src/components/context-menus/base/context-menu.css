@@ -1,0 +1,38 @@
+.action {
+    padding: 6px 8px;
+    margin: 2px 0;
+    line-height: 18px;
+    font-size: 14px;
+    color: #B5BAC1;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.action:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.divider {
+    height: 1px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin: 8px;
+}
+
+.dangerous {
+    color: var(--red);
+}
+
+.dangerous:hover {
+    background-color: var(--red);
+    color: white;
+}
+
+.unimportant {
+    color: var(--gray);
+}
+
+.unimportant:hover {
+    background-color: var(--gray);
+    color: white;
+}

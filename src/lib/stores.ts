@@ -31,3 +31,6 @@ export const voicePeers = writable<Map<string, Peer>>(new Map());
 // ---- misc ----
 
 export const eventSocket = writable<WebSocket>(null);
+
+// event for when the user clicks a context menu
+export const contextMenu = writable(null);

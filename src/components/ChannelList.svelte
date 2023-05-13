@@ -18,11 +18,12 @@
 
         const currentChannelInCurrentGuild = $currentGuild?.channels?.find(
             (c) => c.id === $currentChannel?.id
-        )
+        );
 
         if (channels?.length > 0 && currentChannelInCurrentGuild == null) {
             // auto-open the first text channel or if there aren't any text channels, set to null
-            let auto = (channels.find((c) => c.type == "text") as TextChannel) || null;
+            let auto =
+                (channels.find((c) => c.type == "text") as TextChannel) || null;
             $currentChannel = auto;
         } else {
             // if there are no channels, set to null
@@ -40,26 +41,25 @@
         });
     });
 
-    function switch_channel(channel: Channel) {
-        currentChannel.set(channel as TextChannel);
-    }
-
     async function create_channel(type: "voice" | "text") {
         let name = prompt("Channel name?");
         if (name == null) {
             return;
         }
 
-        let resp = await auth_fetch(`/api/guilds/${$currentGuild.id}/channels`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                name,
-                type
-            }),
-        });
+        let resp = await auth_fetch(
+            `/api/guilds/${$currentGuild.id}/channels`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name,
+                    type,
+                }),
+            }
+        );
 
         if (!resp.ok) {
             alert(`Failed to create channel: ${await resp.text()}`);
@@ -78,10 +78,7 @@
         <!-- show channel list -->
         {#each $currentGuild.channels as channel}
             {#if channel.type == "text"}
-                <UiTextChannel
-                    name={channel.name}
-                    onClick={() => switch_channel(channel)}
-                />
+                <UiTextChannel {channel} />
             {:else if channel.type == "voice"}
                 <VoiceChannel
                     name={channel.name}

@@ -1,14 +1,24 @@
 <script lang="ts">
     import MajesticonsHashtagLine from '~icons/majesticons/hashtag-line'
+    import ContextMenu from '../context-menus/base/ContextMenu.svelte';
+    import ChannelContextMenu from '../context-menus/ChannelContextMenu.svelte';
+    import type { Channel, TextChannel } from '../../lib/channel';
+    import { currentChannel } from '../../lib/stores';
 
-    export let name: string = "Text Channel";
-    export let onClick: () => void = () => {};
+    export let channel: Channel; // pretend this says TextChannel, svelte's type system is slightly broken
+
+    function switch_channel() {
+        $currentChannel = channel as TextChannel;
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="channel" on:click={onClick}>
-    <p class="channel-name"><MajesticonsHashtagLine /><span>{name}</span></p>
-</div>
+<ContextMenu>
+    <div class="channel" on:click={switch_channel}>
+        <p class="channel-name"><MajesticonsHashtagLine /><span>{channel.name}</span></p>
+    </div>
+    <ChannelContextMenu slot="menu" />
+</ContextMenu>
 
 <style>
     .channel {

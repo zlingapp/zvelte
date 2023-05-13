@@ -72,56 +72,58 @@
 </script>
 
 {#if $localUser}
-<div class="wrapper">
-    {#if !$eventSocket && $eventSocket?.readyState != WebSocket.OPEN || socketAlert}
-        <HeaderWarning />
-    {/if}
-    <main>
-        <VoiceManager />
-        <ServerList />
+    <div class="wrapper" on:contextmenu|preventDefault>
+        {#if (!$eventSocket && $eventSocket?.readyState != WebSocket.OPEN) || socketAlert}
+            <HeaderWarning />
+        {/if}
+        <main>
+            <VoiceManager />
+            <ServerList />
 
-        <div class="sidebar">
-            {#if $currentGuild}
-                <div class="server-head">
-                    <p class="server-name">{$currentGuild.name}</p>
-                </div>
-            {/if}
-
-            <div class="server-channels">
+            <div class="sidebar">
                 {#if $currentGuild}
-                    <ChannelList />
+                    <div class="server-head">
+                        <p class="server-name">{$currentGuild.name}</p>
+                    </div>
                 {/if}
 
-                <!-- <VoiceChannel id="chan_a" name="Channel A" />
+                <div class="server-channels">
+                    {#if $currentGuild}
+                        <ChannelList />
+                    {/if}
+
+                    <!-- <VoiceChannel id="chan_a" name="Channel A" />
                         <VoiceChannel id="chan_b" name="Channel B" />
                         <VoiceChannel id="chan_c" name="Channel C" /> -->
-            </div>
-
-            <div class="bottom-user-drawer">
-                <VoiceControls />
-                <LocalUserControls />
-            </div>
-        </div>
-
-        <section class="content">
-            {#if $currentChannel}
-                <ChannelContent
-                    channel={$currentChannel}
-                    guild_id={$currentGuild.id}
-                >
-                    <div slot="sidebar" class="sidebar">
-                        <div class="user-list" />
-                    </div>
-                </ChannelContent>
-            {:else}
-                <div class="lonely">
-                    <div class="lonely-icon"><IconParkOutlineSleepOne /></div>
-                    <div>*crickets*</div>
                 </div>
-            {/if}
-        </section>
-    </main>
-</div>
+
+                <div class="bottom-user-drawer">
+                    <VoiceControls />
+                    <LocalUserControls />
+                </div>
+            </div>
+
+            <section class="content">
+                {#if $currentChannel}
+                    <ChannelContent
+                        channel={$currentChannel}
+                        guild_id={$currentGuild.id}
+                    >
+                        <div slot="sidebar" class="sidebar">
+                            <div class="user-list" />
+                        </div>
+                    </ChannelContent>
+                {:else}
+                    <div class="lonely">
+                        <div class="lonely-icon">
+                            <IconParkOutlineSleepOne />
+                        </div>
+                        <div>*crickets*</div>
+                    </div>
+                {/if}
+            </section>
+        </main>
+    </div>
 {/if}
 
 <style>
