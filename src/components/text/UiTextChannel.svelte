@@ -1,6 +1,6 @@
 <script lang="ts">
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
-    import ContextMenu from "../context-menus/base/ContextMenu.svelte";
+    import ContextMenu from "../base/ContextMenu.svelte";
     import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
     import type { Channel, TextChannel } from "../../lib/channel";
     import { currentChannel } from "../../lib/stores";

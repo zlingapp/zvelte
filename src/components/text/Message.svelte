@@ -1,7 +1,7 @@
 <script lang="ts">
     import { unimplemented } from "../../lib/dev";
     import { localUser } from "../../lib/stores";
-    import ContextMenu from "../context-menus/base/ContextMenu.svelte";
+    import ContextMenu from "../base/ContextMenu.svelte";
     import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
 

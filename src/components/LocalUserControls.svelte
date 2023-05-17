@@ -1,7 +1,7 @@
 <script lang="ts">
     import { logOut } from "../lib/auth";
     import { localUser } from "../lib/stores";
-    import Tooltip from "./Tooltip.svelte";
+    import Tooltip from "./base/Tooltip.svelte";
 
     $: [name, tag] = $localUser?.name.split('#');
 </script>
@@ -9,6 +9,7 @@
 <div class="user-controls">
     <div class="info">
         <Tooltip text="Click to Log Out">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img src={$localUser.avatar} alt="avatar" on:click={logOut} />
         </Tooltip>
         <div class="name-tag">

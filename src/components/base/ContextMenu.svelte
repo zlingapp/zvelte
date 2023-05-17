@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
-    import { clickOutside } from "../../../lib/clickOutside";
-    import { contextMenu } from "../../../lib/stores";
+    import { clickOutside } from "../../lib/clickOutside";
+    import { contextMenu } from "../../lib/stores";
     import { onMount } from "svelte";
 
     export let open = false;

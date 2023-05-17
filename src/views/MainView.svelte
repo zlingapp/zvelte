@@ -20,9 +20,9 @@
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
     import HeaderWarning from "../components/HeaderWarning.svelte";
-    import Modal from "../components/Modal.svelte";
-    import Button from "../components/Button.svelte";
-    import ErrorModal from "../components/ErrorModal.svelte";
+    import Modal from "../components/base/Modal.svelte";
+    import Button from "../components/base/Button.svelte";
+    import ErrorModal from "../components/modals/ErrorModal.svelte";
 
     let socketAlert = false;
 

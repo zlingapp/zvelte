@@ -1,9 +1,9 @@
 <script lang="ts">
     import type { Guild } from "../lib/guild";
     import { currentGuild } from "../lib/stores";
-    import ContextMenu from "./context-menus/base/ContextMenu.svelte";
+    import ContextMenu from "./base/ContextMenu.svelte";
     import GuildContextMenu from "./context-menus/GuildContextMenu.svelte";
-    import Tooltip from "./Tooltip.svelte";
+    import Tooltip from "./base/Tooltip.svelte";
 
     export let guild: Guild;
 

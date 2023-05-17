@@ -42,5 +42,5 @@
 <div class="action unimportant" on:click={onCopyId}>Copy Message ID</div>
 
 <style>
-    @import "./base/context-menu.css";
+    @import "../base/ContextMenu.css";
 </style>

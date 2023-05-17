@@ -1,10 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { localUser, showInErrorModal } from "../lib/stores";
-    import Button from "./Button.svelte";
-    import IconUpload from "./IconUpload.svelte";
-    import Modal from "./Modal.svelte";
-    import Tooltip from "./Tooltip.svelte";
+    import Button from "./base/Button.svelte";
+    import IconUpload from "./base/IconUpload.svelte";
+    import Modal from "./base/Modal.svelte";
+    import Tooltip from "./base/Tooltip.svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import { auth_fetch } from "../lib/auth";
     import ServerIcon from "./ServerIcon.svelte";

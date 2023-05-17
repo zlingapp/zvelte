@@ -8,5 +8,5 @@
 </div>
 
 <style>
-    @import "./base/context-menu.css";
+    @import "../base/ContextMenu.css";
 </style>

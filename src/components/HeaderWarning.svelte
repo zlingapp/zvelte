@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Button from "./Button.svelte";
+    import Button from "./base/Button.svelte";
 </script>
 <div class="header-warning">
     <p class="warning">

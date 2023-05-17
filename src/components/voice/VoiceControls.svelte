@@ -10,7 +10,7 @@
     import { onMount } from "svelte";
     import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
     import DisconnectIcon from "~icons/majesticons/phone-missed-call";
-    import Tooltip from "../Tooltip.svelte";
+    import Tooltip from "../base/Tooltip.svelte";
 
     let statsInterval: number;
     let latencyMs: number = 0;

@@ -5,7 +5,7 @@
     import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
     import type { Channel, TextChannel } from "../lib/channel";
     import UiTextChannel from "./text/UiTextChannel.svelte";
-    import Button from "./Button.svelte";
+    import Button from "./base/Button.svelte";
     import { text } from "svelte/internal";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import VoiceChannel from "./voice/VoiceChannel.svelte";
