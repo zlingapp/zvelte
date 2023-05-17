@@ -6,6 +6,8 @@
     color: #B5BAC1;
     border-radius: 2px;
     cursor: pointer;
+
+    transition: background-color 30ms ease-in-out;
 }
 
 .action:hover {

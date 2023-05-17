@@ -29,7 +29,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div on:contextmenu|preventDefault|stopPropagation={onContext}>
+<div on:contextmenu|preventDefault={onContext}>
     <slot />
 </div>
 {#if open}
@@ -48,11 +48,11 @@
         position: fixed;
         z-index: 5;
 
-        min-width: 175px;
+        min-width: 172.77px;
 
         background-color: #111214;
         border-radius: 4px;
-        padding: 10px 8px;
+        padding: 6px 6px;
 
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         user-select: none;
