@@ -2,11 +2,25 @@
     import { unimplemented } from "../../lib/dev";
     import { localUser } from "../../lib/stores";
     import ContextMenu from "../base/ContextMenu.svelte";
+    import Tooltip from "../base/Tooltip.svelte";
     import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
 
+    import dayjs from "dayjs";
+
     export let message: any;
     export let detailed: boolean = true;
+
+    $: createdAt = dayjs.utc(message.created_at).tz(dayjs.tz.guess());
+
+    $: formattedCreatedAt = createdAt.calendar(null, {
+        sameDay: "[Today at] h:mm A",
+        nextDay: "[Tomorrow]",
+        nextWeek: "DD/MM/YYYY hh:mm: A",
+        lastDay: "[Yesterday]",
+        lastWeek: "DD/MM/YYYY hh:mm A",
+        sameElse: "DD/MM/YYYY hh:mm A",
+    });
 </script>
 
 <ContextMenu>
@@ -17,10 +31,20 @@
             </ContextMenu>
             <div class="header">
                 {message.author.username.split("#")[0]}
-                <span class="time">{message.created_at}</span>
+
+                <span class="time"
+                    ><Tooltip direction="right" text={message.created_at.substring(0, 19) + " GMT"}
+                        >{formattedCreatedAt}</Tooltip
+                    ></span
+                >
             </div>
         {/if}
-        <div class="content">{message.content}</div>
+        <div class="content">
+            {message.content}
+            {#if !detailed}
+                <span class="time time-inline">{createdAt.format("hh:mm A")}</span>
+            {/if}
+        </div>
     </div>
     <MessageContextMenu
         onMarkAsRead={unimplemented}
@@ -94,5 +118,17 @@
         font-size: 0.75rem;
         line-height: 1.375rem;
         color: #949ba4;
+        user-select: none;
+    }
+
+    .time-inline {
+        position: absolute;
+        left: 0;
+        transform: translate(calc(-100% - 8px), 2px);
+        opacity: 0;
+    }
+
+    .message:hover .time-inline {
+        opacity: 1;
     }
 </style>

@@ -39,7 +39,6 @@
                 }
 
                 if (msg.event.type === "message") {
-                    console.log("new message: ", msg.event);
                     messages = [...messages, msg.event];
                 }
             });

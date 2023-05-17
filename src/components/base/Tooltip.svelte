@@ -21,6 +21,7 @@
 <style>
     .has-tooltip {
         position: relative;
+        display: inline;
     }
 
     .tooltip {

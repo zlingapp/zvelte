@@ -23,6 +23,7 @@
     "vite": "^4.2.0"
   },
   "dependencies": {
+    "dayjs": "^1.11.7",
     "mediasoup-client": "^3.6.84",
     "svelte-routing": "^1.6.0"
   }
