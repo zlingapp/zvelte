@@ -127,6 +127,9 @@
     .body {
         flex-grow: 1;
         display: flex;
+        /* I have no clue why this fixes the y-overflow issue, but it does */
+        /* In fact, at runtime, the body element expands to 927px, isn't that crazy?  */
+        height: 0;
     }
     .middle-pane {
         flex-grow: 1;
