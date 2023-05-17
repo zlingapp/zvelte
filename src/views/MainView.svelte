@@ -134,6 +134,7 @@
         flex-direction: column;
         height: 100svh;
         width: 100vw;
+        overflow: hidden;
     }
 
     main {
