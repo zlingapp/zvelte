@@ -139,7 +139,12 @@
 </script>
 
 <main>
+    <!-- svelte-ignore missing-declaration -->
+    <a class="version-info" href="https://github.com/zlingapp/zvelte">
+        <strong>zvelte</strong> {ZLING_VERSION}
+    </a>
     <div class="login-pane">
+        <img src="/apple-touch-icon.png" alt="Zling Logo" height="100px" />
         <div class="title">
             {#if register}
                 <h2>Register Account</h2>
@@ -224,7 +229,7 @@
         width: 100vw;
 
         /* background-color: var(--bg-0); */
-        background-image: url("/login-background.jpg");
+        background-image: url("/login-background2-blur.jpg");
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
@@ -237,6 +242,7 @@
 
         /* background-color: var(--bg-1); */
         border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.08);
         box-sizing: border-box;
 
         backdrop-filter: blur(200px);
@@ -255,12 +261,11 @@
     }
 
     .title {
-        color: var(--gray);
+        color: var(--text-color);
         text-align: center;
     }
 
     .title > h2 {
-        color: var(--text-color);
         line-height: 30px;
         margin: 10px;
     }
@@ -313,10 +318,6 @@
 
     /* on mobile devices */
     @media (max-width: 768px) {
-        main {
-            /* background: none; */
-        }
-
         .login-pane {
             padding: 50px;
             height: 100svh;
@@ -329,5 +330,20 @@
         .form {
             min-width: 310px;
         }
+    }
+
+    .version-info {
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-sizing: border-box;
+        margin: 20px 20px;
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+    }
+
+    img {
+        user-select: none;
+        pointer-events: none;
     }
 </style>

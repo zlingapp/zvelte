@@ -6,3 +6,5 @@ declare namespace svelte.JSX {
       onclick_outside: () => void
     }
   }
+  
+declare const ZLING_VERSION: string;

@@ -1,31 +1,22 @@
-import { defineConfig } from "vite";
+import { ConfigEnv, defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import Icons from 'unplugin-icons/vite';
+import Icons from "unplugin-icons/vite";
+
+import { execSync } from "child_process"; 
 
 // https://vitejs.dev/config/
-export default defineConfig({
-    plugins: [
-        svelte(),
-        Icons({
-            compiler: "svelte",
-        }),
-    ],
-    server: {
-        https: false,
-        proxy: {
-            // "/api": {
-            //     target: "http://127.0.0.1:8080/",
-            //     changeOrigin: true,
-            //     secure: false,
-            //     rewrite: (path) => path.replace(/^\/api/, ""),
-            // },
-            // "/api/ws": {
-            //     target: "ws://127.0.0.1:8080/ws",
-            //     changeOrigin: true,
-            //     secure: false,
-            //     rewrite: (path) => path.replace(/^\/api\/ws/, ""),
-            //     ws: true,
-            // },
-        },
-    },
+export default defineConfig((env: ConfigEnv) => {
+    const commitHash = execSync('git rev-parse HEAD').toString().trimEnd();
+
+    return {
+        plugins: [
+            svelte(),
+            Icons({
+                compiler: "svelte",
+            }),
+        ],
+        define: {
+            ZLING_VERSION: JSON.stringify(commitHash.substr(0, 7)),
+        }
+    };
 });
