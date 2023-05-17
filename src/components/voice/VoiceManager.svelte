@@ -1,11 +1,11 @@
 <script lang="ts">
     import type {
         Consumer,
+        Device,
         Producer,
         Transport,
     } from "mediasoup-client/lib/types";
 
-    import { Device } from "mediasoup-client";
     import {
         voice_auth_fetch,
         VoiceState,
@@ -239,7 +239,7 @@
         voiceState.set(VoiceState.CONNECTING);
 
         // load mediasoup devices
-        device = new Device();
+        device = new (await import("mediasoup-client")).Device();
         await device.load({ routerRtpCapabilities });
 
         // set up transports
