@@ -101,7 +101,7 @@ export async function tryObtainLocalUser() {
 
 export async function ensureLoggedIn() {
     if (!(await tryObtainLocalUser())) {
-        navigate("/login");
+        goToLogin();
         return false;
     }
     return true;
@@ -113,9 +113,13 @@ export async function logOut() {
     if (tokens?.refreshExpires < Date.now() / 1000) {
         await auth_fetch("/api/auth/logout");
     }
-    localUser.set(null);
+    goToLogin();
+}
+
+// call this instead of navigate("/login") to avoid any stores surviving
+function goToLogin() {
     apiTokens.set(null);
-    navigate("/login");
+    location.href = "/login";
 }
 
 export function tokenExpiryTimestamp(token): number {
