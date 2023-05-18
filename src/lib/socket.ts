@@ -1,6 +1,17 @@
 import type { Unsubscriber } from "svelte/store";
 import { eventSocket } from "./stores";
 
+export interface EventSocketMessage {
+    topic: {
+        type: string;
+        id: string;
+    };
+    event: {
+        type: string;
+        [key: string]: any;
+    };
+}
+
 // send something on the event socket
 export async function eventSocketSend(data: string) {
     const socket = await waitForEventSocket();

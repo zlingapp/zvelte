@@ -44,18 +44,16 @@
             location.href
         );
 
-        console.log('update 1...')
+        console.log('Connecting event socket...')
         const socket = new WebSocket(ws_url);
 
-        // the moment the socket opens, begin the initialization process
-        console.log('update 2...')
         socket.onopen = async () => {
+            console.info('Event socket connected!');
             socketAlert = false;
         };
 
-        // whenever the socket closes, we need to disconnect
-        console.log('update 3...')
         socket.onclose = async () => {
+            console.warn('Event socket closed! Reconnecting...');
             socketAlert = true;
             clearInterval(heartbeat_handle);
             connectWebSocket();
@@ -85,7 +83,7 @@
 <ErrorModal />
 {#if $localUser}
     <div class="wrapper" on:contextmenu|preventDefault>
-        {#if (!$eventSocket && $eventSocket?.readyState != WebSocket.OPEN) || socketAlert}
+        {#if socketAlert}
             <HeaderWarning />
         {/if}
         <main>
@@ -103,10 +101,6 @@
                     {#if $currentGuild}
                         <ChannelList />
                     {/if}
-
-                    <!-- <VoiceChannel id="chan_a" name="Channel A" />
-                        <VoiceChannel id="chan_b" name="Channel B" />
-                        <VoiceChannel id="chan_c" name="Channel C" /> -->
                 </div>
 
                 <div class="bottom-user-drawer">

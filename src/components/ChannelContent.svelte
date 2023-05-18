@@ -7,13 +7,11 @@
     import Message from "./text/Message.svelte";
     import { auth_fetch } from "../lib/auth";
     import { eventSocketSend } from "../lib/socket";
+    import TopicConsumer from "./TopicConsumer.svelte";
 
     export let guild_id: string;
     export let channel: TextChannel;
     let channelOld: TextChannel;
-    // eventSocket.subscribe has been called at least once
-    let firstTimeSocketSubscribe = false;
-    let socketStoreUnsubscribe: Function;
 
     let messages = [];
     let messagesList: HTMLDivElement;
@@ -35,50 +33,9 @@
         messages = await resp.json();
     }
 
-    onMount(() => {
-        console.log('subscribing...')
-        socketStoreUnsubscribe = eventSocket.subscribe((sock) => {
-            if (sock == null) {
-                console.log('nulled out');
-            };
-
-            sock.addEventListener("message", async (event) => {
-                let msg = JSON.parse(event.data);
-
-                if (
-                    msg.topic.type !== "channel" &&
-                    msg.topic.id !== channel?.id
-                ) {
-                    console.warn("ignoring uninteresting topic", msg);
-                    return;
-                }
-
-                if (msg.event.type === "message") {
-                    messages = [...messages, msg.event];
-                }
-            });
-
-            if (!firstTimeSocketSubscribe) {
-                // socket is just now being connected
-                firstTimeSocketSubscribe = true;
-                return;
-            }
-
-            // this will be called ONLY when the socket reconnects, not when it first connects
-            console.log('(socket reconnected) refetch, resubscribe', sock);
-            fetchMessageHistory();
-            resubscribeToTopics();
-        });
-    });
-
     afterUpdate(() => {
         if (messagesList && messagesList.children.length > 0)
             messagesList.scrollTo(0, messagesList.scrollHeight);
-    });
-
-    onDestroy(() => {
-        console.log('unsubscribing...')
-        socketStoreUnsubscribe();
     });
 
     async function resubscribeToTopics() {
@@ -96,6 +53,7 @@
     }
 
     $: {
+        // channel switch without remount
         if (channelOld?.id !== channel?.id) {
             messages = [];
             // get message history
@@ -105,6 +63,20 @@
         }
     }
 </script>
+
+<TopicConsumer
+    onReconnect={() => {
+        fetchMessageHistory();
+        resubscribeToTopics();
+    }}
+    eventFilter={(msg) =>
+        msg.topic.type === "channel" && msg.topic.id === channel?.id}
+    onRelevantEvent={(msg) => {
+        if (msg.event.type === "message") {
+            messages = [...messages, msg.event];
+        }
+    }}
+/>
 
 <div class="channel-content">
     <div class="head">
