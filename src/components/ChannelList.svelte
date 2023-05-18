@@ -10,6 +10,11 @@
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import VoiceChannel from "./voice/VoiceChannel.svelte";
     import { auth_fetch } from "../lib/auth";
+    import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
+    import TopicConsumer from "./TopicConsumer.svelte";
+
+    // guild id of the last guild we subscribed to
+    let previousGuildId = null;
 
     async function get_channel_list() {
         let resp = await auth_fetch(`/api/guilds/${$currentGuild.id}/channels`);
@@ -31,12 +36,27 @@
         }
     }
 
+    async function subscribeToTopics(guild: Guild) {
+        // subscribe to new channel
+        let msg: any = {
+            sub: ["guild:" + guild?.id],
+        };
+        if (previousGuildId != null && previousGuildId !== guild.id) {
+            // transitioning from one channel to another, so unsubscribe from the old one
+            msg = { ...msg, unsub: ["guild:" + previousGuildId] };
+        }
+
+        await eventSocketSend(JSON.stringify(msg));
+        previousGuildId = guild.id;
+    }
+
     onMount(async () => {
-        currentGuild.subscribe(async (g) => {
-            if (g.channels != null) {
+        currentGuild.subscribe(async (guild) => {
+            if (guild.channels != null) {
                 return;
             }
 
+            await subscribeToTopics(guild);
             await get_channel_list();
         });
     });
@@ -65,11 +85,24 @@
             alert(`Failed to create channel: ${await resp.text()}`);
             return;
         }
+    }
 
-        await get_channel_list();
+    async function onRelevantEvent(esm: EventSocketMessage) {
+        if (esm.event.type == "channel_list_update") {
+            await get_channel_list();
+        }
     }
 </script>
 
+<TopicConsumer
+    {onRelevantEvent}
+    eventFilter={(esm) =>
+        esm.topic.type == "guild" && esm.topic.id == $currentGuild.id}
+    onReconnect={async () => {
+        await subscribeToTopics($currentGuild);
+        await get_channel_list();
+    }}
+/>
 <div class="channel-list">
     {#if $currentGuild.channels == null}
         <!-- loading -->
