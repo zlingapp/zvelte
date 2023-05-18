@@ -5,7 +5,9 @@
 </script>
 
 <Router>
-    <Route path="/" component={MainView} />
+    <Route path="/">
+        <MainView />
+    </Route>
     <Route path="/login">
         <LoginView />
     </Route>

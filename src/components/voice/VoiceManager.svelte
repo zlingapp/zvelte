@@ -130,7 +130,7 @@
             heartbeat_handle = setInterval(
                 () => socket.send("heartbeat"),
                 5000
-            );
+            ) as any;
         } catch (error) {
             // something went wrong, in the identity getting or socket construction???
             console.error(error);
