@@ -16,10 +16,7 @@ export interface Tokens {
     refreshExpires: number;
 }
 
-export async function auth_fetch(
-    input: RequestInfo | URL,
-    init?: RequestInit
-): Promise<Response> {
+export async function ensureHaveValidTokens() {
     let tokens = get(apiTokens);
     if (tokens != null) {
         // if the access token is about to expire, try to refresh it
@@ -57,9 +54,18 @@ export async function auth_fetch(
                 refreshToken: newTokens.refreshToken,
                 refreshExpires: tokenExpiryTimestamp(newTokens.refreshToken),
             });
-            tokens = get(apiTokens);
+            return get(apiTokens);
         }
+    }
+    return tokens;
+}
 
+export async function auth_fetch(
+    input: RequestInfo | URL,
+    init?: RequestInit
+): Promise<Response> {
+    let tokens = await ensureHaveValidTokens();
+    if (tokens != null) {
         if (init == null) {
             init = {};
         }

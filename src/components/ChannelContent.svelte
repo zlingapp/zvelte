@@ -3,30 +3,45 @@
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import MessageCaret from "./text/MessageCaret.svelte";
     import { eventSocket } from "../lib/stores";
-    import { afterUpdate, onMount } from "svelte";
+    import { afterUpdate, onDestroy, onMount } from "svelte";
     import Message from "./text/Message.svelte";
     import { auth_fetch } from "../lib/auth";
+    import { eventSocketSend } from "../lib/socket";
 
     export let guild_id: string;
     export let channel: TextChannel;
     let channelOld: TextChannel;
+    // eventSocket.subscribe has been called at least once
+    let firstTimeSocketSubscribe = false;
+    let socketStoreUnsubscribe: Function;
 
     let messages = [];
     let messagesList: HTMLDivElement;
 
-    async function fetch_message_history() {
+    async function fetchMessageHistory() {
         let channel_id = channel?.id;
         if (channel_id == null) {
-            console.warn('channel_id of', channel, 'was null, cannot get history');
+            console.warn(
+                "channel_id of",
+                channel,
+                "was null, cannot get history"
+            );
             return;
         }
 
-        let resp = await auth_fetch(`/api/guilds/${guild_id}/channels/${channel_id}/messages`);
+        let resp = await auth_fetch(
+            `/api/guilds/${guild_id}/channels/${channel_id}/messages`
+        );
         messages = await resp.json();
     }
 
     onMount(() => {
-        eventSocket.subscribe((sock) => {
+        console.log('subscribing...')
+        socketStoreUnsubscribe = eventSocket.subscribe((sock) => {
+            if (sock == null) {
+                console.log('nulled out');
+            };
+
             sock.addEventListener("message", async (event) => {
                 let msg = JSON.parse(event.data);
 
@@ -42,6 +57,17 @@
                     messages = [...messages, msg.event];
                 }
             });
+
+            if (!firstTimeSocketSubscribe) {
+                // socket is just now being connected
+                firstTimeSocketSubscribe = true;
+                return;
+            }
+
+            // this will be called ONLY when the socket reconnects, not when it first connects
+            console.log('(socket reconnected) refetch, resubscribe', sock);
+            fetchMessageHistory();
+            resubscribeToTopics();
         });
     });
 
@@ -50,22 +76,32 @@
             messagesList.scrollTo(0, messagesList.scrollHeight);
     });
 
+    onDestroy(() => {
+        console.log('unsubscribing...')
+        socketStoreUnsubscribe();
+    });
+
+    async function resubscribeToTopics() {
+        // subscribe to new channel
+        let msg: any = {
+            sub: ["channel:" + channel?.id],
+        };
+        if (channelOld != null && channelOld.id !== channel.id) {
+            // transitioning from one channel to another, so unsubscribe from the old one
+            msg = { ...msg, unsub: ["channel:" + channelOld.id] };
+        }
+
+        await eventSocketSend(JSON.stringify(msg));
+        channelOld = channel;
+    }
+
     $: {
         if (channelOld?.id !== channel?.id) {
             messages = [];
-            // subscribe to new channel, unsubscribe from old channel
-            let msg: any = {
-                sub: ["channel:" + channel?.id],
-            };
-            if (channelOld != null) {
-                msg = { ...msg, unsub: ["channel:" + channelOld.id] };
-            }
-
-            $eventSocket?.send(JSON.stringify(msg));
-            channelOld = channel;
-
             // get message history
-            fetch_message_history();
+            fetchMessageHistory();
+            // subscribe to new channel, unsubscribe from old channel
+            resubscribeToTopics();
         }
     }
 </script>
@@ -84,7 +120,10 @@
         <div class="middle-pane">
             <div class="messages" bind:this={messagesList}>
                 {#each messages as msg, idx}
-                    <Message message={msg} detailed={messages[idx - 1]?.author.id != msg.author.id} />
+                    <Message
+                        message={msg}
+                        detailed={messages[idx - 1]?.author.id != msg.author.id}
+                    />
                 {/each}
             </div>
             <MessageCaret />
@@ -136,7 +175,7 @@
         display: flex;
         flex-direction: column;
     }
-    
+
     .messages {
         flex-grow: 1;
         overflow-y: auto;

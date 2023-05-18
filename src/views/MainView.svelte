@@ -1,5 +1,4 @@
 <script lang="ts">
-    import VoiceChannel from "../components/voice/VoiceChannel.svelte";
     import VoiceControls from "../components/voice/VoiceControls.svelte";
     import VoiceManager from "../components/voice/VoiceManager.svelte";
 
@@ -10,23 +9,20 @@
         currentGuild,
         eventSocket,
         localUser,
-        showInErrorModal,
     } from "../lib/stores";
-    import { navigate } from "svelte-routing";
     import LocalUserControls from "../components/LocalUserControls.svelte";
-    import { ensureLoggedIn } from "../lib/auth";
+    import { ensureLoggedIn, ensureHaveValidTokens } from "../lib/auth";
     import ServerList from "../components/ServerList.svelte";
     import ChannelContent from "../components/ChannelContent.svelte";
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
     import HeaderWarning from "../components/HeaderWarning.svelte";
-    import Modal from "../components/base/Modal.svelte";
-    import Button from "../components/base/Button.svelte";
     import ErrorModal from "../components/modals/ErrorModal.svelte";
+    import { eventSocketSend } from "../lib/socket";
 
     let socketAlert = false;
 
-    function connectWebSocket() {
+    async function connectWebSocket() {
         if ($eventSocket && $eventSocket?.readyState !== WebSocket.CLOSED) {
             return;
         }
@@ -35,32 +31,43 @@
             return;
         }
 
+        let tokens = await ensureHaveValidTokens();
+        if (tokens == null) {
+            // the above function will have already redirected us to the login page
+            return;
+        }
+
         let ws_url = new URL(
             `ws${location.protocol === "https:" ? "s" : ""}://${
                 location.host
-            }/api/events/ws/?auth=${$apiTokens.accessToken}`,
+            }/api/events/ws/?auth=${tokens.accessToken}`,
             location.href
         );
 
-        $eventSocket = new WebSocket(ws_url);
+        console.log('update 1...')
+        const socket = new WebSocket(ws_url);
 
         // the moment the socket opens, begin the initialization process
-        $eventSocket.onopen = async () => {
+        console.log('update 2...')
+        socket.onopen = async () => {
             socketAlert = false;
         };
 
         // whenever the socket closes, we need to disconnect
-        $eventSocket.onclose = async () => {
+        console.log('update 3...')
+        socket.onclose = async () => {
             socketAlert = true;
             clearInterval(heartbeat_handle);
             connectWebSocket();
         };
 
+        $eventSocket = socket;
+
         // in browsers, websockets disconnect after 30 seconds of inactivity
         // which means we need to send a message periodically to keep the connection alive
         let heartbeat_handle = setInterval(
-            () => $eventSocket.send("heartbeat"),
-            5000
+            () => eventSocketSend("heartbeat"),
+            15000
         );
     }
 
@@ -68,8 +75,11 @@
         if (await ensureLoggedIn()) {
             connectWebSocket();
         }
-    });
 
+        window.addEventListener("focus", () => {
+            connectWebSocket();
+        });
+    });
 </script>
 
 <ErrorModal />
