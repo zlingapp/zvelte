@@ -21,7 +21,6 @@
 
     let socketDisconnected;
 
-    // Ensure logged in is called by EventSocketManager
     onMount(async () => {
         await ensureLoggedIn();
     })
