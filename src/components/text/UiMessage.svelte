@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Message } from "../../lib/channel";
     import { unimplemented } from "../../lib/dev";
     import { localUser } from "../../lib/stores";
     import ContextMenu from "../base/ContextMenu.svelte";
@@ -8,16 +9,14 @@
 
     import dayjs from "dayjs";
 
-    export let message: any;
+    export let message: Message;
     export let detailed: boolean = true;
 
-    $: createdAt = dayjs.utc(message.created_at).tz(dayjs.tz.guess());
-
-    $: formattedCreatedAt = createdAt.calendar(null, {
+    $: formattedCreatedAt = message.created_at.calendar(null, {
         sameDay: "[Today at] h:mm A",
-        nextDay: "[Tomorrow]",
+        nextDay: "[Tomorrow at] h:mm A",
         nextWeek: "DD/MM/YYYY hh:mm: A",
-        lastDay: "[Yesterday]",
+        lastDay: "[Yesterday at] h:mm A",
         lastWeek: "DD/MM/YYYY hh:mm A",
         sameElse: "DD/MM/YYYY hh:mm A",
     });
@@ -33,8 +32,11 @@
                 {message.author.username.split("#")[0]}
 
                 <span class="time"
-                    ><Tooltip direction="right" text={message.created_at.substring(0, 19) + " GMT"}
-                        >{formattedCreatedAt}</Tooltip
+                    ><Tooltip
+                        direction="right"
+                        text={message.created_at.format(
+                            "DD/MM/YYYY HH:mm:ss G[M]T+0"
+                        )}>{formattedCreatedAt}</Tooltip
                     ></span
                 >
             </div>
@@ -42,7 +44,9 @@
         <div class="content">
             {message.content}
             {#if !detailed}
-                <span class="time time-inline">{createdAt.format("hh:mm A")}</span>
+                <span class="time time-inline"
+                    >{message.created_at.format("hh:mm A")}</span
+                >
             {/if}
         </div>
     </div>

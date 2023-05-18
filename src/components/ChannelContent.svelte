@@ -1,19 +1,20 @@
 <script lang="ts">
-    import type { TextChannel } from "../lib/channel";
+    import type { TextChannel, Message } from "../lib/channel";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import MessageCaret from "./text/MessageCaret.svelte";
     import { eventSocket } from "../lib/stores";
     import { afterUpdate, onDestroy, onMount } from "svelte";
-    import Message from "./text/Message.svelte";
+    import UiMessage from "./text/UiMessage.svelte";
     import { auth_fetch } from "../lib/auth";
-    import { eventSocketSend } from "../lib/socket";
+    import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
     import TopicConsumer from "./TopicConsumer.svelte";
+    import dayjs from "dayjs";
 
     export let guild_id: string;
     export let channel: TextChannel;
     let channelOld: TextChannel;
 
-    let messages = [];
+    let messages: Message[] = [];
     let messagesList: HTMLDivElement;
 
     async function fetchMessageHistory() {
@@ -30,7 +31,14 @@
         let resp = await auth_fetch(
             `/api/guilds/${guild_id}/channels/${channel_id}/messages`
         );
-        messages = await resp.json();
+        messages = ((await resp.json()) as Message[]).map(parseMessage);
+    }
+
+    function parseMessage(raw: Message): Message {
+        return {
+            ...raw,
+            created_at: dayjs.utc(raw.created_at).tz(dayjs.tz.guess()),
+        };
     }
 
     afterUpdate(() => {
@@ -62,6 +70,28 @@
             resubscribeToTopics();
         }
     }
+
+    function onRelevantEvent(esm: EventSocketMessage) {
+        if (esm.event.type === "message") {
+            messages = [
+                ...messages,
+                parseMessage(esm.event as unknown as Message),
+            ];
+        }
+    }
+
+    function shouldSeparateMessage(last: Message, current: Message) {
+        if (last == null) return true;
+        if (last.author.id !== current.author.id) return true;
+        if (
+            !last.created_at
+                .endOf("day")
+                .isSame(current.created_at.endOf("day"))
+        )
+            return true;
+        if (current.created_at.diff(last.created_at, "hours") >= 1) return true;
+        return false;
+    }
 </script>
 
 <TopicConsumer
@@ -71,11 +101,7 @@
     }}
     eventFilter={(msg) =>
         msg.topic.type === "channel" && msg.topic.id === channel?.id}
-    onRelevantEvent={(msg) => {
-        if (msg.event.type === "message") {
-            messages = [...messages, msg.event];
-        }
-    }}
+    {onRelevantEvent}
 />
 
 <div class="channel-content">
@@ -91,10 +117,14 @@
     <div class="body">
         <div class="middle-pane">
             <div class="messages" bind:this={messagesList}>
-                {#each messages as msg, idx}
-                    <Message
-                        message={msg}
-                        detailed={messages[idx - 1]?.author.id != msg.author.id}
+                {#each messages as message, idx}
+                    <!-- {"" + message.created_at.diff(messages[idx - 1]?.created_at, "hours")} -->
+                    <UiMessage
+                        {message}
+                        detailed={shouldSeparateMessage(
+                            messages[idx - 1],
+                            message
+                        )}
                     />
                 {/each}
             </div>
