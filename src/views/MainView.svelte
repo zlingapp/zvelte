@@ -6,6 +6,7 @@
         currentChannel,
         currentGuild,
         localUser,
+        userSettingsOpen,
     } from "../lib/stores";
     
     import LocalUserControls from "../components/LocalUserControls.svelte";
@@ -16,8 +17,9 @@
     import ErrorModal from "../components/modals/ErrorModal.svelte";
     import EventSocketManager from "../components/EventSocketManager.svelte";
     import { onMount } from "svelte";
-    import { ensureLoggedIn } from "../lib/auth";
+    import { ensureHaveValidTokens, ensureLoggedIn } from "../lib/auth";
     import LoadingScreen from "../components/LoadingScreen.svelte";
+    import UserSettings from "../components/settings/UserSettings.svelte";
 
     let socketDisconnected;
 
@@ -32,6 +34,9 @@
     <LoadingScreen />
 {/if}
 {#if $localUser}
+    {#if $userSettingsOpen}
+        <UserSettings />
+    {/if}
     <div class="wrapper" on:contextmenu|preventDefault>
         <main>
             <VoiceManager />

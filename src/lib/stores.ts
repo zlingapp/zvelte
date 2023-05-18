@@ -37,3 +37,5 @@ export const contextMenu = writable(null);
 
 // string to show in an error modal
 export const showInErrorModal = writable(null);
+
+export const userSettingsOpen = writable(true);

@@ -1,4 +1,4 @@
-.action {
+.cm-action {
     padding: 6px 8px;
     margin: 2px 0;
     line-height: 18px;
@@ -10,26 +10,26 @@
     transition: background-color 30ms ease-in-out;
 }
 
-.action:hover {
+.cm-action:hover {
     background-color: var(--accent-color);
     color: white;
 }
 
-.divider {
+.cm-divider {
     height: 1px;
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     margin: 8px;
 }
 
-.dangerous {
+.cm-dangerous {
     color: var(--red);
 }
 
-.dangerous:hover {
+.cm-dangerous:hover {
     background-color: var(--red);
     color: white;
 }
 
-.unimportant {
+.cm-unimportant {
     color: var(--gray);
 }

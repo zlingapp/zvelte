@@ -3,7 +3,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="action" on:click={onCopyId}>
+<div class="cm-action" on:click={onCopyId}>
     Copy ID
 </div>
 
