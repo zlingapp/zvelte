@@ -3,12 +3,12 @@
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import MessageCaret from "./text/MessageCaret.svelte";
     import { eventSocket } from "../lib/stores";
-    import { afterUpdate, onDestroy, onMount } from "svelte";
+    import { afterUpdate, onDestroy, onMount, tick } from "svelte";
     import UiMessage from "./text/UiMessage.svelte";
     import { auth_fetch } from "../lib/auth";
     import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
     import TopicConsumer from "./TopicConsumer.svelte";
-    import dayjs from "dayjs";
+    import dayjs, { Dayjs } from "dayjs";
 
     export let guild_id: string;
     export let channel: TextChannel;
@@ -17,7 +17,15 @@
     let messages: Message[] = [];
     let messagesList: HTMLDivElement;
 
-    async function fetchMessageHistory() {
+    let loadingOlder = false;
+    let nothingOlder = false;
+
+    const MESSAGE_FETCH_LIMIT = 50;
+
+    async function fetchMessageHistory(
+        before: Dayjs = null,
+        after: Dayjs = null
+    ) {
         let channel_id = channel?.id;
         if (channel_id == null) {
             console.warn(
@@ -28,10 +36,17 @@
             return;
         }
 
-        let resp = await auth_fetch(
-            `/api/guilds/${guild_id}/channels/${channel_id}/messages`
-        );
-        messages = ((await resp.json()) as Message[]).map(parseMessage);
+        let url = `/api/guilds/${guild_id}/channels/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
+
+        if (before != null) {
+            url += `&before=${before.toISOString()}`;
+        }
+        if (after != null) {
+            url += `&after=${after.toISOString()}`;
+        }
+
+        let resp = await auth_fetch(url);
+        return ((await resp.json()) as Message[]).map(parseMessage);
     }
 
     function parseMessage(raw: Message): Message {
@@ -40,11 +55,6 @@
             created_at: dayjs.utc(raw.created_at).tz(dayjs.tz.guess()),
         };
     }
-
-    afterUpdate(() => {
-        if (messagesList && messagesList.children.length > 0)
-            messagesList.scrollTo(0, messagesList.scrollHeight);
-    });
 
     async function resubscribeToTopics() {
         // subscribe to new channel
@@ -63,9 +73,9 @@
     $: {
         // channel switch without remount
         if (channelOld?.id !== channel?.id) {
-            messages = [];
+            nothingOlder = false;
             // get message history
-            fetchMessageHistory();
+            initialFetch();
             // subscribe to new channel, unsubscribe from old channel
             resubscribeToTopics();
         }
@@ -77,6 +87,7 @@
                 ...messages,
                 parseMessage(esm.event as unknown as Message),
             ];
+            scrollToBottom();
         }
     }
 
@@ -92,11 +103,45 @@
         if (current.created_at.diff(last.created_at, "hours") >= 1) return true;
         return false;
     }
+
+    async function scrollToBottom() {
+        await tick();
+        if (messagesList) messagesList.scrollTo(0, messagesList.scrollHeight);
+    }
+
+    async function initialFetch() {
+        let result = await fetchMessageHistory();
+        if (result.length < MESSAGE_FETCH_LIMIT) {
+            nothingOlder = true;
+        }
+        messages = result;
+        scrollToBottom();
+    }
+
+    async function onMessagesScroll() {
+        if (messagesList.scrollTop === 0 && !loadingOlder && !nothingOlder) {
+            loadingOlder = true;
+
+            let messagesBefore = await fetchMessageHistory(
+                messages[0]?.created_at
+            );
+
+            if (messagesBefore.length > 0) {
+                messages = [...messagesBefore, ...messages];
+            }
+
+            if (messagesBefore.length < MESSAGE_FETCH_LIMIT) {
+                nothingOlder = true;
+            }
+
+            loadingOlder = false;
+        }
+    }
 </script>
 
 <TopicConsumer
-    onReconnect={() => {
-        fetchMessageHistory();
+    onReconnect={async () => {
+        initialFetch();
         resubscribeToTopics();
     }}
     eventFilter={(msg) =>
@@ -116,7 +161,14 @@
     </div>
     <div class="body">
         <div class="middle-pane">
-            <div class="messages" bind:this={messagesList}>
+            <div
+                class="messages"
+                bind:this={messagesList}
+                on:scroll={onMessagesScroll}
+            >
+                {#if loadingOlder}
+                    <div class="loading">Loading older messages...</div>
+                {/if}
                 {#each messages as message, idx}
                     <!-- {"" + message.created_at.diff(messages[idx - 1]?.created_at, "hours")} -->
                     <UiMessage

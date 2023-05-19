@@ -51,7 +51,7 @@
 
         intervalHandle = setInterval(() => {
             speaking = isSoundDetected();
-        }, 100);
+        }, 100) as any;
     }
 </script>
 
