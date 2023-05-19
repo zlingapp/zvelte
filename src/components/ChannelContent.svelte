@@ -2,13 +2,15 @@
     import type { TextChannel, Message } from "../lib/channel";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import MessageCaret from "./text/MessageCaret.svelte";
-    import { eventSocket } from "../lib/stores";
+    import { eventSocket, localUser } from "../lib/stores";
     import { afterUpdate, onDestroy, onMount, tick } from "svelte";
     import UiMessage from "./text/UiMessage.svelte";
     import { auth_fetch } from "../lib/auth";
     import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
     import TopicConsumer from "./TopicConsumer.svelte";
     import dayjs, { Dayjs } from "dayjs";
+    import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
+    import { fly } from "svelte/transition";
 
     export let guild_id: string;
     export let channel: TextChannel;
@@ -19,8 +21,10 @@
 
     let loadingOlder = false;
     let nothingOlder = false;
+    let typing: Map<string, any> = new Map();
 
     const MESSAGE_FETCH_LIMIT = 50;
+    const CONSIDER_TYPING_STOPPED_AFTER = 5000;
 
     async function fetchMessageHistory(
         before: Dayjs = null,
@@ -74,6 +78,13 @@
         // channel switch without remount
         if (channelOld?.id !== channel?.id) {
             nothingOlder = false;
+
+            // clear old intervals
+            for (const typer of typing.values()) {
+                clearTimeout(typer.deleterHandle);
+            }
+            typing = new Map();
+
             // get message history
             initialFetch();
             // subscribe to new channel, unsubscribe from old channel
@@ -82,12 +93,42 @@
     }
 
     function onRelevantEvent(esm: EventSocketMessage) {
-        if (esm.event.type === "message") {
-            messages = [
-                ...messages,
-                parseMessage(esm.event as unknown as Message),
-            ];
-            scrollToBottom();
+        switch (esm.event.type) {
+            case "message":
+                messages = [
+                    ...messages,
+                    parseMessage(esm.event as unknown as Message),
+                ];
+
+                const typer = typing.get(esm.event.author.id);
+                if (typer) {
+                    clearTimeout(typer.deleterHandle);
+                    typing.delete(esm.event.author.id);
+                    typing = typing;
+                }
+
+                scrollToBottom();
+                break;
+            case "typing":
+                if (esm.event.user.id === $localUser.id) return;
+
+                const existing = typing.get(esm.event.user.id);
+                if (existing) {
+                    clearTimeout(existing.deleterHandle);
+                }
+
+                typing.set(esm.event.user.id, {
+                    ...esm.event.user,
+                    lastTyping: Date.now(),
+                    deleterHandle: setTimeout(() => {
+                        typing.delete(esm.event.user.id);
+                        typing = typing;
+                    }, CONSIDER_TYPING_STOPPED_AFTER),
+                });
+
+                typing = typing;
+            default:
+                break;
         }
     }
 
@@ -181,6 +222,36 @@
                 {/each}
             </div>
             <MessageCaret />
+            {#if typing.size > 0}
+                <div class="typing-list" transition:fly={{ y: 10, duration: 100 }}>
+                    <div class="typing-icon">
+                        <SvgSpinners3DotsFade />
+                    </div>
+                    {#if typing.size >= 5}
+                        <span class="typer" style="margin-right: 12px;">Several people are typing...</span>
+                        {#each [...typing.values()] as typer}
+                            <!-- svelte-ignore a11y-missing-attribute -->
+                            <img class="typer-avatar overlap-avatar" src={typer.avatar} height="14px" />
+                        {/each}
+                    {:else}
+                        {#each [...typing.values()] as typer, idx}
+                            <!-- svelte-ignore a11y-missing-attribute -->
+                            <img class="typer-avatar" src={typer.avatar} height="14px" />
+                            <span class="typer">
+                                {typer.username.split("#")[0]}
+                            </span>
+                            {#if idx < typing.size - 1}
+                                {#if idx < typing.size - 2}
+                                    <span style="margin-right: 4px;">,</span>
+                                {:else}
+                                    <span style="margin-inline: 4px;">and</span>
+                                {/if}
+                            {/if}
+                        {/each}
+                        <span class="typing-suffix">is typing...</span>
+                    {/if}
+                </div>
+            {/if}
         </div>
         <slot name="sidebar" />
     </div>
@@ -228,6 +299,7 @@
         background-color: var(--bg-0);
         display: flex;
         flex-direction: column;
+        position: relative;
     }
 
     .messages {
@@ -246,5 +318,40 @@
         background-color: var(--bg-2);
         border: 4px solid var(--bg-0);
         border-radius: 8px;
+    }
+
+    .typing-list {
+        position: absolute;
+        bottom: 0;
+        left: 19px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        user-select: none;
+    }
+
+    .typing-icon {
+        line-height: 0;
+        font-size: 20px;
+        margin-right: 8px;
+    }
+
+    .typer-avatar {
+        border-radius: 50%;
+        margin-right: 4px;
+    }
+
+    .typer {
+        font-weight: 600;
+    }
+
+    .typing-suffix {
+        margin-left: 4px;
+    }
+
+    .overlap-avatar {
+        margin-left: -8px;
+        box-sizing: border-box;
+        outline: 2px solid var(--bg-0);
     }
 </style>

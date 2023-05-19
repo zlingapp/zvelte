@@ -1,18 +1,62 @@
 <script lang="ts">
     import MaterialSymbolsAddCircle from "~icons/material-symbols/add-circle";
-    import { currentChannel, currentGuild, eventSocket } from "../../lib/stores";
+    import {
+        currentChannel,
+        currentGuild,
+        eventSocket,
+    } from "../../lib/stores";
 
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import { auth_fetch } from "../../lib/auth";
+    import { onMount } from "svelte";
 
     let value;
     let sendButton: HTMLDivElement;
 
+    let typingLastSent = 0;
+
+    const RESEND_TYPING_EVERY = 4000;
+
+    onMount(() => {
+        currentChannel.subscribe(() => {
+            typingLastSent = 0;
+        });
+    });
+
     function onKeyUp(e: KeyboardEvent) {
-        if (e.key !== "Enter") return;
-        sendButton.click();
-        e.preventDefault();
+        switch (e.key) {
+            case "Enter":
+                if (e.shiftKey) {
+                    break;
+                }
+                sendButton.click();
+                e.preventDefault();
+                break;
+            case "Backspace":
+                break;
+            default:
+                if (e.ctrlKey || e.metaKey || e.altKey && e.which == 8) {
+                    break;
+                }
+                if (!(e.keyCode >= 48 && e.keyCode <= 57) && !(e.keyCode >= 65 && e.keyCode <= 90)) {
+                    break;
+                }
+                if (Date.now() - typingLastSent >= RESEND_TYPING_EVERY) {
+                    sendTyping();
+                    typingLastSent = Date.now();
+                }
+                break;
+        }
+    }
+
+    async function sendTyping() {
+        await auth_fetch(
+            `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/typing`,
+            {
+                method: "POST",
+            }
+        );
     }
 
     async function send() {
@@ -20,13 +64,16 @@
             return;
         }
 
-        await auth_fetch(`/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ content: value }),
-        });
+        await auth_fetch(
+            `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ content: value }),
+            }
+        );
 
         value = "";
     }
