@@ -25,7 +25,9 @@
             class="guild-icon"
             class:current={guild.id == $currentGuild?.id}
             on:click={() => {
-                $currentGuild = { ...guild };
+                if ($currentGuild?.id !== guild.id) {
+                    $currentGuild = { ...guild };
+                }
             }}
         >
             {guild.name[0].toUpperCase()}
@@ -37,10 +39,12 @@
 <style>
     .guild-tooltip-name {
         font-weight: 600;
+        user-select: none;
     }
 
     .current {
         outline: 3px solid rgba(255, 255, 255, 0.2);
         border-radius: 40%;
+        user-select: none;
     }
 </style>
