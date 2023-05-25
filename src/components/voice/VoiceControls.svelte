@@ -6,11 +6,12 @@
         voicePeers,
     } from "../../lib/stores";
 
-    import { VoiceState, disconnectFromVoice } from "../../lib/voice";
+    import { VoiceState, disconnectFromVoice, isPeerDuplicate } from "../../lib/voice";
     import { onMount } from "svelte";
     import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
     import DisconnectIcon from "~icons/majesticons/phone-missed-call";
     import Tooltip from "../base/Tooltip.svelte";
+    import VoiceMemberDuplicateTag from "./VoiceMemberDuplicateTag.svelte";
 
     let statsInterval: number;
     let latencyMs: number = 0;
@@ -36,7 +37,7 @@
                     }
                 }
             });
-        }, 1000);
+        }, 1000) as any;
     });
 </script>
 
@@ -58,6 +59,9 @@
             <div class="status green">
                 <VoiceLatencyIcon latency={latencyMs} />
                 <span>Connected</span>
+                {#if isPeerDuplicate(me)}
+                    <VoiceMemberDuplicateTag text={me.identity.slice(0, 3)} is_me tooltipDirection="top" />
+                {/if}
             </div>
             <div class="channel-name">
                 {$voiceChannelCurrent?.name} | {$voiceChannelCurrent?.guild_name}
@@ -129,5 +133,14 @@
     .channel-name {
         font-size: 0.8em;
         color: var(--gray);
+    }
+
+    .identity {
+        font-family: monospace;
+        background: var(--bg-2);
+        padding: 2px 5px;
+        font-size: 10px;
+        border-radius: 5px;
+        color: dodgerblue;
     }
 </style>

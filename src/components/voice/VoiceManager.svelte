@@ -19,6 +19,7 @@
         voicePeers as voicePeersStore,
         voiceState,
         voiceChannelCurrent,
+        localUser,
     } from "../../lib/stores";
     import { auth_fetch } from "../../lib/auth";
 
@@ -201,7 +202,13 @@
         $voiceState = VoiceState.DISCONNECTING;
 
         try {
-            await voice_auth_fetch(identity, token, `/api/voice/leave`, null, false);
+            await voice_auth_fetch(
+                identity,
+                token,
+                `/api/voice/leave`,
+                null,
+                false
+            );
         } catch (e) {
             console.error("graceful disconnect failed,", e);
         }
@@ -250,7 +257,16 @@
         producer = await send_transport.produce({ track: audio_track });
 
         // add self to voice peers
-        await add_peer(identity, true, producer);
+        await add_peer(
+            identity,
+            {
+                id: $localUser.id,
+                username: $localUser.name,
+                avatar: $localUser.avatar,
+            },
+            true,
+            producer
+        );
 
         let already_in_vc = await voice_auth_fetch(
             identity,
@@ -260,7 +276,7 @@
 
         // consume existing
         for (const peer of already_in_vc) {
-            await add_peer(peer.identity);
+            await add_peer(peer.identity, peer.user);
             for (const producerId of peer.producers) {
                 await consume(peer.identity, producerId);
             }
@@ -433,7 +449,7 @@
                     );
                     return;
                 }
-                await add_peer(data.identity);
+                await add_peer(data.identity, data.user);
                 break;
             case "client_disconnected":
                 if (data.identity == identity) {
@@ -457,20 +473,27 @@
      * Adds a `Peer` to the voicePeers map, and signals reactivity (voicePeers = voicePeers).
      *
      * If this is the local peer:
-     * - The `local_track` should be provided so that it can be used to show the local speaking status in the UI.
-     *   Not setting it is not fatal, but it will make the UI not show the local speaking status.
      * - `is_me` shoulb be set to true.
+     * - `producer` should be set to the local producer.
+     *
+     * Otherwise, `producer` should be null and is_me should be false.
      *
      * @param identity The peer's identity
      * @param is_me Set to true if this is the local peer
-     * @param local_track The local track to use for the local speaking status
+     * @param producer The peer's producer
      */
-    async function add_peer(identity, is_me?, producer?: Producer) {
+    async function add_peer(
+        identity: string,
+        user: Peer["user"],
+        is_me?: boolean,
+        producer?: Producer
+    ) {
         if (voicePeers.has(identity)) return false;
 
         voicePeers.set(identity, {
-            is_me: is_me === true,
             identity,
+            user,
+            is_me: is_me === true,
             consumers: new Map(),
             producer,
         });

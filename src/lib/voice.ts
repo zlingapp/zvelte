@@ -1,6 +1,7 @@
 import type { Consumer, Producer } from "mediasoup-client/lib/types";
+import { get } from "svelte/store";
 import { auth_fetch } from "./auth";
-import { voiceChannelTarget } from "./stores";
+import { voiceChannelTarget, voicePeers } from "./stores";
 
 export enum VoiceState {
     PERMISSION_REQUEST,
@@ -13,8 +14,13 @@ export enum VoiceState {
 
 export interface Peer {
     identity: string;
+    user: {
+        id: string;
+        username: string;
+        avatar: string;
+    }
     consumers: Map<string, Consumer>;
-    is_me: Boolean;
+    is_me: boolean;
     producer: Producer; // used only for the local peer
 }
 
@@ -49,4 +55,18 @@ export async function voice_auth_fetch(identity, token, url, init?: RequestInit,
 
 export function disconnectFromVoice() {
     voiceChannelTarget.update((v) => null);
+}
+
+// if there is more than one peer with the same user id, in the same voice channel
+// then that user is connected to the voice channel from multiple devices
+export function isPeerDuplicate(peer: Peer) {
+    let count = 0;
+    
+    get(voicePeers).forEach((p) => {
+        if (p.user.id === peer.user.id) {
+            count++;
+        }
+    });
+
+    return count > 1;
 }

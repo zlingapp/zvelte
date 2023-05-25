@@ -21,7 +21,7 @@
 <style>
     .has-tooltip {
         position: relative;
-        display: inline;
+        display: inherit;
     }
 
     .tooltip {
@@ -47,7 +47,7 @@
     }
 
     .tooltip.top {
-        top: -48px;
+        bottom: 28px;
         left: 50%;
         transform: translate(-50%, 0);
     }
@@ -65,7 +65,7 @@
 
     .tooltip.right {
         left: 100%;
-        top: calc(50% - 2px);
+        top: calc(50%);
         transform: translate(10px, -50%);
     }
 

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { Peer } from "../../lib/voice";
+    import { isPeerDuplicate, type Peer } from "../../lib/voice";
     import {
         voiceChannelTarget,
         voiceChannelCurrent,
         voicePeers,
     } from "../../lib/stores";
     import VoiceMember from "./VoiceMember.svelte";
-    import MajesticonsMicrophone from '~icons/majesticons/microphone'
+    import MajesticonsMicrophone from "~icons/majesticons/microphone";
 
     export let name: string = "Voice Channel";
     export let id: string;
@@ -16,6 +16,8 @@
         if ($voiceChannelCurrent?.id === id) return;
         voiceChannelTarget.update((v) => ({ id, name, guild_name }));
     }
+
+    $: peers = [...$voicePeers.values()];
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -23,8 +25,8 @@
     <p class="channel-name"><MajesticonsMicrophone /><span>{name}</span></p>
     {#if $voiceChannelCurrent?.id === id && $voicePeers.size > 0}
         <div class="members">
-            {#each [...$voicePeers.values()] as peer}
-                <VoiceMember bind:peer />
+            {#each peers as peer}
+                <VoiceMember bind:peer isDuplicate={isPeerDuplicate(peer)} />
             {/each}
         </div>
     {/if}
@@ -55,6 +57,7 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        padding: 10px;
+        padding-top: 10px;
+        padding-inline: 10px;
     }
 </style>

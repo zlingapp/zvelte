@@ -2,8 +2,10 @@
     import { onMount } from "svelte";
     import type { Peer } from "../../lib/voice";
     import type { Consumer } from "mediasoup-client/lib/Consumer";
+    import VoiceMemberDuplicateTag from "./VoiceMemberDuplicateTag.svelte";
 
     export let peer: Peer;
+    export let isDuplicate: boolean = false;
 
     let analyzer: AnalyserNode = null;
     let speaking: Boolean = false;
@@ -56,8 +58,14 @@
 </script>
 
 <div class="voice-member">
-    <div class="avatar" class:lit={speaking} />
-    <p class="name">{peer.identity.slice(0,8)}</p>
+    <!-- svelte-ignore a11y-missing-attribute -->
+    <img class="avatar" src={peer.user.avatar} class:lit={speaking} />
+    <div class="name">
+        <span>{peer.user.username.split("#")[0]}</span>
+        {#if isDuplicate}
+            <VoiceMemberDuplicateTag is_me={peer.is_me} text={peer.identity.slice(0, 3)} />
+        {/if}
+    </div>
 </div>
 
 <style>
@@ -65,19 +73,23 @@
         display: flex;
         align-items: center;
         padding: 4px 8px;
-        gap: 8px;
+        gap: 10px;
     }
     .avatar {
         width: 20px;
         height: 20px;
         border-radius: 50%;
         background-color: gray;
-        margin-right: 5px;
     }
 
     .lit {
         /* border with gap */
         outline: 4px solid #00b576;
-        outline-offset: 2px;
+    }
+
+    .name {
+        line-height: 1rem;
+        display: flex;
+        gap: 8px;
     }
 </style>
