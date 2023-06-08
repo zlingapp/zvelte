@@ -13,6 +13,12 @@
         isContextMenuOpen = false;
         navigator.clipboard.writeText(guild.id);
     }
+
+    function switchGuild() {
+        if ($currentGuild?.id !== guild.id) {
+                        $currentGuild = { ...guild };
+                    }
+    }
 </script>
 
 <ContextMenu bind:open={isContextMenuOpen}>
@@ -21,17 +27,25 @@
             {guild.name}
         </div>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div
-            class="guild-icon"
-            class:current={guild.id == $currentGuild?.id}
-            on:click={() => {
-                if ($currentGuild?.id !== guild.id) {
-                    $currentGuild = { ...guild };
-                }
-            }}
-        >
-            {guild.name[0].toUpperCase()}
-        </div>
+        {#if guild.icon != null}
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <img
+                src={guild.icon}
+                class="guild-icon"
+                class:current={guild.id == $currentGuild?.id}
+                on:click={switchGuild}
+            />
+        {:else}
+            <div
+                class="guild-icon"
+                class:current={guild.id == $currentGuild?.id}
+                on:click={switchGuild}
+            >
+                {#if guild.icon == null}
+                    {guild.name[0].toUpperCase()}
+                {/if}
+            </div>
+        {/if}
     </Tooltip>
     <GuildContextMenu slot="menu" {onCopyId} />
 </ContextMenu>
@@ -41,7 +55,6 @@
         font-weight: 600;
         user-select: none;
     }
-
     .current {
         outline: 3px solid rgba(255, 255, 255, 0.2);
         border-radius: 40%;

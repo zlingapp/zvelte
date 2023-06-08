@@ -4,6 +4,9 @@
     import { userSettingsOpen } from "../../lib/stores";
     import { fade, fly } from "svelte/transition";
     import Button from "../base/Button.svelte";
+    import SettingsCategoryAccount from "./SettingsCategoryAccount.svelte";
+
+    let category = "my-account";
 </script>
 
 <div class="settings" transition:fly={{ duration: 100, y: 10 }}>
@@ -29,7 +32,7 @@
         </div>
     </div>
     <div class="category-content">
-
+        <SettingsCategoryAccount />
     </div>
     <div class="close-group">
         <button class="close" on:click={() => $userSettingsOpen = false}>
@@ -50,6 +53,8 @@
 
         background-color: var(--bg-0);
         z-index: 1000;
+
+        display: flex;
     }
 
     .categories {
@@ -96,6 +101,10 @@
     .category:hover {
         color: #dadfe7;
         background-color: #36373D;
+    }
+
+    .category-content {
+        padding: 60px 20px 60px 40px;
     }
 
     .category:active {

@@ -9,7 +9,7 @@
     import { auth_fetch } from "../lib/auth";
     import ServerIcon from "./ServerIcon.svelte";
 
-    let guilds: { name: string; id: string }[] = [];
+    let guilds: { name: string; id: string; icon: string; }[] = [];
 
     async function fetchGuilds() {
         let resp = await auth_fetch("/api/guilds");
@@ -37,6 +37,7 @@
 
     let isCreateModalVisible = false;
     let createServerName = `${$localUser?.name.split("#")[0]}'s Server`;
+    let createServerIcon = null;
 
     async function createServer() {
         isCreateModalVisible = false;
@@ -47,7 +48,10 @@
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ name: createServerName }),
+            body: JSON.stringify({
+                name: createServerName,
+                icon: createServerIcon.url,
+            }),
         });
 
         await fetchGuilds();
@@ -118,14 +122,14 @@
 
         <svelte:fragment slot="content">
             <label>Server Icon</label>
-            <IconUpload />
+            <IconUpload bind:uploadedFile={createServerIcon} />
             <label>Server Name</label>
             <input type="text" bind:value={createServerName} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
             <Button green grow onClick={createServer}>Let's go!</Button>
-            <Button grow onClick={openJoinModal}>Nevermind</Button>
+            <Button grow onClick={() => (isCreateModalVisible = false)}>Nevermind</Button>
         </svelte:fragment>
     </Modal>
 
@@ -136,7 +140,11 @@
         <svelte:fragment slot="content">
             <div style="min-width: 230px;" />
             <label>Server ID</label>
-            <input type="text" style="font-family: monospace;" bind:value={joinServerId} />
+            <input
+                type="text"
+                style="font-family: monospace;"
+                bind:value={joinServerId}
+            />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

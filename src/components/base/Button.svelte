@@ -3,11 +3,19 @@
     export let danger: boolean = false;
     export let outline: boolean = false;
     export let grow: boolean = false;
+    export let accent: boolean = false;
 
     export let onClick = () => {};
 </script>
 
-<button class:grow class:green class:danger class:outline on:click={onClick}><slot /></button>
+<button
+    class:grow
+    class:green
+    class:danger
+    class:outline
+    class:accent
+    on:click={onClick}><slot /></button
+>
 
 <style>
     button {
@@ -33,6 +41,10 @@
 
     .outline {
         border: 2px solid white;
+    }
+
+    .accent {
+        background-color: var(--accent-color);
     }
 
     .grow {

@@ -6,6 +6,7 @@ export interface Guild {
     channels?: Channel[],
     members?: Member[],
     me?: Member,
+    icon: string,
 }
 
 export interface Member {
