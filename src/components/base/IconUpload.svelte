@@ -8,14 +8,16 @@
 
     let input: HTMLInputElement;
 
-    export let uploadedFile: {
+    interface UploadedFile {
         id: string;
         name: string;
         url: string;
-    } = null;
+    };
+
+    export let uploadedFile: UploadedFile = null;
     export let sizeLimit = 1000000; // 5mb
     export let defaultImage: string = null;
-    export let onChange: Function;
+    export let onChange: Function = (UploadedFile) => {};
     
     let loading = false;
 
