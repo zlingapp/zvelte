@@ -3,6 +3,8 @@ import { get } from "svelte/store";
 import { apiTokens, localUser } from "./stores";
 import { disconnectFromVoice } from "./voice";
 
+var ensureHaveTokensFuture = null;
+
 export interface LocalUser {
     id: string;
     name: string;
@@ -16,7 +18,16 @@ export interface Tokens {
     refreshExpires: number;
 }
 
-export async function ensureHaveValidTokens() {
+export async function  ensureHaveValidTokens() {
+    if (ensureHaveTokensFuture == null) {
+        ensureHaveTokensFuture = _ensureHaveValidTokens();
+    }
+    const retval = await ensureHaveTokensFuture;
+    ensureHaveTokensFuture = null;
+    return retval;
+}
+
+async function _ensureHaveValidTokens() {
     let tokens = get(apiTokens);
     if (tokens != null) {
         // if the access token is about to expire, try to refresh it
