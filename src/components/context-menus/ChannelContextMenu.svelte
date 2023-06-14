@@ -8,7 +8,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="cm-action unimportant" on:click={onMarkAsRead}>
+<div class="cm-action cm-unimportant" on:click={onMarkAsRead}>
     Mark As Read
 </div>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -25,12 +25,12 @@
     Duplicate Channel
 </div>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="cm-action dangerous" on:click={onDeleteChannel}>
+<div class="cm-action cm-dangerous" on:click={onDeleteChannel}>
     Delete Channel
 </div>
 <div class="cm-divider" /> 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="cm-action unimportant" on:click={onCopyId}>
+<div class="cm-action cm-unimportant" on:click={onCopyId}>
     Copy Channel ID
 </div>
 

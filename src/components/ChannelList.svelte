@@ -12,11 +12,15 @@
     import { auth_fetch } from "../lib/auth";
     import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
     import TopicConsumer from "./TopicConsumer.svelte";
+    import ContextMenu from "./base/ContextMenu.svelte";
+    import ChannelListContextMenu from "./context-menus/ChannelListContextMenu.svelte";
 
     // guild id of the last guild we subscribed to
     let previousGuildId = null;
 
-    async function get_channel_list() {
+    let menuOpen = false;
+
+    async function getChannelList() {
         let resp = await auth_fetch(`/api/guilds/${$currentGuild.id}/channels`);
         let channels: Channel[] = await resp.json();
         currentGuild.update((g) => ({ ...g, channels }));
@@ -61,11 +65,11 @@
             }
 
             await subscribeToTopics(guild);
-            await get_channel_list();
+            await getChannelList();
         });
     });
 
-    async function create_channel(type: "voice" | "text") {
+    async function createChannel(type: "voice" | "text") {
         let name = prompt("Channel name?");
         if (name == null) {
             return;
@@ -93,8 +97,18 @@
 
     async function onRelevantEvent(esm: EventSocketMessage) {
         if (esm.event.type == "channel_list_update") {
-            await get_channel_list();
+            await getChannelList();
         }
+    }
+
+    async function onCreateTextChannel() {
+        menuOpen = false;
+        await createChannel("text");
+    }
+
+    async function onCreateVoiceChannel() {
+        menuOpen = false;
+        await createChannel("voice");
     }
 </script>
 
@@ -104,9 +118,10 @@
         esm.topic.type == "guild" && esm.topic.id == $currentGuild.id}
     onReconnect={async () => {
         await subscribeToTopics($currentGuild);
-        await get_channel_list();
+        await getChannelList();
     }}
 />
+<ContextMenu bind:open={menuOpen}>
 <div class="channel-list">
     {#if $currentGuild.channels == null}
         <!-- loading -->
@@ -128,20 +143,10 @@
         <!-- nothing in the list -->
         <div class="status">No Visible Channels</div>
     {/if}
-
-    <div style="flex-grow: 1;" />
-
-    <Button
-        onClick={async () => {
-            await create_channel("text");
-        }}>Create Text Channel</Button
-    >
-    <Button
-        onClick={async () => {
-            await create_channel("voice");
-        }}>Create Voice Channel</Button
-    >
 </div>
+<ChannelListContextMenu {onCreateTextChannel} {onCreateVoiceChannel} slot="menu" />
+</ContextMenu>
+
 
 <style>
     .channel-list {

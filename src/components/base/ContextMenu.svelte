@@ -29,7 +29,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div on:contextmenu|preventDefault={onContext}>
+<div on:contextmenu|preventDefault|stopPropagation={onContext}>
     <slot />
 </div>
 {#if open}
