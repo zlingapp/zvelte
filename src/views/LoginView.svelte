@@ -44,7 +44,7 @@
                 return false;
             }
 
-            if (password.length < 8) {
+            if (password?.length < 8) {
                 error = "Password must be at least 8 characters.";
                 return false;
             }
