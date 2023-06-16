@@ -102,12 +102,10 @@
     }
 
     async function onCreateTextChannel() {
-        menuOpen = false;
         await createChannel("text");
     }
 
     async function onCreateVoiceChannel() {
-        menuOpen = false;
         await createChannel("voice");
     }
 </script>
@@ -121,7 +119,7 @@
         await getChannelList();
     }}
 />
-<ContextMenu bind:open={menuOpen}>
+<ContextMenu>
 <div class="channel-list">
     {#if $currentGuild.channels == null}
         <!-- loading -->

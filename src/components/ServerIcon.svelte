@@ -7,10 +7,7 @@
 
     export let guild: Guild;
 
-    let isContextMenuOpen = false;
-
     function onCopyId() {
-        isContextMenuOpen = false;
         navigator.clipboard.writeText(guild.id);
     }
 
@@ -21,7 +18,7 @@
     }
 </script>
 
-<ContextMenu bind:open={isContextMenuOpen}>
+<ContextMenu>
     <Tooltip direction="right" selectable>
         <div class="guild-tooltip-name" slot="text">
             {guild.name}

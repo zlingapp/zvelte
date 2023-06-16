@@ -4,7 +4,7 @@
     import { contextMenu } from "../../lib/stores";
     import { onMount } from "svelte";
 
-    export let open = false;
+    let open = false;
     let x = 0;
     let y = 0;
 
@@ -21,11 +21,7 @@
         open = false;
     }
 
-    onMount(() => {
-        contextMenu.subscribe((c) => {
-            close();
-        });
-    });
+    onMount(() => contextMenu.subscribe(close));
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -33,11 +29,13 @@
     <slot />
 </div>
 {#if open}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
         class="context"
         style="left: {x}px; top: {y}px;"
         use:clickOutside
         on:click_outside={close}
+        on:click={close}
     >
         <slot name="menu" />
     </div>
