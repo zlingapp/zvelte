@@ -11,7 +11,7 @@
     
     import LocalUserControls from "../components/LocalUserControls.svelte";
     import ServerList from "../components/ServerList.svelte";
-    import ChannelContent from "../components/ChannelContent.svelte";
+    import MessageList from "../components/MessageList.svelte";
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
     import ErrorModal from "../components/modals/ErrorModal.svelte";
@@ -63,14 +63,14 @@
 
             <section class="content">
                 {#if $currentChannel}
-                    <ChannelContent
+                    <MessageList
                         channel={$currentChannel}
                         guild_id={$currentGuild.id}
                     >
                         <div slot="sidebar" class="sidebar">
                             <div class="user-list" />
                         </div>
-                    </ChannelContent>
+                    </MessageList>
                 {:else}
                     <div class="lonely">
                         <div class="lonely-icon">

@@ -1,16 +1,16 @@
 <script lang="ts">
-    import type { TextChannel, Message } from "../lib/channel";
-    import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
-    import MessageCaret from "./text/MessageCaret.svelte";
-    import { eventSocket, localUser } from "../lib/stores";
-    import { afterUpdate, onDestroy, onMount, tick } from "svelte";
-    import UiMessage from "./text/UiMessage.svelte";
-    import { auth_fetch } from "../lib/auth";
-    import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
-    import TopicConsumer from "./TopicConsumer.svelte";
     import dayjs, { Dayjs } from "dayjs";
-    import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
+    import { tick } from "svelte";
     import { fly } from "svelte/transition";
+    import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
+    import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
+    import { auth_fetch } from "../lib/auth";
+    import type { Message, TextChannel } from "../lib/channel";
+    import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
+    import { localUser } from "../lib/stores";
+    import TopicConsumer from "./TopicConsumer.svelte";
+    import MessageCaret from "./text/MessageCaret.svelte";
+    import UiMessage from "./text/UiMessage.svelte";
 
     export let guild_id: string;
     export let channel: TextChannel;
