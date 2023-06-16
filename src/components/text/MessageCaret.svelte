@@ -2,14 +2,13 @@
     import MaterialSymbolsAddCircle from "~icons/material-symbols/add-circle";
     import {
         currentChannel,
-        currentGuild,
-        eventSocket,
+        currentGuild
     } from "../../lib/stores";
 
-    import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
-    import FluentSend20Filled from "~icons/fluent/send-20-filled";
-    import { auth_fetch } from "../../lib/auth";
     import { onMount } from "svelte";
+    import FluentSend20Filled from "~icons/fluent/send-20-filled";
+    import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
+    import { auth_fetch } from "../../lib/auth";
 
     let value;
     let sendButton: HTMLDivElement;

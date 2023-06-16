@@ -1,8 +1,8 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import type { Unsubscriber } from "svelte/store";
-    import { eventSocket } from "../lib/stores";
     import type { EventSocketMessage } from "../lib/socket";
+    import { eventSocket } from "../lib/stores";
 
     // function to call when the socket is reconnected
     export let onReconnect: Function;

@@ -2,8 +2,8 @@
     import { auth_fetch } from "../../lib/auth";
     import Button from "./Button.svelte";
 
+    import BiQuestionSquare from '~icons/bi/question-square';
     import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
-    import BiQuestionSquare from '~icons/bi/question-square'
     import { humanFileSize } from "../../lib/util";
 
     let input: HTMLInputElement;

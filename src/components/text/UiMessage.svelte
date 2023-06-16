@@ -4,11 +4,9 @@
     import { localUser } from "../../lib/stores";
     import ContextMenu from "../base/ContextMenu.svelte";
     import Tooltip from "../base/Tooltip.svelte";
-    import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
 
-    import dayjs from "dayjs";
-
+    
     export let message: Message;
     export let detailed: boolean = true;
 

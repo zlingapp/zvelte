@@ -1,9 +1,7 @@
 <script lang="ts">
-    import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
+    import { fly } from "svelte/transition";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
     import { userSettingsOpen } from "../../lib/stores";
-    import { fade, fly } from "svelte/transition";
-    import Button from "../base/Button.svelte";
     import SettingsCategoryAccount from "./SettingsCategoryAccount.svelte";
 
     let category = "my-account";

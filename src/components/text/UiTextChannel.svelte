@@ -1,10 +1,10 @@
 <script lang="ts">
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
+    import type { Channel, TextChannel } from "../../lib/channel";
+    import { unimplemented } from "../../lib/dev";
+    import { currentChannel } from "../../lib/stores";
     import ContextMenu from "../base/ContextMenu.svelte";
     import ChannelContextMenu from "../context-menus/ChannelContextMenu.svelte";
-    import type { Channel, TextChannel } from "../../lib/channel";
-    import { currentChannel } from "../../lib/stores";
-    import { unimplemented } from "../../lib/dev";
 
     export let channel: Channel; // pretend this says TextChannel, svelte's type system is slightly broken
 

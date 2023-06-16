@@ -1,16 +1,16 @@
 <script lang="ts">
     import {
-        voiceChannelTarget,
         voiceChannelCurrent,
-        voiceState,
+        voiceChannelTarget,
         voicePeers,
+        voiceState,
     } from "../../lib/stores";
 
-    import { VoiceState, disconnectFromVoice, isPeerDuplicate } from "../../lib/voice";
     import { onMount } from "svelte";
-    import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
     import DisconnectIcon from "~icons/majesticons/phone-missed-call";
+    import { VoiceState, disconnectFromVoice, isPeerDuplicate } from "../../lib/voice";
     import Tooltip from "../base/Tooltip.svelte";
+    import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
     import VoiceMemberDuplicateTag from "./VoiceMemberDuplicateTag.svelte";
 
     let statsInterval: number;

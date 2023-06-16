@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import MaterialSymbolsAdd from "~icons/material-symbols/add";
+    import { auth_fetch } from "../lib/auth";
     import { localUser, showInErrorModal } from "../lib/stores";
+    import ServerIcon from "./ServerIcon.svelte";
     import Button from "./base/Button.svelte";
     import IconUpload from "./base/IconUpload.svelte";
     import Modal from "./base/Modal.svelte";
     import Tooltip from "./base/Tooltip.svelte";
-    import MaterialSymbolsAdd from "~icons/material-symbols/add";
-    import { auth_fetch } from "../lib/auth";
-    import ServerIcon from "./ServerIcon.svelte";
 
     let guilds: { name: string; id: string; icon: string; }[] = [];
 

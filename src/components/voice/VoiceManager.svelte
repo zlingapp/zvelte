@@ -1,27 +1,26 @@
 <script lang="ts">
     import type {
-        Consumer,
         Device,
         Producer,
-        Transport,
+        Transport
     } from "mediasoup-client/lib/types";
 
     import {
-        voice_auth_fetch,
         VoiceState,
+        voice_auth_fetch,
         type Peer,
         type VoiceChannelInfo,
     } from "../../lib/voice";
 
+    import { auth_fetch } from "../../lib/auth";
     import {
-        voiceChannelTarget,
         voiceChannelCurrent as currentChannelStore,
+        localUser,
+        voiceChannelCurrent,
+        voiceChannelTarget,
         voicePeers as voicePeersStore,
         voiceState,
-        voiceChannelCurrent,
-        localUser,
     } from "../../lib/stores";
-    import { auth_fetch } from "../../lib/auth";
 
     let device: Device = null;
 
