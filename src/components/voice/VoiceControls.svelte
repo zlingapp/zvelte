@@ -134,13 +134,4 @@
         font-size: 0.8em;
         color: var(--gray);
     }
-
-    .identity {
-        font-family: monospace;
-        background: var(--bg-2);
-        padding: 2px 5px;
-        font-size: 10px;
-        border-radius: 5px;
-        color: dodgerblue;
-    }
 </style>
