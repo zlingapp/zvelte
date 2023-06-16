@@ -4,13 +4,13 @@
     import { fly } from "svelte/transition";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
-    import { auth_fetch } from "../lib/auth";
-    import type { Message, TextChannel } from "../lib/channel";
-    import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
-    import { localUser } from "../lib/stores";
-    import TopicConsumer from "./TopicConsumer.svelte";
-    import MessageCaret from "./text/MessageCaret.svelte";
-    import UiMessage from "./text/UiMessage.svelte";
+    import { auth_fetch } from "../../lib/auth";
+    import type { Message, TextChannel } from "../../lib/channel";
+    import { eventSocketSend, type EventSocketMessage } from "../../lib/socket";
+    import { localUser } from "../../lib/stores";
+    import TopicConsumer from "../TopicConsumer.svelte";
+    import MessageCaret from "./MessageCaret.svelte";
+    import UiMessage from "./UiMessage.svelte";
 
     export let guild_id: string;
     export let channel: TextChannel;
@@ -22,6 +22,8 @@
     let loadingOlder = false;
     let nothingOlder = false;
     let typing: Map<string, any> = new Map();
+
+    let pendingOutgoingMessage: Message = null;
 
     const MESSAGE_FETCH_LIMIT = 50;
     const CONSIDER_TYPING_STOPPED_AFTER = 5000;
@@ -95,10 +97,14 @@
     function onRelevantEvent(esm: EventSocketMessage) {
         switch (esm.event.type) {
             case "message":
-                messages = [
-                    ...messages,
-                    parseMessage(esm.event as unknown as Message),
-                ];
+                const message = parseMessage(esm.event as unknown as Message);
+
+                if (message.author.id == $localUser.id) {
+                    // TODO: make a better system for this with a ref value
+                    pendingOutgoingMessage = null;
+                }
+
+                messages = [...messages, message];
 
                 const typer = typing.get(esm.event.author.id);
                 if (typer) {
@@ -151,6 +157,9 @@
     }
 
     async function initialFetch() {
+        // reset pending message since we're doing a reset from the beginning
+        pendingOutgoingMessage = null;
+
         let result = await fetchMessageHistory();
         if (result.length < MESSAGE_FETCH_LIMIT) {
             nothingOlder = true;
@@ -220,23 +229,50 @@
                         )}
                     />
                 {/each}
+                {#if pendingOutgoingMessage}
+                    <UiMessage
+                        pending
+                        message={pendingOutgoingMessage}
+                        detailed={shouldSeparateMessage(
+                            messages[messages.length - 1],
+                            pendingOutgoingMessage
+                        )}
+                    />
+                {/if}
             </div>
-            <MessageCaret />
+            <MessageCaret
+                onOutgoingMessage={(msg) => {
+                    pendingOutgoingMessage = msg;
+                }}
+            />
             {#if typing.size > 0}
-                <div class="typing-list" transition:fly={{ y: 10, duration: 100 }}>
+                <div
+                    class="typing-list"
+                    transition:fly={{ y: 10, duration: 100 }}
+                >
                     <div class="typing-icon">
                         <SvgSpinners3DotsFade />
                     </div>
                     {#if typing.size >= 5}
-                        <span class="typer" style="margin-right: 12px;">Several people are typing...</span>
+                        <span class="typer" style="margin-right: 12px;"
+                            >Several people are typing...</span
+                        >
                         {#each [...typing.values()] as typer}
                             <!-- svelte-ignore a11y-missing-attribute -->
-                            <img class="typer-avatar overlap-avatar" src={typer.avatar} height="14px" />
+                            <img
+                                class="typer-avatar overlap-avatar"
+                                src={typer.avatar}
+                                height="14px"
+                            />
                         {/each}
                     {:else}
                         {#each [...typing.values()] as typer, idx}
                             <!-- svelte-ignore a11y-missing-attribute -->
-                            <img class="typer-avatar" src={typer.avatar} height="14px" />
+                            <img
+                                class="typer-avatar"
+                                src={typer.avatar}
+                                height="14px"
+                            />
                             <span class="typer">
                                 {typer.username.split("#")[0]}
                             </span>

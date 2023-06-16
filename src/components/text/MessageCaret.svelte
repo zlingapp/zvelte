@@ -2,16 +2,20 @@
     import MaterialSymbolsAddCircle from "~icons/material-symbols/add-circle";
     import {
         currentChannel,
-        currentGuild
+        currentGuild,
+        localUser
     } from "../../lib/stores";
 
+    import dayjs from "dayjs";
     import { onMount } from "svelte";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import { auth_fetch } from "../../lib/auth";
+    import type { Message } from "../../lib/channel";
 
     let value;
     let sendButton: HTMLDivElement;
+    export let onOutgoingMessage: (msg: Message) => void = () => {};
 
     let typingLastSent = 0;
 
@@ -63,6 +67,22 @@
             return;
         }
 
+        const valueCopy = value;
+        value = "";
+
+        onOutgoingMessage({
+            // identifiable in case this bad boy somehow gets sent to the backend
+            id: "zvelte-pending",
+            content: valueCopy,
+            author: {
+                id: $localUser.id,
+                avatar: $localUser.avatar,
+                username: $localUser.name
+                // TODO: resolve nickname here, maybe through guild Member
+            },
+            created_at: dayjs(),
+        });
+
         await auth_fetch(
             `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
             {
@@ -70,7 +90,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content: value }),
+                body: JSON.stringify({ content: valueCopy }),
             }
         );
 

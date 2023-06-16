@@ -6,9 +6,9 @@
     import Tooltip from "../base/Tooltip.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
 
-    
     export let message: Message;
     export let detailed: boolean = true;
+    export let pending: boolean = false;
 
     $: formattedCreatedAt = message.created_at.calendar(null, {
         sameDay: "[Today at] h:mm A",
@@ -21,7 +21,7 @@
 </script>
 
 <ContextMenu>
-    <div class="message" class:detailed>
+    <div class="message">
         {#if detailed}
             <ContextMenu>
                 <img class="avatar" src={message.author.avatar} alt="avatar" />
@@ -39,7 +39,7 @@
                 >
             </div>
         {/if}
-        <div class="content">
+        <div class="content" class:pending>
             {message.content}
             {#if !detailed}
                 <span class="time time-inline"
@@ -48,19 +48,22 @@
             {/if}
         </div>
     </div>
-    <MessageContextMenu
-        onMarkAsRead={unimplemented}
-        onCopyLink={unimplemented}
-        onEdit={unimplemented}
-        onDelete={unimplemented}
-        onCopyId={unimplemented}
-        onCopyText={unimplemented}
-        onReply={unimplemented}
-        onPin={unimplemented}
-        editAllowed={message.author.id === $localUser.id}
-        modAllowed={message.author.id === $localUser.id}
-        slot="menu"
-    />
+    <svelte:fragment slot="menu">
+        {#if pending}
+            <MessageContextMenu
+                onMarkAsRead={unimplemented}
+                onCopyLink={unimplemented}
+                onEdit={unimplemented}
+                onDelete={unimplemented}
+                onCopyId={unimplemented}
+                onCopyText={unimplemented}
+                onReply={unimplemented}
+                onPin={unimplemented}
+                editAllowed={message.author.id === $localUser.id}
+                modAllowed={message.author.id === $localUser.id}
+            />
+        {/if}
+    </svelte:fragment>
 </ContextMenu>
 
 <style>
@@ -75,10 +78,6 @@
 
     .message:hover {
         background-color: #2e3035;
-    }
-
-    .detailed {
-        margin-top: 1.0625rem;
     }
 
     .avatar {
@@ -132,5 +131,9 @@
 
     .message:hover .time-inline {
         opacity: 1;
+    }
+
+    .pending {
+        color: var(--disabled-text);
     }
 </style>

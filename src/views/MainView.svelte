@@ -11,7 +11,7 @@
     
     import LocalUserControls from "../components/LocalUserControls.svelte";
     import ServerList from "../components/ServerList.svelte";
-    import MessageList from "../components/MessageList.svelte";
+    import MessageList from "../components/text/MessageList.svelte";
     import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
     import ErrorModal from "../components/modals/ErrorModal.svelte";
