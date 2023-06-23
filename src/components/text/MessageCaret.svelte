@@ -145,7 +145,7 @@
         height: 44px;
         margin-inline: 16px;
         margin-bottom: 24px;
-        background-color: #383a40;
+        background-color: #2B2B2B;
         border-radius: 8px;
         display: flex;
         align-items: center;

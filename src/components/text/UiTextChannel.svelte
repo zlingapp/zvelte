@@ -39,7 +39,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <ContextMenu>
-    <div class="channel" on:click={switch_channel}>
+    <div class="channel" class:current={$currentChannel.id == channel.id}  on:click={switch_channel}>
         <p class="channel-name">
             <MajesticonsHashtagLine /><span>{channel.name}</span>
         </p>
@@ -58,10 +58,13 @@
 <style>
     .channel {
         color: #888b8f;
-        padding: 6px 0;
+        padding: 5px 0;
+        margin: 1px 0;
         cursor: pointer;
         border-radius: 6px;
         user-select: none;
+
+        transition: all 75ms ease-in-out;
     }
 
     .channel-name {
@@ -71,8 +74,14 @@
         gap: 8px;
     }
 
-    .channel:hover {
-        background-color: #404249;
+    .channel.current {
+        background-color: #2B2B2B;
+        color: #fff;
+    }
+
+    /* not current */
+    .channel:hover:not(.current) {
+        background-color: #242424;
         color: #fff;
     }
 </style>

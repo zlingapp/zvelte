@@ -2,16 +2,16 @@
 
 :root {
   --text-color: rgba(255, 255, 255, 0.87);
-  --bg-0: #313338;
-  --bg-1: #2B2D31;
-  --bg-2: #1E1F22;
+  --bg-0: #232323;
+  --bg-1: #1C1C1C;
+  --bg-2: #0E0E0E;
 
   --green: #00b576;
   --red: #c94b44;
   --yellow: #ffc800;
   --gray: #888b8f;
 
-  --accent-color: #845EC2;
+  --accent-color: #2764ff;
   --disabled: #888b8f3f;
   --disabled-text: rgba(255, 255, 255, 0.3);
 

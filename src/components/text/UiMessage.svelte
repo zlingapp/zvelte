@@ -49,13 +49,13 @@
         </div>
     </div>
     <svelte:fragment slot="menu">
-        {#if pending}
+        {#if !pending}
             <MessageContextMenu
                 onMarkAsRead={unimplemented}
                 onCopyLink={unimplemented}
                 onEdit={unimplemented}
                 onDelete={unimplemented}
-                onCopyId={unimplemented}
+                onCopyId={() => navigator.clipboard.writeText(message.id)}
                 onCopyText={unimplemented}
                 onReply={unimplemented}
                 onPin={unimplemented}
@@ -77,7 +77,7 @@
     }
 
     .message:hover {
-        background-color: #2e3035;
+        background-color: #262626;
     }
 
     .avatar {
@@ -118,7 +118,7 @@
     .time {
         font-size: 0.75rem;
         line-height: 1.375rem;
-        color: #949ba4;
+        color: #a3a3a3;
         user-select: none;
     }
 

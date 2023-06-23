@@ -20,6 +20,18 @@
         open = false;
     }
 
+    function ensureNotOffscreen(node) {
+        const rect = node.getBoundingClientRect();
+
+        if (rect.right > window.innerWidth) {
+            x -= rect.right - window.innerWidth + 10;
+        }
+
+        if (rect.bottom > window.innerHeight) {
+            y -= rect.bottom - window.innerHeight + 10;
+        }
+    }
+
     onMount(() => contextMenu.subscribe(close));
 </script>
 
@@ -33,6 +45,7 @@
         class="context"
         style="left: {x}px; top: {y}px;"
         use:clickOutside
+        use:ensureNotOffscreen
         on:click_outside={close}
         on:click={close}
     >

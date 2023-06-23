@@ -114,7 +114,7 @@
 
         if (res.status == 200) {
             let data = await res.json();
-            
+
             $apiTokens = {
                 accessToken: data.accessToken,
                 accessExpires: tokenExpiryTimestamp(data.accessToken),
@@ -141,10 +141,11 @@
 <main>
     <!-- svelte-ignore missing-declaration -->
     <a class="version-info" href="https://github.com/zlingapp/zvelte">
-        <strong>zvelte</strong> {ZLING_VERSION}
+        <strong>zvelte</strong>
+        {ZLING_VERSION}
     </a>
     <div class="login-pane">
-        <img src="/apple-touch-icon.png" alt="Zling Logo" height="100px" />
+        <img src="/zling.svg" alt="Zling Logo" height="100px" />
         <div class="title">
             {#if register}
                 <h2>Register Account</h2>
@@ -229,7 +230,7 @@
         width: 100vw;
 
         /* background-color: var(--bg-0); */
-        background-image: url("/login-background2-blur.jpg");
+        background-image: url("/login-background.jpg");
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
@@ -237,15 +238,38 @@
         color: var(--text-color);
     }
 
+    main:after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 2px);
+        background-size: 40px 40px;
+        background-color: rgba(0, 0, 0, 0.3);
+
+        z-index: 0;
+    }
+
     .login-pane {
         margin: auto;
+        margin-left: 25%;
 
         /* background-color: var(--bg-1); */
         border-radius: 12px;
         border: 2px solid rgba(255, 255, 255, 0.08);
         box-sizing: border-box;
 
-        backdrop-filter: blur(200px);
+        /* gradient top left to bottom right */
+        /* background: linear-gradient(
+            45deg,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.8) 100%
+        ); */
+        /* backdrop-filter: blur(200px); */
+        background-color: var(--bg-2);
 
         box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
             rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
@@ -258,6 +282,8 @@
         gap: 25px;
 
         padding: 50px;
+
+        z-index: 1;
     }
 
     .title {
@@ -325,6 +351,8 @@
             border-radius: 0;
             border: none;
             box-shadow: none;
+
+            margin-left: auto;
         }
 
         .form {
@@ -338,8 +366,10 @@
         left: 0;
         box-sizing: border-box;
         margin: 20px 20px;
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(0, 0, 0, 0.4);
         text-decoration: none;
+
+        z-index: 1;
     }
 
     img {

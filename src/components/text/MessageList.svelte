@@ -216,6 +216,18 @@
                 bind:this={messagesList}
                 on:scroll={onMessagesScroll}
             >
+                {#if nothingOlder}
+                    <div class="beginning">
+                        <div>Beware! Here begins the history of...</div>
+                        <div
+                            style="display:flex; align-items: center; gap: 5px; font-size: 32px;"
+                        >
+                            <MajesticonsHashtagLine color="var(--text-color)" />
+                            <span style="color: var(--text-color); font-weight: 600;">{channel.name}</span>
+                        </div>
+                    </div>
+                    <div class="separator" />
+                {/if}
                 {#if loadingOlder}
                     <div class="loading">Loading older messages...</div>
                 {/if}
@@ -389,5 +401,30 @@
         margin-left: -8px;
         box-sizing: border-box;
         outline: 2px solid var(--bg-0);
+    }
+
+    .beginning {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray);
+        
+        font-size: 20px;
+        
+        margin: 16px;
+        padding-top: 20px;
+        padding-bottom: 24px;
+
+        user-select: none;
+
+        background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    .separator {
+        border-top: 3px dashed rgba(255, 255, 255, 0.1);
+        width: 100%;
+        margin-bottom: 24px;
     }
 </style>
