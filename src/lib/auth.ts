@@ -18,7 +18,7 @@ export interface Tokens {
     refreshExpires: number;
 }
 
-export async function  ensureHaveValidTokens() {
+export async function ensureHaveValidTokens() {
     if (ensureHaveTokensFuture == null) {
         ensureHaveTokensFuture = _ensureHaveValidTokens();
     }
@@ -31,8 +31,9 @@ async function _ensureHaveValidTokens() {
     let tokens = get(apiTokens);
     if (tokens != null) {
         // if the access token is about to expire, try to refresh it
-        const hasAccessTokenExpired = tokens.accessExpires < (Date.now() / 1000);
-        const hasRefreshTokenExpired = tokens.refreshExpires < (Date.now() / 1000);
+        const hasAccessTokenExpired = tokens.accessExpires < Date.now() / 1000;
+        const hasRefreshTokenExpired =
+            tokens.refreshExpires < Date.now() / 1000;
         if (hasAccessTokenExpired) {
             if (hasRefreshTokenExpired) {
                 // refresh token expired, nothing we can do but ask the user to log in again
@@ -89,6 +90,29 @@ export async function auth_fetch(
     return fetch(input, init);
 }
 
+export async function auth_xhr(
+    input: string | URL,
+    method: string,
+    headers?: Record<string, string>
+): Promise<XMLHttpRequest> {
+    let tokens = await ensureHaveValidTokens();
+
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, input, true);
+
+    if (tokens != null) {
+        xhr.setRequestHeader("Authorization", `Bearer ${tokens.accessToken}`);
+
+        if (headers != null) {
+            for (const [key, value] of Object.entries(headers)) {
+                xhr.setRequestHeader(key, value);
+            }
+        }
+    }
+
+    return xhr;
+}
+
 // we might have a LocalUser either already in a store,
 // or a session cookie that can be used to get one from the server
 export async function tryObtainLocalUser() {
@@ -135,7 +159,7 @@ function goToLogin() {
 
 export function tokenExpiryTimestamp(token): number {
     const base64url = token.split(".")[1];
-    
+
     const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
     const binary = atob(base64);
     let timestamp = 0;

@@ -5,17 +5,12 @@
     import BiQuestionSquare from '~icons/bi/question-square';
     import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
     import { humanFileSize } from "../../lib/util";
+    import { uploadFile, type UploadedFile, FILESIZE_LIMIT_ICONS } from "../../lib/upload";
 
     let input: HTMLInputElement;
 
-    interface UploadedFile {
-        id: string;
-        name: string;
-        url: string;
-    };
-
     export let uploadedFile: UploadedFile = null;
-    export let sizeLimit = 1000000; // 5mb
+    export let sizeLimit = FILESIZE_LIMIT_ICONS;
     export let defaultImage: string = null;
     export let onChange: Function = (UploadedFile) => {};
     
@@ -26,28 +21,13 @@
 
         const file: File = event.target.files[0];
 
-        // 25mb
         if (file.size > sizeLimit) {
             alert("File too large");
             return;
         }
 
-        const form = new FormData();
-        form.append("file", file);
-
-        loading = true;
-        let res = await auth_fetch("/api/media/upload", {
-            method: "POST",
-            body: form,
-        });
-        loading = false;
-
-        if (res.ok) {
-            uploadedFile = await res.json();
-            onChange(uploadedFile);
-        } else {
-            console.error(res);
-        }
+        uploadedFile = await uploadFile(file);
+        onChange(uploadedFile);
     }
 </script>
 
@@ -82,7 +62,7 @@
                     Select
                 </div>
             </Button>
-            <div>Maximum {humanFileSize(sizeLimit, true, 0)},<br />at least 64x64</div>
+            <div>Maximum {humanFileSize(FILESIZE_LIMIT_ICONS, true, 0)},<br />at least 64x64</div>
         </div>
     {/if}
 </div>
