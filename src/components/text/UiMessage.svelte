@@ -21,7 +21,7 @@
 </script>
 
 <ContextMenu>
-    <div class="message">
+    <div class="message" class:detailed>
         {#if detailed}
             <ContextMenu>
                 <img class="avatar" src={message.author.avatar} alt="avatar" />
@@ -75,7 +75,9 @@
         padding-bottom: 0.125rem;
         padding-right: 48px;
     }
-
+    .detailed {
+        margin-top: 1.0625rem;
+    }
     .message:hover {
         background-color: #262626;
     }
