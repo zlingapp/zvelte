@@ -96,7 +96,7 @@
     }
 
     async function onRelevantEvent(esm: EventSocketMessage) {
-        if (esm.event.type == "channel_list_update") {
+        if (esm.event.type == "channelListUpdate") {
             await getChannelList();
         }
     }

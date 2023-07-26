@@ -1,16 +1,26 @@
 import type { Unsubscriber } from "svelte/store";
 import { eventSocket } from "./stores";
+import type { Message, PublicUserInfo } from "./channel";
 
 export interface EventSocketMessage {
     topic: {
         type: string;
         id: string;
     };
-    event: {
-        type: string;
-        [key: string]: any;
-    };
+    event: Event;
 }
+
+export type Event =
+    | {
+          type: "channelListUpdate";
+      }
+    | ({
+          type: "message";
+      } & Message)
+    | {
+          type: "typing";
+          user: PublicUserInfo;
+      };
 
 // send something on the event socket
 export async function eventSocketSend(data: string) {

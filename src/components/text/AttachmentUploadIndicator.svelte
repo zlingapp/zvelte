@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { humanFileSize } from "../../lib/util";
-    import type { PendingUpload } from "./MessageAttachButton.svelte";
-    import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
+    import { humanFileSize } from "../../lib/util";
     import Tooltip from "../base/Tooltip.svelte";
-    import { scale } from "svelte/transition";
-    import { onMount } from "svelte";
+    import type { PendingUpload } from "./MessageAttachButton.svelte";
 
     export let upload: PendingUpload;
     export let onRemove: () => void = () => {};
@@ -16,14 +14,15 @@
     let showPreview = !isFileLarge; // show previews under 25MB
 
     $: progress = Math.floor(upload.progress);
+    $: finished = progress >= 100;
 </script>
 
 <div class="card">
     <div class="preview">
         {#if upload.started}
             <div class="progress-overlay">
-                <span class="progress-number" class:finished={progress >= 100}>{progress}%</span>
-                <progress class:finished={progress >= 100} value={progress} max="100" />
+                <span class="progress-number" class:finished>{progress}%</span>
+                <progress class:finished value={progress} max="100" />
             </div>
         {/if}
         {#if upload.file.type.startsWith("image/")}
@@ -180,7 +179,7 @@
         color: var(--text-color);
     }
 
-    .progress-number.finished {
+    .finished {
         color: var(--green);
     }
 

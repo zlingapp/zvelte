@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { fade } from "svelte/transition";
     import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
 </script>
 
-<div class="loading-screen">
+<div class="loading-screen" out:fade={{duration: 200}}>
     <!-- svelte-ignore a11y-missing-attribute -->
     <img src="/apple-touch-icon.png" class="logo" />
     <div class="spinner">
@@ -48,6 +49,7 @@
         width: 128px;
         height: 128px;
         animation: bounce 0.5s ease-out infinite;
+        border-radius: 50%;
     }
 
     /* bouncing animation for the logo with outline expanding */

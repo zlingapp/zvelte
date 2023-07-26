@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { auth_fetch } from "../../lib/auth";
     import Button from "./Button.svelte";
 
     import BiQuestionSquare from '~icons/bi/question-square';
     import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
+    import { FILESIZE_LIMIT_ICONS, uploadFile, type UploadedFile } from "../../lib/upload";
     import { humanFileSize } from "../../lib/util";
-    import { uploadFile, type UploadedFile, FILESIZE_LIMIT_ICONS } from "../../lib/upload";
 
     let input: HTMLInputElement;
 

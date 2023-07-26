@@ -7,7 +7,10 @@ export interface UploadedFile {
     id: string;
     name: string;
     url: string;
+    type: UploadedFileType;
 }
+
+export type UploadedFileType = "blob" | "image" | "video" | "audio" | "text";
 
 export async function uploadFile(
     file: File,

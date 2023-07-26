@@ -5,12 +5,13 @@
     import ContextMenu from "../base/ContextMenu.svelte";
     import Tooltip from "../base/Tooltip.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
+    import MessageAttachments from "./MessageAttachments.svelte";
 
     export let message: Message;
     export let detailed: boolean = true;
     export let pending: boolean = false;
 
-    $: formattedCreatedAt = message.created_at.calendar(null, {
+    $: formattedCreatedAt = message.createdAt.calendar(null, {
         sameDay: "[Today at] h:mm A",
         nextDay: "[Tomorrow at] h:mm A",
         nextWeek: "DD/MM/YYYY hh:mm: A",
@@ -32,7 +33,7 @@
                 <span class="time"
                     ><Tooltip
                         direction="right"
-                        text={message.created_at.format(
+                        text={message.createdAt.format(
                             "DD/MM/YYYY HH:mm:ss G[M]T+0"
                         )}>{formattedCreatedAt}</Tooltip
                     ></span
@@ -40,13 +41,18 @@
             </div>
         {/if}
         <div class="content" class:pending>
-            {message.content}
+            {#if message.content}
+                {message.content}
+            {/if}
             {#if !detailed}
                 <span class="time time-inline"
-                    >{message.created_at.format("hh:mm A")}</span
+                    >{message.createdAt.format("hh:mm A")}</span
                 >
             {/if}
         </div>
+        {#if message.attachments}
+            <MessageAttachments attachments={message.attachments} />
+        {/if}
     </div>
     <svelte:fragment slot="menu">
         {#if !pending}

@@ -58,7 +58,7 @@
     function parseMessage(raw: Message): Message {
         return {
             ...raw,
-            created_at: dayjs.utc(raw.created_at).tz(dayjs.tz.guess()),
+            createdAt: dayjs.utc(raw.createdAt).tz(dayjs.tz.guess()),
         };
     }
 
@@ -123,11 +123,13 @@
                     clearTimeout(existing.deleterHandle);
                 }
 
-                typing.set(esm.event.user.id, {
+                const userId = esm.event.user.id;
+
+                typing.set(userId, {
                     ...esm.event.user,
                     lastTyping: Date.now(),
                     deleterHandle: setTimeout(() => {
-                        typing.delete(esm.event.user.id);
+                        typing.delete(userId);
                         typing = typing;
                     }, CONSIDER_TYPING_STOPPED_AFTER),
                 });
@@ -142,12 +144,12 @@
         if (last == null) return true;
         if (last.author.id !== current.author.id) return true;
         if (
-            !last.created_at
+            !last.createdAt
                 .endOf("day")
-                .isSame(current.created_at.endOf("day"))
+                .isSame(current.createdAt.endOf("day"))
         )
             return true;
-        if (current.created_at.diff(last.created_at, "hours") >= 1) return true;
+        if (current.createdAt.diff(last.createdAt, "hours") >= 1) return true;
         return false;
     }
 
@@ -173,7 +175,7 @@
             loadingOlder = true;
 
             let messagesBefore = await fetchMessageHistory(
-                messages[0]?.created_at
+                messages[0]?.createdAt
             );
 
             if (messagesBefore.length > 0) {

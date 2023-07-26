@@ -3,16 +3,16 @@
 
     import dayjs from "dayjs";
     import { onMount } from "svelte";
+    import { flip } from "svelte/animate";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import { auth_fetch } from "../../lib/auth";
     import type { Message } from "../../lib/channel";
+    import AttachmentUploadIndicator from "./AttachmentUploadIndicator.svelte";
     import MessageAttachButton, {
         type PendingUpload,
     } from "./MessageAttachButton.svelte";
-    import { humanFileSize } from "../../lib/util";
-    import AttachmentUploadIndicator from "./AttachmentUploadIndicator.svelte";
-    import { flip } from "svelte/animate";
+
     let value;
     let sendButton: HTMLDivElement;
 
@@ -35,6 +35,7 @@
         switch (e.key) {
             case "Enter":
                 if (e.shiftKey) {
+                    value += "\n";
                     break;
                 }
                 sendButton.click();
@@ -70,30 +71,36 @@
     }
 
     async function send() {
-        if (value == null || value == "") {
+        const noText = value == null || value == "";
+        if (noText && pendingUploads.length == 0) {
             return;
         }
 
-        const valueCopy = value;
+        const content = value;
         value = "";
 
         onOutgoingMessage({
             // identifiable in case this bad boy somehow gets sent to the backend
             id: "zvelte-pending",
-            content: valueCopy,
+            content,
             author: {
                 id: $localUser.id,
                 avatar: $localUser.avatar,
                 username: $localUser.name,
                 // TODO: resolve nickname here, maybe through guild Member
             },
-            created_at: dayjs(),
+            createdAt: dayjs(),
+            attachments: pendingUploads,
         });
 
         // do upload
         if (pendingUploads.length > 0) {
             await uploadAllAttachments();
         }
+
+        const attachments = pendingUploads
+            .map((pu) => pu.uploadedFile)
+            .filter((a) => a != null);
 
         await auth_fetch(
             `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
@@ -102,7 +109,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content: valueCopy }),
+                body: JSON.stringify({ content, attachments }),
             }
         );
 
