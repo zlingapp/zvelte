@@ -50,7 +50,7 @@
             },
             body: JSON.stringify({
                 name: createServerName,
-                icon: createServerIcon.url,
+                icon: createServerIcon?.url,
             }),
         });
 

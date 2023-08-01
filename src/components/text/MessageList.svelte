@@ -135,6 +135,11 @@
                 });
 
                 typing = typing;
+            case "deleteMessage":
+                messages = messages.filter(
+                    (m) => m.id !== (esm.event as any).id
+                );
+                break;
             default:
                 break;
         }
@@ -411,16 +416,19 @@
         align-items: center;
         justify-content: center;
         color: var(--gray);
-        
+
         font-size: 20px;
-        
+
         margin: 16px;
         padding-top: 20px;
         padding-bottom: 24px;
 
         user-select: none;
 
-        background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+        background-image: radial-gradient(
+            rgba(255, 255, 255, 0.15) 1px,
+            transparent 1px
+        );
         background-size: 20px 20px;
     }
 

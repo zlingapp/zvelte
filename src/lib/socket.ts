@@ -18,6 +18,10 @@ export type Event =
           type: "message";
       } & Message)
     | {
+          type: "deleteMessage";
+          id: string;
+      }
+    | {
           type: "typing";
           user: PublicUserInfo;
       };

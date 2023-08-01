@@ -1,7 +1,13 @@
 <script lang="ts">
+    import { auth_fetch } from "../../lib/auth";
     import type { Message } from "../../lib/channel";
     import { unimplemented } from "../../lib/dev";
-    import { localUser } from "../../lib/stores";
+    import {
+        currentChannel,
+        currentGuild,
+        localUser,
+        showInErrorModal,
+    } from "../../lib/stores";
     import ContextMenu from "../base/ContextMenu.svelte";
     import Tooltip from "../base/Tooltip.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
@@ -19,6 +25,25 @@
         lastWeek: "DD/MM/YYYY hh:mm A",
         sameElse: "DD/MM/YYYY hh:mm A",
     });
+
+    async function onDelete() {
+        // warning: getting these this way is bound to cause some issues
+        // yell at myself later for this
+        const guildId = $currentGuild.id;
+        const channelId = $currentChannel.id;
+
+        let resp = await auth_fetch(
+            `/api/guilds/${guildId}/channels/${channelId}/messages/${message.id}`,
+            {
+                method: "DELETE",
+            }
+        );
+        if (!resp.ok) {
+            showInErrorModal.set(
+                `Delete message failed: ${await resp.text()} (${resp.status})`
+            );
+        }
+    }
 </script>
 
 <ContextMenu>
@@ -60,7 +85,7 @@
                 onMarkAsRead={unimplemented}
                 onCopyLink={unimplemented}
                 onEdit={unimplemented}
-                onDelete={unimplemented}
+                {onDelete}
                 onCopyId={() => navigator.clipboard.writeText(message.id)}
                 onCopyText={unimplemented}
                 onReply={unimplemented}
