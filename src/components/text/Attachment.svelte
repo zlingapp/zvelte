@@ -58,7 +58,7 @@
         object-fit: contain;
         border-radius: 5px;
         background-color: var(--bg-1);
-        box-shadow: 0px 1px 2px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 2px 8px 0 rgba(0, 0, 0, 0.3);
         box-sizing: border-box;
         cursor: pointer;
     }

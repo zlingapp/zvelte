@@ -75,7 +75,7 @@
                 >
             {/if}
         </div>
-        {#if message.attachments}
+        {#if message.attachments?.length > 0}
             <MessageAttachments attachments={message.attachments} />
         {/if}
     </div>
