@@ -102,6 +102,8 @@
             .map((pu) => pu.uploadedFile)
             .filter((a) => a != null);
 
+        pendingUploads = [];
+
         await auth_fetch(
             `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
             {
@@ -112,9 +114,6 @@
                 body: JSON.stringify({ content, attachments }),
             }
         );
-
-        pendingUploads = [];
-        value = "";
     }
 </script>
 
@@ -175,7 +174,7 @@
         border: none;
         background: none;
         font-size: 16px;
-        font-family: Whitney;
+        font-family: inherit;
         padding-left: 0;
         color: #dbdee1;
         font-weight: 400;

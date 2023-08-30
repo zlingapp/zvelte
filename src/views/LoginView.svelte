@@ -127,7 +127,7 @@
             return;
         } else {
             switch (res.status) {
-                case 401:
+                case 403:
                     softError = "Invalid username or password.";
                     break;
                 default:

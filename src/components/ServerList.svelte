@@ -165,6 +165,7 @@
         align-items: center;
         padding-block: 16px;
         gap: 12px;
+        border-right: 3px solid black;
     }
 
     .emphasis {

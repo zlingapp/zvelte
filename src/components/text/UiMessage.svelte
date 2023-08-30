@@ -53,7 +53,9 @@
                 <img class="avatar" src={message.author.avatar} alt="avatar" />
             </ContextMenu>
             <div class="header">
-                {message.author.username.split("#")[0]}
+                <span class="username">
+                    {message.author.username.split("#")[0]}
+                </span>
 
                 <span class="time"
                     ><Tooltip
@@ -113,6 +115,11 @@
         background-color: #262626;
     }
 
+    .username {
+        /* font-weight: 600; */
+        margin-right: 3px;
+    }
+
     .avatar {
         position: absolute;
         left: 16px;
@@ -127,10 +134,10 @@
     }
     .content {
         font-size: 1rem;
-        font-weight: 500;
+        font-weight: 400;
         line-height: 1.375rem;
         margin-top: -1px;
-        color: var(--header-primary);
+        color: var(--text-color);
         vertical-align: baseline;
         position: relative;
         word-wrap: break-word;
