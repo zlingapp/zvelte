@@ -1,12 +1,4 @@
-# Zling Web Client: Zvelte
-![Powered by lectricity](https://forthebadge.com/images/badges/powered-by-electricity.svg)
-![Gluten Free](https://forthebadge.com/images/badges/gluten-free.svg)
-![Uses HTML](https://forthebadge.com/images/badges/uses-html.svg)
-
-|Main View Sample|Login Page|
-|-|-|
-|![](/.github/screenshots/0.png)|![](/.github/screenshots/1.png)|
-
+# Zling-Svelte Web Client: Zvelte
 
 ### What is Zvelte?
 **Zvelte is the official web client for the Zling chat application.**
