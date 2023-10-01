@@ -20,6 +20,7 @@
     import { ensureHaveValidTokens, ensureLoggedIn } from "../lib/auth";
     import LoadingScreen from "../components/LoadingScreen.svelte";
     import UserSettings from "../components/settings/UserSettings.svelte";
+    import MemberList from "../components/users/MemberList.svelte";
 
     let socketDisconnected;
 
@@ -68,7 +69,7 @@
                         guild_id={$currentGuild.id}
                     >
                         <div slot="sidebar" class="sidebar">
-                            <div class="user-list" />
+                            <MemberList guild_id={$currentGuild.id} />
                         </div>
                     </MessageList>
                 {:else}
