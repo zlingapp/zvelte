@@ -26,6 +26,12 @@ export type Event =
           user: PublicUserInfo;
       };
 
+export type TopicType = "channel" | "guild";
+export interface Topic {
+    type: TopicType;
+    id: string;
+}
+
 // send something on the event socket
 export async function eventSocketSend(data: string) {
     const socket = await waitForEventSocket();
@@ -53,4 +59,16 @@ async function waitForEventSocket(): Promise<WebSocket> {
     return new Promise<WebSocket>((resolve, reject) => {
         socket.addEventListener("open", () => resolve(socket), { once: true });
     });
+}
+
+export async function eventSocketSubscribe(topics: Topic[]) {
+    await eventSocketSend(
+        JSON.stringify({ type: "sub", topics })
+    );
+}
+
+export async function eventSocketUnsubscribe(topics: Topic[]) {
+    await eventSocketSend(
+        JSON.stringify({ type: "unsub", topics })
+    );
 }

@@ -114,6 +114,15 @@
                 body: JSON.stringify({ content, attachments }),
             }
         );
+
+        // immediately send typing upon next keystrokes
+        // this is needed here because clients usually immediately remove the
+        // typing indicator when the user sends a message
+        // if this wasn't here, even if the user started typing immediately
+        // after sending a message, the typing event wouldn't be sent until the
+        // next 4 second cycle, leading to a delay in the typing indicator
+        // appearing for everyone else
+        typingLastSent = 0;
     }
 </script>
 

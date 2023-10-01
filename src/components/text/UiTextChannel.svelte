@@ -81,7 +81,7 @@
 
     /* not current */
     .channel:hover:not(.current) {
-        background-color: #242424;
+        background-color: rgba(255, 255, 255, 0.025);
         color: #fff;
     }
 </style>

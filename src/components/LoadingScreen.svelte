@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { fade } from "svelte/transition";
-    import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
+    import { fade, slide } from "svelte/transition";
+    import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize'
 </script>
 
-<div class="loading-screen" out:fade={{duration: 200}}>
+<div class="loading-screen" out:fade={{delay: 500, duration: 200}}>
     <!-- svelte-ignore a11y-missing-attribute -->
     <img src="/apple-touch-icon.png" class="logo" />
     <div class="spinner">
-        <SvgSpinnersBarsRotateFade />
+        <SvgSpinnersRingResize font-size="32px" />
     </div>
     <div class="didyouknow">
         <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -39,10 +39,8 @@
     }
 
     .spinner {
-        color: var(--text-color);
+        color: var(--accent-color);
         margin-top: 62px;
-        line-height: 0;
-        transform: scale(1.25);
     }
 
     .logo {

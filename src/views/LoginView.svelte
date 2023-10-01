@@ -1,22 +1,25 @@
 <script lang="ts">
     import { link, navigate } from "svelte-routing";
     import IcOutlineClose from "~icons/ic/outline-close";
-    import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
+    import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize'
     import { apiTokens, localUser } from "../lib/stores";
     import { onMount, tick } from "svelte";
     import { tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
+    import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
+    import MaterialSymbolsVisibilityOffOutlineRounded from "~icons/material-symbols/visibility-off-outline-rounded";
 
     export let register: boolean = false;
 
     let error: string = null;
     let softError: string = null;
     let loading: boolean = false;
+    let showPassword: boolean = false;
 
     $: valid = error == null && email && password && (!register || username);
 
     let email: string;
     let username: string; // registration only
-    let password: string;
+    let password: string = "";
 
     // email regex: https://stackoverflow.com/a/46181/104380
     const EMAIL_REGEX =
@@ -101,7 +104,7 @@
     }
 
     async function login() {
-        const res = await fetch("/api/auth/login", {
+        const req = fetch("/api/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -111,6 +114,14 @@
                 password,
             }),
         });
+
+        // make it so the loading spinner doesn't flash by waiting a minimum
+        // amount of time
+        const placeboWait = new Promise((resolve) => {
+            setTimeout(resolve, 500);
+        });
+
+        let [res] = await Promise.all([req, placeboWait]);
 
         if (res.status == 200) {
             let data = await res.json();
@@ -145,10 +156,10 @@
         {ZLING_VERSION}
     </a>
     <div class="login-pane">
-        <img src="/zling.svg" alt="Zling Logo" height="100px" />
+        <img src="/zling-mono.svg" alt="Zling Logo" height="100px" />
         <div class="title">
             {#if register}
-                <h2>Register Account</h2>
+                <h2>New Account</h2>
                 <p>Fill out your information below.</p>
             {:else}
                 <h2>Welcome back!</h2>
@@ -178,13 +189,37 @@
                 {/if}
 
                 <label for="password">Password</label>
-                <input
-                    bind:value={password}
-                    on:change={validate}
-                    on:input={() => (softError = null)}
-                    name="password"
-                    type="password"
-                />
+                <div style="position: relative;">
+                    <input
+                        value={password}
+                        on:change={(e) => {
+                            password = e.target["value"];
+                            validate();
+                        }}
+                        on:input={(e) => (softError = null)}
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        class:shown={showPassword}
+                    />
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <div
+                        class="show-pw-btn"
+                        on:click={() => (showPassword = !showPassword)}
+                    >
+                        {#if showPassword}
+                            <MaterialSymbolsVisibilityOutlineRounded
+                                color="var(--text-color)"
+                                font-size="18px"
+                                height="100%"
+                            />
+                        {:else}
+                            <MaterialSymbolsVisibilityOffOutlineRounded
+                                font-size="18px"
+                                height="100%"
+                            />
+                        {/if}
+                    </div>
+                </div>
                 <span style="flex-grow: 1;" />
 
                 {#if error || softError}
@@ -199,7 +234,7 @@
                 <div class="actions">
                     <button type="submit" disabled={!valid || loading}>
                         {#if loading}
-                            <SvgSpinnersBarsRotateFade />
+                            <SvgSpinnersRingResize />
                         {:else if register}
                             Register
                         {:else}
@@ -229,7 +264,7 @@
         height: 100svh;
         width: 100vw;
 
-        /* background-color: var(--bg-0); */
+        background-color: var(--bg-0);
         background-image: url("/login-background.jpg");
         background-repeat: no-repeat;
         background-position: center;
@@ -238,24 +273,9 @@
         color: var(--text-color);
     }
 
-    main:after {
-        content: "";
-        display: block;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 2px);
-        background-size: 40px 40px;
-        background-color: rgba(0, 0, 0, 0.3);
-
-        z-index: 0;
-    }
-
     .login-pane {
         margin: auto;
-        margin-left: 25%;
+        /* margin-left:289%; */
 
         /* background-color: var(--bg-1); */
         border-radius: 12px;
@@ -267,9 +287,9 @@
             45deg,
             rgba(0, 0, 0, 0.5) 0%,
             rgba(0, 0, 0, 0.8) 100%
-        ); */
-        /* backdrop-filter: blur(200px); */
-        background-color: var(--bg-2);
+        );
+        backdrop-filter: blur(200px); */
+        background-color: var(--bg-1);
 
         box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
             rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
@@ -366,7 +386,7 @@
         left: 0;
         box-sizing: border-box;
         margin: 20px 20px;
-        color: rgba(0, 0, 0, 0.4);
+        color: rgba(255, 255, 255, 0.7);
         text-decoration: none;
 
         z-index: 1;
@@ -375,5 +395,36 @@
     img {
         user-select: none;
         pointer-events: none;
+    }
+
+    .show-pw-btn {
+        position: absolute;
+        right: 16px;
+        top: 0;
+        bottom: 0;
+        color: var(--disabled-text);
+        transition: right 0.2s var(--sproing), transform 0.2s var(--sproing);
+        cursor: pointer;
+    }
+
+    input {
+        transition: transform 0.2s var(--sproing);
+    }
+
+    input:focus {
+        transform: scale(1.02);
+        border-color: var(--accent-color);
+    }
+
+    input:focus + .show-pw-btn {
+        right: 12px;
+    }
+
+    .show-pw-btn:active {
+        transform: scale(0.85);
+    }
+
+    .shown {
+        border-style: dashed;
     }
 </style>

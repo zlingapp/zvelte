@@ -6,7 +6,11 @@
     import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
     import { auth_fetch } from "../../lib/auth";
     import type { Message, TextChannel } from "../../lib/channel";
-    import { eventSocketSend, type EventSocketMessage } from "../../lib/socket";
+    import {
+        type EventSocketMessage,
+        eventSocketSubscribe,
+        eventSocketUnsubscribe,
+    } from "../../lib/socket";
     import { localUser } from "../../lib/stores";
     import TopicConsumer from "../TopicConsumer.svelte";
     import MessageCaret from "./MessageCaret.svelte";
@@ -64,15 +68,15 @@
 
     async function resubscribeToTopics() {
         // subscribe to new channel
-        let msg: any = {
-            sub: ["channel:" + channel?.id],
-        };
+        await eventSocketSubscribe([{ type: "channel", id: channel?.id }]);
+
         if (channelOld != null && channelOld.id !== channel.id) {
             // transitioning from one channel to another, so unsubscribe from the old one
-            msg = { ...msg, unsub: ["channel:" + channelOld.id] };
+            await eventSocketUnsubscribe([
+                { type: "channel", id: channelOld.id },
+            ]);
         }
 
-        await eventSocketSend(JSON.stringify(msg));
         channelOld = channel;
     }
 
@@ -148,11 +152,7 @@
     function shouldSeparateMessage(last: Message, current: Message) {
         if (last == null) return true;
         if (last.author.id !== current.author.id) return true;
-        if (
-            !last.createdAt
-                .endOf("day")
-                .isSame(current.createdAt.endOf("day"))
-        )
+        if (!last.createdAt.endOf("day").isSame(current.createdAt.endOf("day")))
             return true;
         if (current.createdAt.diff(last.createdAt, "hours") >= 1) return true;
         return false;
@@ -230,7 +230,10 @@
                             style="display:flex; align-items: center; gap: 5px; font-size: 32px;"
                         >
                             <MajesticonsHashtagLine color="var(--text-color)" />
-                            <span style="color: var(--text-color); font-weight: 600;">{channel.name}</span>
+                            <span
+                                style="color: var(--text-color); font-weight: 600;"
+                                >{channel.name}</span
+                            >
                         </div>
                     </div>
                     <div class="separator" />

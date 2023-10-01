@@ -1,6 +1,6 @@
-@import url('https://fonts.cdnfonts.com/css/whitney-2');
+/* @import url('https://fonts.cdnfonts.com/css/whitney-2'); */
 /* @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap'); */
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 :root {
   --text-color: rgba(255, 255, 255, 0.87);
@@ -19,7 +19,10 @@
 
   --message-caret-bg: #2b2b2b;
 
-  font-family: Whitney, Lato, sans-serif;
+  --sproing: cubic-bezier(0, 0, 0.5, 2.5);
+
+  /* font-family: Whitney, Lato, sans-serif; */
+  font-family: 'Roboto', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -76,6 +79,6 @@ input:focus {
 label {
   color: var(--gray);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 12px;
 }

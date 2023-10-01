@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import type { Guild } from "../lib/guild";
     import { currentChannel, currentGuild } from "../lib/stores";
-    import SvgSpinnersBarsRotateFade from "~icons/svg-spinners/bars-rotate-fade";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import type { Channel, TextChannel } from "../lib/channel";
     import UiTextChannel from "./text/UiTextChannel.svelte";
     import Button from "./base/Button.svelte";
@@ -10,7 +10,11 @@
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import VoiceChannel from "./voice/VoiceChannel.svelte";
     import { auth_fetch } from "../lib/auth";
-    import { eventSocketSend, type EventSocketMessage } from "../lib/socket";
+    import {
+        type EventSocketMessage,
+        eventSocketSubscribe,
+        eventSocketUnsubscribe,
+    } from "../lib/socket";
     import TopicConsumer from "./TopicConsumer.svelte";
     import ContextMenu from "./base/ContextMenu.svelte";
     import ChannelListContextMenu from "./context-menus/ChannelListContextMenu.svelte";
@@ -45,16 +49,16 @@
     }
 
     async function subscribeToTopics(guild: Guild) {
-        // subscribe to new channel
-        let msg: any = {
-            sub: ["guild:" + guild?.id],
-        };
+        // subscribe to new guild events
+        await eventSocketSubscribe([{ type: "guild", id: guild.id }]);
+
         if (previousGuildId != null && previousGuildId !== guild.id) {
-            // transitioning from one channel to another, so unsubscribe from the old one
-            msg = { ...msg, unsub: ["guild:" + previousGuildId] };
+            // transitioning from one guild to another, so unsubscribe from the old one
+            await eventSocketUnsubscribe([
+                { type: "guild", id: previousGuildId },
+            ]);
         }
 
-        await eventSocketSend(JSON.stringify(msg));
         previousGuildId = guild.id;
     }
 
@@ -120,31 +124,34 @@
     }}
 />
 <ContextMenu>
-<div class="channel-list">
-    {#if $currentGuild.channels == null}
-        <!-- loading -->
-        <div class="status"><SvgSpinnersBarsRotateFade /></div>
-    {:else if $currentGuild.channels.length > 0}
-        <!-- show channel list -->
-        {#each $currentGuild.channels as channel}
-            {#if channel.type == "text"}
-                <UiTextChannel {channel} />
-            {:else if channel.type == "voice"}
-                <VoiceChannel
-                    name={channel.name}
-                    id={channel.id}
-                    guild_name={$currentGuild.name}
-                />
-            {/if}
-        {/each}
-    {:else}
-        <!-- nothing in the list -->
-        <div class="status">No Visible Channels</div>
-    {/if}
-</div>
-<ChannelListContextMenu {onCreateTextChannel} {onCreateVoiceChannel} slot="menu" />
+    <div class="channel-list">
+        {#if $currentGuild.channels == null}
+            <!-- loading -->
+            <div class="status"><SvgSpinnersRingResize /></div>
+        {:else if $currentGuild.channels.length > 0}
+            <!-- show channel list -->
+            {#each $currentGuild.channels as channel}
+                {#if channel.type == "text"}
+                    <UiTextChannel {channel} />
+                {:else if channel.type == "voice"}
+                    <VoiceChannel
+                        name={channel.name}
+                        id={channel.id}
+                        guild_name={$currentGuild.name}
+                    />
+                {/if}
+            {/each}
+        {:else}
+            <!-- nothing in the list -->
+            <div class="status">No Visible Channels</div>
+        {/if}
+    </div>
+    <ChannelListContextMenu
+        {onCreateTextChannel}
+        {onCreateVoiceChannel}
+        slot="menu"
+    />
 </ContextMenu>
-
 
 <style>
     .channel-list {
