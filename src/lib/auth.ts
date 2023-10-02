@@ -5,6 +5,10 @@ import { disconnectFromVoice } from "./voice";
 
 var ensureHaveTokensFuture = null;
 
+export const EMAIL_REGEX =
+/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+export const USERNAME_REGEX = /^[a-zA-Z0-9!?._ -]{3,16}$/;
+
 export interface LocalUser {
     id: string;
     name: string;

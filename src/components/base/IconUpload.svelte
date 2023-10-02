@@ -25,6 +25,12 @@
             return;
         }
 
+        // check if the file is an image
+        if (!file.type.startsWith("image/")) {
+            alert("File is not an image");
+            return;
+        }
+
         uploadedFile = await uploadFile(file);
         onChange(uploadedFile);
     }

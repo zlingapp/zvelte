@@ -27,3 +27,5 @@
     <h2>My Account</h2>
     <IconUpload onChange={setAvatar} defaultImage={$localUser.avatar} />
 </section>
+
+<style></style>

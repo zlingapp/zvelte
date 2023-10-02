@@ -3,6 +3,7 @@
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
     import { userSettingsOpen } from "../../lib/stores";
     import SettingsCategoryAccount from "./SettingsCategoryAccount.svelte";
+    import SettingsCategoryMyBots from "./SettingsCategoryMyBots.svelte";
 
     let category = "my-account";
 </script>
@@ -12,12 +13,12 @@
         <div class="categories-container">
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label>User Settings</label>
-            <button class="category">My Account</button>
+            <button class="category" on:click={() => (category = "my-account")}>My Account</button>
             <button class="category">Privacy & Safety</button>
             <button class="category">Devices</button>
             <button class="category">Connections</button>
             <button class="category">Friend Requests</button>
-            <div class="divider"></div>
+            <div class="divider" />
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label>App Settings</label>
             <button class="category">Appearance</button>
@@ -27,13 +28,23 @@
             <button class="category">Keybinds</button>
             <button class="category">Language</button>
             <button class="category">Advanced</button>
+            <div class="divider" />
+            <!-- svelte-ignore a11y-label-has-associated-control -->
+            <label>Developer</label>
+            <button class="category" on:click={() => (category = "my-bots")}
+                >Applications</button
+            >
         </div>
     </div>
     <div class="category-content">
-        <SettingsCategoryAccount />
+        {#if category === "my-account"}
+            <SettingsCategoryAccount />
+        {:else if category == "my-bots"}
+            <SettingsCategoryMyBots />
+        {/if}
     </div>
     <div class="close-group">
-        <button class="close" on:click={() => $userSettingsOpen = false}>
+        <button class="close" on:click={() => ($userSettingsOpen = false)}>
             <MaterialSymbolsCloseRounded />
         </button>
         <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -73,7 +84,7 @@
         align-items: flex-start;
         padding: 60px 20px 60px 20px;
 
-        color: #B5BAC1;
+        color: #b5bac1;
         user-select: none;
     }
 
@@ -98,16 +109,17 @@
 
     .category:hover {
         color: #dadfe7;
-        background-color: #36373D;
+        background-color: rgba(255, 255, 255, 0.05);
     }
 
     .category-content {
         padding: 60px 20px 60px 40px;
+        max-width: 700px;
     }
 
     .category:active {
         color: var(--text-color);
-        background-color: #3B3D44;
+        background-color: rgba(255, 255, 255, 0.1);
     }
 
     .divider {

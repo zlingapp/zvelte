@@ -4,7 +4,7 @@
     import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize'
     import { apiTokens, localUser } from "../lib/stores";
     import { onMount, tick } from "svelte";
-    import { tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
+    import { EMAIL_REGEX, USERNAME_REGEX, tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
     import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
     import MaterialSymbolsVisibilityOffOutlineRounded from "~icons/material-symbols/visibility-off-outline-rounded";
 
@@ -20,11 +20,6 @@
     let email: string;
     let username: string; // registration only
     let password: string = "";
-
-    // email regex: https://stackoverflow.com/a/46181/104380
-    const EMAIL_REGEX =
-        /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,16}$/;
 
     onMount(async () => {
         if (await tryObtainLocalUser()) {

@@ -47,7 +47,7 @@
     }
 
     .tooltip.top {
-        bottom: 28px;
+        bottom: 40px;
         left: 50%;
         transform: translate(-50%, 0);
     }
