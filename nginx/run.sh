@@ -1,5 +1,5 @@
-#!/bin/env bash
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+#!/usr/bin/env sh
+SCRIPT_DIR=$(cd -- "$(dirname -- "$0")" &>/dev/null && pwd)
 
 CONF_FILE=$SCRIPT_DIR/site.test.conf
 
