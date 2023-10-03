@@ -1,35 +1,36 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import type { PublicUserInfo } from "../../lib/channel";
     import MemberListMember from "./MemberListMember.svelte";
     import { auth_fetch } from "../../lib/auth";
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import type { EventSocketMessage } from "../../lib/socket";
     import TopicConsumer from "../TopicConsumer.svelte";
-    import { currentChannel, currentGuild } from "../../lib/stores";
+    import { currentGuild } from "../../lib/stores";
 
     export let guild_id: string;
     let members: PublicUserInfo[] = [];
 
     let loading = true;
 
-    $: {
+    async function fetchMembers() {
         loading = true;
-        auth_fetch(`/api/guilds/${guild_id}/members`)
-            .then((res) => res.json())
-            .then((list) => {
-                members = list;
-                loading = false;
-            });
+        const resp = await auth_fetch(`/api/guilds/${guild_id}/members`);
+
+        if (!resp.ok) {
+            alert("Failed to fetch members");
+            loading = false;
+            return;
+        }
+
+        members = await resp.json();
+        loading = false;
     }
+
+    $: fetchMembers();
 
     async function onRelevantEvent(esm: EventSocketMessage) {
         if (esm.event.type == "memberListUpdate") {
-            auth_fetch(`/api/guilds/${guild_id}/members`)
-                .then((res) => res.json())
-                .then((list) => {
-                    members = list;
-                });
+            await fetchMembers();
         }
     }
 </script>
@@ -38,7 +39,7 @@
     {onRelevantEvent}
     eventFilter={(esm) =>
         esm.topic.type == "guild" && esm.topic.id == $currentGuild.id}
-    onReconnect={async () => {}}
+    onReconnect={fetchMembers}
 />
 <div class="member-list">
     {#if loading}
