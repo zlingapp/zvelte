@@ -46,7 +46,7 @@
         <div class="status"><SvgSpinnersRingResize /></div>
     {:else}
         <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label>members</label>
+        <label>Members — {members.length}</label>
         {#each members as member}
             <MemberListMember {member} />
         {/each}
@@ -56,6 +56,13 @@
 <style>
     .member-list {
         padding: 8px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    label {
+        padding-top: 8px;
     }
 
     .status {
