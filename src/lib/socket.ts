@@ -12,19 +12,22 @@ export interface EventSocketMessage {
 
 export type Event =
     | {
-          type: "channelListUpdate";
-      }
+        type: "channelListUpdate";
+    }
+    | {
+        type: "memberListUpdate"
+    }
     | ({
-          type: "message";
-      } & Message)
+        type: "message";
+    } & Message)
     | {
-          type: "deleteMessage";
-          id: string;
-      }
+        type: "deleteMessage";
+        id: string;
+    }
     | {
-          type: "typing";
-          user: PublicUserInfo;
-      };
+        type: "typing";
+        user: PublicUserInfo;
+    };
 
 export type TopicType = "channel" | "guild";
 export interface Topic {
