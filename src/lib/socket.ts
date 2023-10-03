@@ -15,7 +15,7 @@ export type Event =
         type: "channelListUpdate";
     }
     | {
-        type: "memberListUpdate"
+        type: "memberListUpdate";
     }
     | ({
         type: "message";
