@@ -6,7 +6,13 @@ import { execSync } from "child_process";
 
 // https://vitejs.dev/config/
 export default defineConfig((env: ConfigEnv) => {
-    const commitHash = execSync('git rev-parse HEAD').toString().trimEnd();
+    let version;
+    try {
+        version = execSync('git rev-parse HEAD').toString().trimEnd().substr(0, 7);
+    } catch (e) {
+        console.error("Failed to get commit hash");
+        version = "unknown";
+    }
 
     return {
         plugins: [
@@ -16,7 +22,7 @@ export default defineConfig((env: ConfigEnv) => {
             }),
         ],
         define: {
-            ZLING_VERSION: JSON.stringify(commitHash.substr(0, 7)),
+            ZLING_VERSION: JSON.stringify(version),
         }
     };
 });
