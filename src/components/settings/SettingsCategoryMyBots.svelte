@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { USERNAME_REGEX, auth_fetch } from "../../lib/auth";
+    import { USERNAME_REGEX, authFetch } from "../../lib/auth";
     import { localUser } from "../../lib/stores";
     import IconUpload from "../base/IconUpload.svelte";
     import Avatar from "../users/Avatar.svelte";
@@ -20,12 +20,12 @@
     let bots = [];
 
     async function fetchBots() {
-        const resp = await auth_fetch("/api/bots");
+        const resp = await authFetch("/bots");
         bots = await resp.json();
     }
 
     async function deleteBot(id: string) {
-        const resp = await auth_fetch(`/api/bots/${id}`, {
+        const resp = await authFetch(`/bots/${id}`, {
             method: "DELETE",
         });
 
@@ -38,7 +38,7 @@
     }
 
     async function resetToken(id: string) {
-        const resp = await auth_fetch(`/api/bots/${id}/tokenreset`, {
+        const resp = await authFetch(`/bots/${id}/tokenreset`, {
             method: "POST",
         });
 
@@ -70,7 +70,7 @@
     async function createBot() {
         createLoading = true;
 
-        const req = auth_fetch("/api/bots", {
+        const req = authFetch("/bots", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

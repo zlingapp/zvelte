@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { auth_fetch } from "../../lib/auth";
+    import { authFetch } from "../../lib/auth";
     import type { Message } from "../../lib/channel";
     import { unimplemented } from "../../lib/dev";
     import {
@@ -32,8 +32,8 @@
         const guildId = $currentGuild.id;
         const channelId = $currentChannel.id;
 
-        let resp = await auth_fetch(
-            `/api/guilds/${guildId}/channels/${channelId}/messages/${message.id}`,
+        let resp = await authFetch(
+            `/guilds/${guildId}/channels/${channelId}/messages/${message.id}`,
             {
                 method: "DELETE",
             }

@@ -25,7 +25,7 @@
         let ws_url = new URL(
             `ws${location.protocol === "https:" ? "s" : ""}://${
                 location.host
-            }/api/events/ws/?auth=${tokens.accessToken}`,
+            }/events/ws/?auth=${tokens.accessToken}`,
             location.href
         );
 

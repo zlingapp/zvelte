@@ -5,6 +5,8 @@ import { disconnectFromVoice } from "./voice";
 
 var ensureHaveTokensFuture = null;
 
+export var apiBase = new URL("https://api.zlingapp.com/v1");
+
 export const EMAIL_REGEX =
 /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 export const USERNAME_REGEX = /^[a-zA-Z0-9!?._ -]{3,16}$/;
@@ -46,7 +48,7 @@ async function _ensureHaveValidTokens() {
             }
 
             // try to refresh the access token
-            let res = await fetch("/api/auth/reissue", {
+            let res = await apiFetch("/auth/reissue", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -76,8 +78,16 @@ async function _ensureHaveValidTokens() {
     return tokens;
 }
 
-export async function auth_fetch(
-    input: RequestInfo | URL,
+export async function apiFetch(
+    url: string | URL,
+    init?: RequestInit
+): Promise<Response> {
+    url = new URL(apiBase + url.toString());
+    return fetch(url, init);
+}
+
+export async function authFetch(
+    url: string | URL,
     init?: RequestInit
 ): Promise<Response> {
     let tokens = await ensureHaveValidTokens();
@@ -91,18 +101,20 @@ export async function auth_fetch(
             Authorization: `Bearer ${tokens.accessToken}`,
         };
     }
-    return fetch(input, init);
+    return apiFetch(url, init);
 }
 
-export async function auth_xhr(
-    input: string | URL,
+export async function authXhr(
+    url: string | URL,
     method: string,
     headers?: Record<string, string>
 ): Promise<XMLHttpRequest> {
     let tokens = await ensureHaveValidTokens();
 
+    url = new URL(apiBase + url.toString());
+
     const xhr = new XMLHttpRequest();
-    xhr.open(method, input, true);
+    xhr.open(method, url, true);
 
     if (tokens != null) {
         xhr.setRequestHeader("Authorization", `Bearer ${tokens.accessToken}`);
@@ -122,7 +134,7 @@ export async function auth_xhr(
 export async function tryObtainLocalUser() {
     if (get(localUser) == null) {
         try {
-            let res = await auth_fetch("/api/auth/whoami");
+            let res = await authFetch("/auth/whoami");
 
             if (res.status == 200) {
                 localUser.set(await res.json());
@@ -150,7 +162,7 @@ export async function logOut() {
     disconnectFromVoice();
     const tokens = get(apiTokens);
     if (tokens?.refreshExpires < Date.now() / 1000) {
-        await auth_fetch("/api/auth/logout");
+        await authFetch("/auth/logout");
     }
     goToLogin();
 }

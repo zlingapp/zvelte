@@ -4,7 +4,7 @@
     import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize'
     import { apiTokens, localUser } from "../lib/stores";
     import { onMount, tick } from "svelte";
-    import { EMAIL_REGEX, USERNAME_REGEX, tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
+    import { EMAIL_REGEX, USERNAME_REGEX, apiFetch, tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
     import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
     import MaterialSymbolsVisibilityOffOutlineRounded from "~icons/material-symbols/visibility-off-outline-rounded";
 
@@ -68,7 +68,7 @@
     }
 
     async function registerAccount() {
-        const res = await fetch("/api/auth/register", {
+        const res = await apiFetch("/auth/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -99,7 +99,7 @@
     }
 
     async function login() {
-        const req = fetch("/api/auth/login", {
+        const req = apiFetch("/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

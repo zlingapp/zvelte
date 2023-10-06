@@ -6,7 +6,7 @@
     import { flip } from "svelte/animate";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
-    import { auth_fetch } from "../../lib/auth";
+    import { authFetch } from "../../lib/auth";
     import type { Message } from "../../lib/channel";
     import AttachmentUploadIndicator from "./AttachmentUploadIndicator.svelte";
     import MessageAttachButton, {
@@ -62,8 +62,8 @@
     }
 
     async function sendTyping() {
-        await auth_fetch(
-            `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/typing`,
+        await authFetch(
+            `/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/typing`,
             {
                 method: "POST",
             }
@@ -104,8 +104,8 @@
 
         pendingUploads = [];
 
-        await auth_fetch(
-            `/api/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
+        await authFetch(
+            `/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
             {
                 method: "POST",
                 headers: {
