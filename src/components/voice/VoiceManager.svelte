@@ -77,15 +77,15 @@
 
     /**
      * Start the connection process to a voice channel
-     * @param channel_id The channel to connect to
+     * @param channelId The channel to connect to
      */
-    async function join(channel_id: string) {
+    async function join(channelId: string) {
         if ($voiceState != VoiceState.DISCONNECTED) return;
 
         try {
             voiceState.set(VoiceState.GETTING_IDENTITY);
 
-            const resp = await authFetch(`/voice/join?c=${channel_id}`);
+            const resp = await authFetch(`/voice/join?c=${channelId}`);
             const data = await resp.json();
             identity = data.identity;
             token = data.token;
@@ -105,7 +105,7 @@
 
             // the moment the socket opens, begin the initialization process
             socket.onopen = async () => {
-                await start_connection(data.rtp);
+                await startConnection(data.rtp);
             };
 
             // whenever the socket closes, we need to disconnect
@@ -121,7 +121,7 @@
             // server events
             socket.onmessage = async (e) => {
                 let data = JSON.parse(e.data);
-                await on_server_event(data);
+                await onServerEvent(data);
             };
 
             // in browsers, websockets disconnect after 30 seconds of inactivity
@@ -177,7 +177,7 @@
         }
 
         for (let peer of voicePeers.values()) {
-            remove_peer(peer);
+            removePeer(peer);
         }
         // for some reason voicePeers is not being reset
 
@@ -219,7 +219,7 @@
      *
      * @param rtp_capabilities The RTP capabilities of the server
      */
-    async function start_connection(routerRtpCapabilities) {
+    async function startConnection(routerRtpCapabilities) {
         voiceState.set(VoiceState.PERMISSION_REQUEST);
 
         // get all the tracks
@@ -248,14 +248,14 @@
         await device.load({ routerRtpCapabilities });
 
         // set up transports
-        await initialize_send_transport();
-        await initialize_recv_transport();
+        await initSendTransport();
+        await initRecvTransport();
 
         // start producer
         producer = await send_transport.produce({ track: audio_track });
 
         // add self to voice peers
-        await add_peer(
+        await addPeer(
             identity,
             {
                 id: $localUser.id,
@@ -274,7 +274,7 @@
 
         // consume existing
         for (const peer of already_in_vc) {
-            await add_peer(peer.identity, peer.user);
+            await addPeer(peer.identity, peer.user);
             for (const producerId of peer.producers) {
                 await consume(peer.identity, producerId);
             }
@@ -285,7 +285,7 @@
      * Creates a send transport with the server, and wires up its events.
      * After this, `send_transport` should be populated.
      */
-    async function initialize_send_transport() {
+    async function initSendTransport() {
         // voice_status = "ST Creating..."; // ST = Send Transport
         send_transport = device.createSendTransport(
             await voiceAuthFetch(
@@ -375,7 +375,7 @@
     /**
      * Sets up the receive transport and hooks events.
      */
-    async function initialize_recv_transport() {
+    async function initRecvTransport() {
         recv_transport = device.createRecvTransport(
             await voiceAuthFetch(
                 identity,
@@ -437,7 +437,7 @@
     /**
      * Hooks events from the server, and handles them.
      */
-    async function on_server_event(data: any) {
+    async function onServerEvent(data: any) {
         switch (data.type) {
             // server told us about a new peer
             case "client_connected":
@@ -447,7 +447,7 @@
                     );
                     return;
                 }
-                await add_peer(data.identity, data.user);
+                await addPeer(data.identity, data.user);
                 break;
             case "client_disconnected":
                 if (data.identity == identity) {
@@ -457,7 +457,7 @@
                     );
                     return;
                 }
-                await remove_peer(data.identity);
+                await removePeer(data.identity);
                 break;
             case "new_producer":
                 console.log("New producer, starting consume...", data);
@@ -480,7 +480,7 @@
      * @param is_me Set to true if this is the local peer
      * @param producer The peer's producer
      */
-    async function add_peer(
+    async function addPeer(
         identity: string,
         user: Peer["user"],
         is_me?: boolean,
@@ -504,7 +504,7 @@
      * Removes a `Peer` from the voicePeers map, and signals reactivity (voicePeers = voicePeers).
      * @param identity The peer's identity
      */
-    async function remove_peer(identity) {
+    async function removePeer(identity) {
         let peer = voicePeers.get(identity);
         if (peer == null) return false;
 

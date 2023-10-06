@@ -30,7 +30,7 @@ export interface VoiceChannelInfo {
     id: string;
 }
 
-export async function voiceAuthFetch(identity, token, url, init?: RequestInit, expect_json?: boolean) {
+export async function voiceAuthFetch(identity, token, url, init?: RequestInit, expectJson?: boolean) {
     if (init == null) {
         init = {}
     }
@@ -46,7 +46,7 @@ export async function voiceAuthFetch(identity, token, url, init?: RequestInit, e
         throw new Error(response.statusText);
     }
 
-    if (expect_json === false) {
+    if (expectJson === false) {
         return response.text;
     } else {
         return response.json();
