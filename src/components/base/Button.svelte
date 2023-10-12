@@ -47,7 +47,7 @@
     }
 
     .outline {
-        border: 2px solid white;
+        border: 2px solid rgba(255, 255, 255, 0.08);
     }
 
     .accent {

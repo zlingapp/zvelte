@@ -1,14 +1,23 @@
 <script lang="ts">
     import { link, navigate } from "svelte-routing";
     import IcOutlineClose from "~icons/ic/outline-close";
-    import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize'
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import { apiTokens, localUser } from "../lib/stores";
     import { onMount, tick } from "svelte";
-    import { EMAIL_REGEX, USERNAME_REGEX, apiFetch, tokenExpiryTimestamp, tryObtainLocalUser } from "../lib/auth";
+    import {
+        EMAIL_REGEX,
+        USERNAME_REGEX,
+        currentInstance,
+        apiFetch,
+        tokenExpiryTimestamp,
+        tryObtainLocalUser,
+    } from "../lib/auth";
     import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
     import MaterialSymbolsVisibilityOffOutlineRounded from "~icons/material-symbols/visibility-off-outline-rounded";
+    import InstancePicker from "../components/InstancePicker.svelte";
 
     export let register: boolean = false;
+    export let instancePickerOpen: boolean = false;
 
     let error: string = null;
     let softError: string = null;
@@ -150,7 +159,7 @@
         <strong>zvelte</strong>
         {ZLING_VERSION}
     </a>
-    <div class="login-pane">
+    <div class="pane login-pane">
         <img src="/zling-mono.svg" alt="Zling Logo" height="100px" />
         <div class="title">
             {#if register}
@@ -250,6 +259,9 @@
                 </p>
             </div>
         </form>
+        <div class="pane instances-pane" class:focus={instancePickerOpen}>
+            <InstancePicker bind:open={instancePickerOpen} />
+        </div>
     </div>
 </main>
 
@@ -258,6 +270,9 @@
         display: flex;
         height: 100svh;
         width: 100vw;
+        flex-direction: column;
+        justify-content: center;
+        gap: 15px;
 
         background-color: var(--bg-0);
         background-image: url("/login-background.jpg");
@@ -266,10 +281,12 @@
         background-size: cover;
 
         color: var(--text-color);
+        overflow: hidden;
     }
 
-    .login-pane {
-        margin: auto;
+    .pane {
+        position: relative;
+        margin-inline: auto;
         /* margin-left:289%; */
 
         /* background-color: var(--bg-1); */
@@ -290,15 +307,41 @@
             rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
             rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 
+        padding: 20px;
+        padding-inline: 0;
+
+        z-index: 1;
+    }
+
+    .instances-pane {
+        transition: top 0.3s ease-in-out;
+        position: absolute;
+        top: calc(100% + 16px);
+    }
+
+    .focus {
+        z-index: 2;
+        top: 10%;
+    }
+
+    .instances-pane.focus::before {
+        content: "";
+        position: absolute;
+        top: -100vw;
+        left: -100vw;
+        width: 300vw;
+        height: 300vh;
+        z-index: -1;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .login-pane {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 25px;
-
         padding: 50px;
-
-        z-index: 1;
     }
 
     .title {

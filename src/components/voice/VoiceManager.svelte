@@ -12,7 +12,7 @@
         type VoiceChannelInfo,
     } from "../../lib/voice";
 
-    import { apiBase, authFetch } from "../../lib/auth";
+    import { currentInstance, authFetch } from "../../lib/auth";
     import {
         voiceChannelCurrent as currentChannelStore,
         localUser,
@@ -93,8 +93,8 @@
             // create websocket url
             // wss or ws depending on secure
             let ws_url = new URL(
-                `ws${apiBase.protocol === "https:" ? "s" : ""}://${
-                    apiBase.host + apiBase.pathname
+                `ws${$currentInstance.url.protocol === "https:" ? "s" : ""}://${
+                    $currentInstance.url.host + $currentInstance.url.pathname
                 }/voice/ws/`
             );
             ws_url.searchParams.set("i", identity);

@@ -1,14 +1,53 @@
 import { navigate } from "svelte-routing";
-import { get } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { apiTokens, localUser } from "./stores";
 import { disconnectFromVoice } from "./voice";
+import { localStorageWritable } from "./localStorageStore";
 
 var ensureHaveTokensFuture = null;
 
-export var apiBase = new URL("https://api.zlingapp.com/v1");
+export interface Instance {
+    name: string;
+    url: URL;
+}
+
+export var currentInstance = localStorageWritable<Instance>(
+    "active_instance",
+    // default having the official instance selected
+    {
+        name: "Zling Official",
+        url: new URL("https://api.zlingapp.com/"),
+    },
+    (stored) => {
+        const instance = JSON.parse(stored);
+        return {
+            name: instance.name,
+            url: new URL(instance.url),
+        };
+    }
+);
+
+export var instances = localStorageWritable<Instance[]>(
+    "instances",
+    // default to a list containing only the official instance
+    [
+        {
+            name: "Zling Official",
+            url: new URL("https://api.zlingapp.com/"),
+        },
+    ],
+    (stored) => {
+        return JSON.parse(stored).map((instance) => {
+            return {
+                name: instance.name,
+                url: new URL(instance.url),
+            };
+        });
+    }
+);
 
 export const EMAIL_REGEX =
-/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+    /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 export const USERNAME_REGEX = /^[a-zA-Z0-9!?._ -]{3,16}$/;
 
 export interface LocalUser {
@@ -82,7 +121,7 @@ export async function apiFetch(
     url: string | URL,
     init?: RequestInit
 ): Promise<Response> {
-    url = new URL(apiBase + url.toString());
+    url = new URL(get(currentInstance).url + url.toString());
     return fetch(url, init);
 }
 
@@ -111,7 +150,7 @@ export async function authXhr(
 ): Promise<XMLHttpRequest> {
     let tokens = await ensureHaveValidTokens();
 
-    url = new URL(apiBase + url.toString());
+    url = new URL(get(currentInstance).url + url.toString());
 
     const xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
@@ -165,7 +204,7 @@ export async function logOut() {
         try {
             await authFetch("/auth/logout");
         } catch (error) {
-            console.error('failed to log out, ignoring...')
+            console.error("failed to log out, ignoring...");
         }
     }
     goToLogin();
