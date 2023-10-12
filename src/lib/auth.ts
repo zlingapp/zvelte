@@ -140,7 +140,7 @@ export async function tryObtainLocalUser() {
                 localUser.set(await res.json());
             }
         } catch (e) {
-            console.error(e);
+            console.error("Failed to get local user identity:", e);
         }
 
         if (get(localUser) == null) {
@@ -162,7 +162,11 @@ export async function logOut() {
     disconnectFromVoice();
     const tokens = get(apiTokens);
     if (tokens?.refreshExpires < Date.now() / 1000) {
-        await authFetch("/auth/logout");
+        try {
+            await authFetch("/auth/logout");
+        } catch (error) {
+            console.error('failed to log out, ignoring...')
+        }
     }
     goToLogin();
 }
