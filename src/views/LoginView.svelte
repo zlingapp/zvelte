@@ -319,7 +319,7 @@
         top: calc(100% + 16px);
     }
 
-    .focus {
+    .instances-pane.focus {
         z-index: 2;
         top: 10%;
     }
@@ -415,6 +415,14 @@
 
         .form {
             min-width: 310px;
+        }
+
+        .instances-pane {
+            top: calc(100% - 200px);
+        }
+
+        .instances-pane.focus {
+            top: 10%;
         }
     }
 
