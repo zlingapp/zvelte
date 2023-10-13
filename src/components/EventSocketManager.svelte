@@ -23,8 +23,9 @@
         }
 
         let ws_url = new URL(
-            $currentInstance.url.toString().replaceAll("http", "ws") + `/events/ws?auth=${tokens.accessToken}`
+            $currentInstance.url.toString().replaceAll("http", "ws") + `/events/ws/`
         );
+        ws_url.searchParams.append("auth", tokens.accessToken);
 
         console.log('Connecting event socket...')
         const socket = new WebSocket(ws_url);
