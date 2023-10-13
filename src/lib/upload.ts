@@ -1,4 +1,4 @@
-import { auth_fetch, auth_xhr } from "./auth";
+import { authFetch, authXhr } from "./auth";
 
 export const FILESIZE_LIMIT_ICONS = 1_000_000; // 1 MB
 export const FILESIZE_LIMIT_ATTACHMENTS = 250_000_000; // 250 MB
@@ -19,7 +19,7 @@ export async function uploadFile(
     const form = new FormData();
     form.append("file", file);
 
-    const xhr = await auth_xhr("/api/media/upload", "POST");
+    const xhr = await authXhr("/media/upload", "POST");
 
     return new Promise((resolve, reject) => {
         xhr.upload.onprogress = onProgress;

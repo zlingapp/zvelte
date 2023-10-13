@@ -1,11 +1,20 @@
 import { get, writable } from "svelte/store";
 
-export function localStorageWritable<T>(localStorageKey: string, value?: T) {
+export function localStorageWritable<T>(localStorageKey: string, value?: T, parser?: (stored: string) => T) {
     const store = writable<T>(value);
 
     if (localStorage[localStorageKey] && localStorage[localStorageKey] != "undefined") {
-        const stored = JSON.parse(localStorage[localStorageKey]);
+        let stored;
+        if (parser) {
+            // custom parser
+            stored = parser(localStorage[localStorageKey]);
+        } else {
+            // simple JSON parser
+            stored = JSON.parse(localStorage[localStorageKey]);
+        }
         store.set(stored);
+    } else {
+        localStorage[localStorageKey] = JSON.stringify(value);
     }
 
     return {

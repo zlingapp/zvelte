@@ -8,7 +8,7 @@
 
     export let channel: Channel; // pretend this says TextChannel, svelte's type system is slightly broken
 
-    function switch_channel() {
+    function switchChannel() {
         $currentChannel = channel as TextChannel;
     }
 
@@ -39,7 +39,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <ContextMenu>
-    <div class="channel" class:current={$currentChannel.id == channel.id}  on:click={switch_channel}>
+    <div class="channel" class:current={$currentChannel.id == channel.id}  on:click={switchChannel}>
         <p class="channel-name">
             <MajesticonsHashtagLine /><span>{channel.name}</span>
         </p>

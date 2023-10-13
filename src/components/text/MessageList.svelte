@@ -4,7 +4,7 @@
     import { fly } from "svelte/transition";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
-    import { auth_fetch } from "../../lib/auth";
+    import { authFetch } from "../../lib/auth";
     import type { Message, TextChannel } from "../../lib/channel";
     import {
         type EventSocketMessage,
@@ -46,7 +46,7 @@
             return;
         }
 
-        let url = `/api/guilds/${guild_id}/channels/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
+        let url = `/guilds/${guild_id}/channels/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
 
         if (before != null) {
             url += `&before=${before.toISOString()}`;
@@ -55,7 +55,7 @@
             url += `&after=${after.toISOString()}`;
         }
 
-        let resp = await auth_fetch(url);
+        let resp = await authFetch(url);
         return ((await resp.json()) as Message[]).map(parseMessage);
     }
 

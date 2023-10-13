@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PublicUserInfo } from "../../lib/channel";
     import MemberListMember from "./MemberListMember.svelte";
-    import { auth_fetch } from "../../lib/auth";
+    import { authFetch } from "../../lib/auth";
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import type { EventSocketMessage } from "../../lib/socket";
     import TopicConsumer from "../TopicConsumer.svelte";
@@ -14,7 +14,7 @@
 
     async function fetchMembers() {
         loading = true;
-        const resp = await auth_fetch(`/api/guilds/${guild_id}/members`);
+        const resp = await authFetch(`/guilds/${guild_id}/members`);
 
         if (!resp.ok) {
             alert("Failed to fetch members");

@@ -1,6 +1,6 @@
 import type { Consumer, Producer } from "mediasoup-client/lib/types";
 import { get } from "svelte/store";
-import { auth_fetch } from "./auth";
+import { authFetch } from "./auth";
 import { voiceChannelTarget, voicePeers } from "./stores";
 
 export enum VoiceState {
@@ -30,7 +30,7 @@ export interface VoiceChannelInfo {
     id: string;
 }
 
-export async function voice_auth_fetch(identity, token, url, init?: RequestInit, expect_json?: boolean) {
+export async function voiceAuthFetch(identity, token, url, init?: RequestInit, expectJson?: boolean) {
     if (init == null) {
         init = {}
     }
@@ -41,12 +41,12 @@ export async function voice_auth_fetch(identity, token, url, init?: RequestInit,
         "RTC-Token": token,
     }
 
-    const response = await auth_fetch(url, init);
+    const response = await authFetch(url, init);
     if (!response.ok) {
         throw new Error(response.statusText);
     }
 
-    if (expect_json === false) {
+    if (expectJson === false) {
         return response.text;
     } else {
         return response.json();

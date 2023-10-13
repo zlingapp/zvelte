@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { ensureHaveValidTokens } from "../lib/auth";
+    import { currentInstance, ensureHaveValidTokens } from "../lib/auth";
     import { eventSocketSend } from "../lib/socket";
     import { apiTokens, eventSocket } from "../lib/stores";
 
@@ -23,11 +23,9 @@
         }
 
         let ws_url = new URL(
-            `ws${location.protocol === "https:" ? "s" : ""}://${
-                location.host
-            }/api/events/ws/?auth=${tokens.accessToken}`,
-            location.href
+            $currentInstance.url.toString().replaceAll("http", "ws") + `/events/ws/`
         );
+        ws_url.searchParams.append("auth", tokens.accessToken);
 
         console.log('Connecting event socket...')
         const socket = new WebSocket(ws_url);

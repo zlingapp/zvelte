@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
-    import { auth_fetch } from "../lib/auth";
+    import { authFetch } from "../lib/auth";
     import { localUser, showInErrorModal } from "../lib/stores";
     import ServerIcon from "./ServerIcon.svelte";
     import Button from "./base/Button.svelte";
@@ -12,7 +12,7 @@
     let guilds: { name: string; id: string; icon: string; }[] = [];
 
     async function fetchGuilds() {
-        let resp = await auth_fetch("/api/guilds");
+        let resp = await authFetch("/guilds");
         if (resp.status != 200) {
             return;
         }
@@ -43,7 +43,7 @@
         isCreateModalVisible = false;
         // todo: validate createServerName
 
-        let reply = await auth_fetch("/api/guilds", {
+        let reply = await authFetch("/guilds", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -67,7 +67,7 @@
             return;
         }
 
-        let reply = await auth_fetch(`/api/guilds/${joinServerId}/join`);
+        let reply = await authFetch(`/guilds/${joinServerId}/join`);
         if (!reply.ok) {
             // TODO: handle me better
             $showInErrorModal = `Failed to join server: ${reply.statusText}`;

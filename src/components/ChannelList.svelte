@@ -9,7 +9,7 @@
     import { text } from "svelte/internal";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import VoiceChannel from "./voice/VoiceChannel.svelte";
-    import { auth_fetch } from "../lib/auth";
+    import { authFetch } from "../lib/auth";
     import {
         type EventSocketMessage,
         eventSocketSubscribe,
@@ -25,7 +25,7 @@
     let menuOpen = false;
 
     async function getChannelList() {
-        let resp = await auth_fetch(`/api/guilds/${$currentGuild.id}/channels`);
+        let resp = await authFetch(`/guilds/${$currentGuild.id}/channels`);
         let channels: Channel[] = await resp.json();
         currentGuild.update((g) => ({ ...g, channels }));
 
@@ -79,8 +79,8 @@
             return;
         }
 
-        let resp = await auth_fetch(
-            `/api/guilds/${$currentGuild.id}/channels`,
+        let resp = await authFetch(
+            `/guilds/${$currentGuild.id}/channels`,
             {
                 method: "POST",
                 headers: {
