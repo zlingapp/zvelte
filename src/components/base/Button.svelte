@@ -21,7 +21,7 @@
     class:disabled
     class:nobg
     class:compact
-    on:click={onClick}><slot /></button
+    on:click|stopPropagation={onClick}><slot /></button
 >
 
 <style>

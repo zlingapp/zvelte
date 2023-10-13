@@ -1,12 +1,47 @@
 <script lang="ts">
     import ZondiconsNetwork from "~icons/zondicons/network";
+    import ZondiconsTrash from "~icons/zondicons/trash";
     import Dropdown from "./base/Dropdown.svelte";
     import { fly, slide } from "svelte/transition";
     import Button from "./base/Button.svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import { currentInstance, instances } from "../lib/auth";
+    import Modal from "./base/Modal.svelte";
 
     export let open: boolean = true;
+    let isAddModalOpen = false;
+    let urlError = false;
+    let dupError = false;
+    let addInstanceName = null;
+    let addInstanceUrl = null;
+
+    function clear() {
+        isAddModalOpen = false;
+        urlError = false;
+        dupError = false;
+        addInstanceName = null;
+        addInstanceUrl = null;
+    }
+
+    function addInstance() {
+        dupError = false;
+        urlError = false;
+        let url = null;
+        try {
+            url = new URL(addInstanceUrl)
+        } catch {
+            urlError=true;
+            return;
+        }
+        if (($instances.filter((x)=>(x.url.toString()==url.toString())).length != 0)) {
+            dupError = true;
+            return;
+        } 
+        instances.update((x)=>x.concat([{"name":addInstanceName??"New Instance","url":new URL(addInstanceUrl)}]))
+        isAddModalOpen = false;
+        addInstanceName = null;
+        addInstanceUrl = null;
+    }
 
     function formatUrl(url: URL) {
         if (url.pathname.endsWith("/"))
@@ -43,10 +78,17 @@
                         <div class="name">{instance.name}</div>
                         <div class="url">{formatUrl(instance.url)}</div>
                     </div>
+                    {#if (instance.url.toString()!="https://api.zlingapp.com/")}
+                    <div style="margin-left:auto;margin-right:0">
+                        <Button compact onClick={()=>instances.update((v)=>v.filter((x)=>x.url != instance.url))}>
+                            <ZondiconsTrash width="14px" height="14px"/>
+                        </Button>
+                    </div>
+                    {/if}
                 </div>
             </Button>
         {/each}
-        <Button outline>
+        <Button outline onClick={() => (isAddModalOpen = true)}>
             <div class="add-instance">
                 <MaterialSymbolsAdd
                     font-size="18px"
@@ -54,6 +96,28 @@
             </div>
         </Button>
     </div>
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <Modal bind:show={isAddModalOpen} onClose={clear}>
+        <svelte:fragment slot="title">Add an Instance</svelte:fragment>
+
+        <svelte:fragment slot="content">
+            <label>Instance Name</label>
+            <input type="text" bind:value={addInstanceName} placeholder="New Instance"/>
+            <label>Base URL</label>
+            <input type="text" bind:value={addInstanceUrl} placeholder="https://example.com/"/>
+            {#if urlError}
+            <label style="color: var(--red)">Invalid URL</label>
+            {/if}
+            {#if dupError}
+            <label style="color: var(--red)">That instance already exists</label>
+            {/if}
+        </svelte:fragment>
+
+        <svelte:fragment slot="actions">
+            <Button green grow onClick={addInstance}>Add Instance</Button>
+            <Button grow onClick={clear}>Nevermind</Button>
+        </svelte:fragment>
+    </Modal>
 {/if}
 
 <style>
