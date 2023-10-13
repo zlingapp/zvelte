@@ -93,9 +93,7 @@
             // create websocket url
             // wss or ws depending on secure
             let ws_url = new URL(
-                `ws${$currentInstance.url.protocol === "https:" ? "s" : ""}://${
-                    $currentInstance.url.host + $currentInstance.url.pathname
-                }/voice/ws/`
+                $currentInstance.url.toString().replaceAll("http", "ws") + `/voice/ws`
             );
             ws_url.searchParams.set("i", identity);
             ws_url.searchParams.set("t", token);

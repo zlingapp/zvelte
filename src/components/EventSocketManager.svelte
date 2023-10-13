@@ -23,9 +23,7 @@
         }
 
         let ws_url = new URL(
-            `ws${$currentInstance.url.protocol === "https:" ? "s" : ""}://${
-                $currentInstance.url.host
-            }/events/ws/?auth=${tokens.accessToken}`
+            $currentInstance.url.toString().replaceAll("http", "ws") + `/events/ws?auth=${tokens.accessToken}`
         );
 
         console.log('Connecting event socket...')
