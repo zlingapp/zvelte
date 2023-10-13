@@ -11,7 +11,6 @@
     let members: PublicUserInfo[] = [];
 
     let loading = true;
-
     async function fetchMembers() {
         loading = true;
         const resp = await authFetch(`/guilds/${guild_id}/members`);
@@ -25,6 +24,8 @@
         members = await resp.json();
         loading = false;
     }
+
+    currentGuild.subscribe((_)=>{fetchMembers()})
 
     $: fetchMembers();
 
