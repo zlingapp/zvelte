@@ -16,7 +16,7 @@ export var currentInstance = localStorageWritable<Instance>(
     // default having the official instance selected
     {
         name: "Zling Official",
-        url: new URL("https://api.zlingapp.com/"),
+        url: new URL("https://api.zlingapp.com"),
     },
     (stored) => {
         const instance = JSON.parse(stored);
@@ -33,7 +33,7 @@ export var instances = localStorageWritable<Instance[]>(
     [
         {
             name: "Zling Official",
-            url: new URL("https://api.zlingapp.com/"),
+            url: new URL("https://api.zlingapp.com"),
         },
     ],
     (stored) => {
