@@ -195,7 +195,7 @@
         outline: none;
     }
     .theme-edit-header {
-        width: 100%;
+        width: 500px;
         display: flex;
         align-items: center;
         gap: 10px;
