@@ -2,6 +2,7 @@
     import { Router, Link, Route } from "svelte-routing";
     import MainView from "./views/MainView.svelte";
     import LoginView from "./views/LoginView.svelte";
+    import {currentTheme} from "./lib/stores"
 </script>
 
 <Router>
@@ -15,3 +16,4 @@
         <LoginView register />
     </Route>
 </Router>
+<svelte:element this="style">{$currentTheme}</svelte:element>

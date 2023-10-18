@@ -7,12 +7,14 @@
     export let disabled: boolean = false;
     export let nobg: boolean = false;
     export let compact: boolean = false;
+    export let tooltip: string = "";
 
     export let onClick = () => {};
 </script>
 
 <button
     {disabled}
+    title = {tooltip}
     class:grow
     class:green
     class:danger
