@@ -118,10 +118,15 @@
     .category-content {
         padding: 60px 20px 60px 40px;
         max-width: 700px;
-        width: 500px;
         overflow-y: scroll;
         height: 100%;
-        scrollbar-width: thin;
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .category-content::-webkit-scrollbar {
+        display: none;
     }
 
     .category:active {

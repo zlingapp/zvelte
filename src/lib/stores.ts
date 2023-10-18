@@ -4,7 +4,7 @@ import type { Channel, TextChannel } from './channel';
 import type { Guild } from './guild';
 import { localStorageWritable } from './localStorageStore';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
-import type { theme } from './theme';
+import type { Theme } from './theme';
 import {defaultTheme} from './theme';
 
 // ---- login stuff ---
@@ -43,4 +43,4 @@ export const showInErrorModal = writable(null);
 export const userSettingsOpen = writable(false);
 
 export const currentTheme = localStorageWritable<string>("active_theme",defaultTheme);
-export const themes = localStorageWritable<Array<theme>>("themes",[]);
+export const themes = localStorageWritable<Array<Theme>>("themes",[]);
