@@ -8,6 +8,9 @@
     import Modal from "../base/Modal.svelte";
     import ContextMenu from "../base/ContextMenu.svelte";
     import ThemeListContextMenu from "../context-menus/ThemeListContextMenu.svelte";
+    import DummyMessage from "../preview/DummyMessage.svelte";
+    import DummyMessageCaret from "../preview/DummyMessageCaret.svelte";
+    import dayjs from "dayjs";
 
     let saved = false;
     let isSaveModalOpen = false;
@@ -57,10 +60,10 @@
         setTheme = null;
     }
     function downloadTheme(t: Theme) {
-        var file = new Blob([t.style], {type: "text/css"});
+        var file = new Blob([t.style], { type: "text/css" });
         var link = document.createElement("a");
-        var urlObject = URL.createObjectURL(file)
-        link.download = t.name+".css";
+        var urlObject = URL.createObjectURL(file);
+        link.download = t.name + ".css";
         link.href = urlObject;
         document.body.appendChild(link);
         link.click();
@@ -70,6 +73,25 @@
 </script>
 
 <h2>Appearance</h2>
+<h3>Preview</h3>
+<div class="preview">
+    <div class="preview-messages">
+        <DummyMessage
+            detailed
+            time={dayjs().subtract(5, "minute")}
+            message="This is a test message"
+        />
+        <DummyMessage
+            time={dayjs().subtract(1, "minute")}
+            message="This is another test message"
+        />
+        <DummyMessage
+            time={dayjs()}
+            message="The quick brown fox jumps over the lazy dog"
+        />
+    </div>
+    <DummyMessageCaret />
+</div>
 <div class="theme-edit-header">
     <h3>Style Editor</h3>
     {#if saved}
@@ -107,7 +129,7 @@
     <h3>Saved Themes</h3>
     <div class="theme-list">
         {#each $themes as theme}
-        <ContextMenu>
+            <ContextMenu>
                 <Button
                     outline
                     onClick={() => {
@@ -116,12 +138,17 @@
                     }}>{theme.name}</Button
                 >
                 <ThemeListContextMenu
-                    onDelete={() => {themes.set($themes.filter((x)=>x!=theme))}}
-                    onExport={() => {console.log("Download "+theme.name);downloadTheme(theme);}}
+                    onDelete={() => {
+                        themes.set($themes.filter((x) => x != theme));
+                    }}
+                    onExport={() => {
+                        console.log("Download " + theme.name);
+                        downloadTheme(theme);
+                    }}
                     slot="menu"
                 />
             </ContextMenu>
-            {/each}
+        {/each}
     </div>
 {/if}
 
@@ -201,6 +228,14 @@
 </Modal>
 
 <style>
+    .preview {
+        border: 1px solid var(--text-color);
+        border-radius: 4px;
+    }
+    .preview-messages {
+        box-sizing: border-box;
+        padding-block-end: 20px;
+    }
     textarea {
         width: 100%;
         height: 500px;
