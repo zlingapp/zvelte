@@ -132,6 +132,7 @@
             <ContextMenu>
                 <Button
                     outline
+                    accent={theme.style == $currentTheme}
                     onClick={() => {
                         setTheme = theme;
                         loadOther();
