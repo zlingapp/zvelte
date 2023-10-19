@@ -6,6 +6,8 @@
     import ZondiconsSaveDisk from "~icons/zondicons/save-disk";
     import ZondiconsRefreshIcon from "~icons/zondicons/refresh";
     import Modal from "../base/Modal.svelte";
+    import ContextMenu from "../base/ContextMenu.svelte";
+    import ThemeListContextMenu from "../context-menus/ThemeListContextMenu.svelte";
 
     let saved = false;
     let isSaveModalOpen = false;
@@ -54,6 +56,17 @@
         currentTheme.set(setTheme.style);
         setTheme = null;
     }
+    function downloadTheme(t: Theme) {
+        var file = new Blob([t.style], {type: "text/css"});
+        var link = document.createElement("a");
+        var urlObject = URL.createObjectURL(file)
+        link.download = t.name+".css";
+        link.href = urlObject;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(urlObject);
+    }
 </script>
 
 <h2>Appearance</h2>
@@ -93,15 +106,22 @@
 {#if $themes.length != 0}
     <h3>Saved Themes</h3>
     <div class="theme-list">
-        {#each $themes as _theme}
-            <Button
-                outline
-                onClick={() => {
-                    setTheme = _theme;
-                    loadOther();
-                }}>{_theme.name}</Button
-            >
-        {/each}
+        {#each $themes as theme}
+        <ContextMenu>
+                <Button
+                    outline
+                    onClick={() => {
+                        setTheme = theme;
+                        loadOther();
+                    }}>{theme.name}</Button
+                >
+                <ThemeListContextMenu
+                    onDelete={() => {themes.set($themes.filter((x)=>x!=theme))}}
+                    onExport={() => {console.log("Download "+theme.name);downloadTheme(theme);}}
+                    slot="menu"
+                />
+            </ContextMenu>
+            {/each}
     </div>
 {/if}
 
@@ -189,9 +209,9 @@
         background-color: var(--bg-1);
         resize: none;
         padding: 8px 10px;
+        font-family: monospace;
     }
-
-    textarea:active {
+    textarea:focus {
         outline: none;
     }
     .theme-edit-header {
