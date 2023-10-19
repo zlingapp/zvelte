@@ -119,7 +119,6 @@
         padding: 60px 20px 60px 40px;
         max-width: 700px;
         overflow-y: scroll;
-        height: 100%;
 
         -ms-overflow-style: none;
         scrollbar-width: none;
