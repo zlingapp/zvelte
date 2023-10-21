@@ -16,4 +16,8 @@
         <LoginView register />
     </Route>
 </Router>
+
+<!-- prevents default context menu from opening -->
+<svelte:window on:contextmenu={e => e.preventDefault()} /> 
+
 <svelte:element this="style">{$currentTheme}</svelte:element>
