@@ -28,8 +28,8 @@
         opacity: 0;
         transition: opacity ease-in 0.06s;
 
-        background-color: black;
-        color: #fff;
+        background-color: var(--tooltip-bg);
+        color: var(--tooltip-fg);
 
         text-align: center;
 

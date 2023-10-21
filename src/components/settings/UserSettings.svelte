@@ -87,7 +87,7 @@
         align-items: flex-start;
         padding: 60px 20px 60px 20px;
 
-        color: #b5bac1;
+        color: var(--gray-2);
         user-select: none;
     }
 
@@ -111,8 +111,8 @@
     }
 
     .category:hover {
-        color: #dadfe7;
-        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-color);
+        background-color: var(--category-hover-bg);
     }
 
     .category-content {

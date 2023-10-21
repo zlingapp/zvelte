@@ -41,7 +41,7 @@
     }
 
     .green {
-        background-color: #00925f;
+        background-color: var(--green-btn);
     }
 
     .danger {

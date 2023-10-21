@@ -57,7 +57,7 @@
 
 <style>
     .channel {
-        color: #888b8f;
+        color: var(--channel-fg);
         padding: 5px 0;
         margin: 1px 0;
         cursor: pointer;
@@ -75,13 +75,13 @@
     }
 
     .channel.current {
-        background-color: #2B2B2B;
-        color: #fff;
+        background-color: var(--channel-current-bg);
+        color: var(--channel-current-fg);
     }
 
     /* not current */
     .channel:hover:not(.current) {
-        background-color: rgba(255, 255, 255, 0.025);
-        color: #fff;
+        background-color: var(--channel-hover-bg);
+        color: var(--channel-hover-fg);
     }
 </style>

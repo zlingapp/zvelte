@@ -55,7 +55,7 @@
         margin-top: 1.0625rem;
     }
     .message:hover {
-        background-color: #262626;
+        background-color: var(--message-hover-bg);
     }
 
     .username {
@@ -101,7 +101,7 @@
     .time {
         font-size: 0.75rem;
         line-height: 1.375rem;
-        color: #a3a3a3;
+        color:var(--gray);
         user-select: none;
     }
 
@@ -115,5 +115,4 @@
     .message:hover .time-inline {
         opacity: 1;
     }
-
 </style>
