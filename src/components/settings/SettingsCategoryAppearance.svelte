@@ -1,5 +1,9 @@
 <script lang="ts">
-    import { themeToFileString, fileStringToTheme, type Theme } from "../../lib/theme";
+    import {
+        themeToFileString,
+        fileStringToTheme,
+        type Theme,
+    } from "../../lib/theme";
     import { defaultTheme } from "../../lib/theme";
     import { themes, localUser, editingThemeId } from "../../lib/stores";
     import Button from "../base/Button.svelte";
@@ -43,32 +47,31 @@
     var editingName: Theme = null;
     function updateThemeName(t: Theme, event) {
         themes.update((x) => {
-            x[x.findIndex((y) => y == t)]["name"] = event.target.value;
+            x.find((y) => y == t)["name"] = event.target.value;
             return x;
         });
     }
     function validateThemeName(id: Number) {
         themes.update((x) => {
-            let nid = x.findIndex((y) => y.id == id);
-            x[nid].name =
-                x[nid].name.trim() == "" ? "New Theme" : x[nid].name.trim();
+            let t = x.find((y) => y.id == id);
+            t.name = t.name.trim() == "" ? "New Theme" : t.name.trim();
             return x;
         });
     }
     var file = null;
     var invalidFile = false;
     async function submitImport() {
-        let text = await file[0].text()
+        let text = await file[0].text();
         console.log(text);
-        let t = fileStringToTheme(text)
-        console.log(t)
-        if (t===null) {
+        let t = fileStringToTheme(text);
+        console.log(t);
+        if (t === null) {
             invalidFile = true;
             file = null;
         } else {
             invalidFile = false;
             file = null;
-            themes.update((x)=>x.concat([t]))
+            themes.update((x) => x.concat([t]));
         }
     }
 </script>
@@ -174,15 +177,26 @@
     </div>
     <div class="import-theme theme-entry">
         <ZondiconsAddSolid
-        width="14px"
-        height="14px"
-        style="padding-right:5px"
+            width="14px"
+            height="14px"
+            style="padding-right:5px"
         />
-        <input type="file" bind:files={file} on:change={submitImport} accept="text/css" id="import" style="display: none"/>
+        <input
+            type="file"
+            bind:files={file}
+            on:change={submitImport}
+            accept="text/css"
+            id="import"
+            style="display: none"
+        />
         <!-- svelte-ignore a11y-label-has-associated-control -->
-       <label for="import" style="color: var(--yellow); cursor: pointer;">Import Theme</label> 
+        <label for="import" style="color: var(--yellow); cursor: pointer;"
+            >Import Theme</label
+        >
         <!-- svelte-ignore a11y-label-has-associated-control -->
-       {#if invalidFile}<label style="color: var(--red); padding-left: 10px">Invalid File</label>{/if}
+        {#if invalidFile}<label style="color: var(--red); padding-left: 10px"
+                >Invalid File</label
+            >{/if}
     </div>
 </div>
 <svelte:window
