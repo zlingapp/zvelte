@@ -62,9 +62,7 @@
     var invalidFile = false;
     async function submitImport() {
         let text = await file[0].text();
-        console.log(text);
         let t = fileStringToTheme(text);
-        console.log(t);
         if (t === null) {
             invalidFile = true;
             file = null;
