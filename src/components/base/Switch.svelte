@@ -2,12 +2,8 @@
     export let value = true;
     export let tooltip = "";
 
-    function handleClick(event) {
-        const target = event.target;
-
-        const state = target.getAttribute("aria-checked");
-
-        value = state === "true" ? false : true;
+    function handleClick(_) {
+        value = !value
 
     }
 </script>
@@ -29,6 +25,7 @@
     }
 
     .slider button {
+        cursor: pointer;
         width: 3em;
         height: 1.6em;
         position: relative;
