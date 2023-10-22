@@ -12,7 +12,6 @@
     import ZondiconsEditPencil from "~icons/zondicons/edit-pencil";
     import ZondiconsAddSolid from "~icons/zondicons/add-solid";
     import Switch from "../base/Switch.svelte";
-    import Modal from "../base/Modal.svelte";
     import PreviewArea from "../preview/PreviewArea.svelte";
 
     function downloadTheme(t: Theme) {
@@ -200,7 +199,7 @@
 <svelte:window
     on:click={(event) => {
         if (editingName == null) return;
-        if (!event.target.className.includes("editable")) {
+        if (event.target instanceof HTMLElement && !event.target.className.includes("editable")) {
             if (document.getElementsByClassName("editable").length != 0) {
                 let id = parseInt(
                     document.getElementsByClassName("editable")[0].id
