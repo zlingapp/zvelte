@@ -1,7 +1,7 @@
 <script lang="ts">
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
-    export let show: boolean = null;
+    export let show: boolean = false;
     export let onClose: () => void = () => (show = false);
     export let dimmed = true;
     export let draggable = false;
