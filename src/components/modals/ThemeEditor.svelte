@@ -33,6 +33,11 @@
         <div style="color: var(--green); margin-bottom: 5px;">
             Your changes are saved automatically.
         </div>
+        {#if !currentTheme.enabled}
+            <div style="color: var(--yellow); margin-bottom: 5px;">
+                Warning: This theme is not currently enabled!
+            </div>
+        {/if}
         <textarea
             spellcheck="false"
             class="theme-edit-area"
