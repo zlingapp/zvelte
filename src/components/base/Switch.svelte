@@ -1,5 +1,5 @@
 <script>
-    export let value = true;
+    export let value = false;
     export let tooltip = "";
 
     function handleClick(_) {
