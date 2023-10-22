@@ -70,8 +70,8 @@ export const defaultTheme = {
   font-weight: 400;
 }`};
 
-const regex = /^\/\*theme ({(?:\s*"(?:name|author|version)":\s?".*",?)+\n?})\*\//g
 export function fileStringToTheme(s: string): Theme | null {
+  const regex = /^\/\*theme ({(?:\s*"(?:name|author|version)":\s?".*",?)+\n?})\*\//g
 
   const match = regex.exec(s);
 
@@ -83,7 +83,7 @@ export function fileStringToTheme(s: string): Theme | null {
 
   var css = s.slice(regex.lastIndex).trim();
 
-  const theme = { ...parsed, style: css };
+  const theme = { ...parsed, style: css, id:Math.floor(Math.random() * 1000) };
 
   return theme;
 }
