@@ -64,7 +64,7 @@
         bottom: 0;
 
         background-color: var(--bg-0);
-        z-index: 1000;
+        z-index: 10;
 
         display: flex;
     }

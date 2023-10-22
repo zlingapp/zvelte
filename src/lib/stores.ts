@@ -42,4 +42,8 @@ export const showInErrorModal = writable(null);
 
 export const userSettingsOpen = writable(false);
 
+// list of themes to show in the theme editor
 export const themes = localStorageWritable<Array<Theme>>("themes",[]);
+
+// should the theme editor be open and if so what theme id is it editing
+export const editingThemeId = writable<Theme["id"]>(null);

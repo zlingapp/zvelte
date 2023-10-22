@@ -1,7 +1,7 @@
 <script lang="ts">
     import { themeToFileString, type Theme } from "../../lib/theme";
     import { defaultTheme } from "../../lib/theme";
-    import { themes, localUser } from "../../lib/stores";
+    import { themes, localUser, editingThemeId } from "../../lib/stores";
     import Button from "../base/Button.svelte";
     import ZondiconsDownload from "~icons/zondicons/download";
     import ZondiconsTrash from "~icons/zondicons/trash";
@@ -11,13 +11,6 @@
     import Modal from "../base/Modal.svelte";
     import PreviewArea from "../preview/PreviewArea.svelte";
 
-    let currentThemeId = null;
-    let isEditModalShowing = false;
-
-    function currentTheme() {
-        // Read-only
-        return $themes.find((x) => x.id == currentThemeId);
-    }
     function downloadTheme(t: Theme) {
         var file = new Blob([themeToFileString(t)], { type: "text/css" });
         var link = document.createElement("a");
@@ -52,38 +45,6 @@
 <h2 style="margin:0;">Appearance</h2>
 <h3>Preview</h3>
 <PreviewArea />
-
-<Modal
-    bind:show={isEditModalShowing}
-    draggable
-    onClose={() => {
-        currentThemeId == null;
-        isEditModalShowing = false;
-    }}
-    dimmed={false}
->
-    <svelte:fragment slot="title"
-        >Style Editor: {currentTheme().name}</svelte:fragment
-    >
-    <svelte:fragment slot="content">
-        <div style="color: var(--green); margin-bottom: 5px;">
-            Your changes are saved automatically.
-        </div>
-        <!-- Hello type warning -->
-        <textarea
-            spellcheck="false"
-            class="theme-edit-area"
-            value={currentTheme().style}
-            on:input={(event) => {
-                themes.update((x) => {
-                    x[x.findIndex((y) => y.id == currentThemeId)].style =
-                        event.target.value;
-                    return x;
-                });
-            }}
-        />
-    </svelte:fragment>
-</Modal>
 
 <h3>Saved Themes</h3>
 <div class="theme-list">
@@ -124,8 +85,7 @@
                     compact
                     tooltip={`Edit ${theme.name}`}
                     onClick={() => {
-                        currentThemeId = theme.id;
-                        isEditModalShowing = true;
+                        $editingThemeId = theme.id;
                     }}
                 >
                     <ZondiconsEditPencil height="14px" width="14px" />
@@ -184,20 +144,6 @@
     .theme-entry-buttons {
         display: inline-flex;
         align-items: center;
-    }
-    textarea {
-        width: 500px;
-        height: 500px;
-        color: var(--text-color);
-        border: none;
-        border-radius: 4px;
-        background-color: var(--bg-1);
-        resize: none;
-        padding: 8px 10px;
-        font-family: monospace;
-    }
-    textarea:focus {
-        outline: none;
     }
 
     .theme-list {
