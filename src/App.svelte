@@ -2,7 +2,7 @@
     import { Router, Link, Route } from "svelte-routing";
     import MainView from "./views/MainView.svelte";
     import LoginView from "./views/LoginView.svelte";
-    import {currentTheme} from "./lib/stores"
+    import {themes} from "./lib/stores"
 </script>
 
 <Router>
@@ -20,4 +20,6 @@
 <!-- prevents default context menu from opening -->
 <svelte:window on:contextmenu={e => e.preventDefault()} /> 
 
-<svelte:element this="style">{$currentTheme}</svelte:element>
+{#each $themes.filter((x)=>x.enabled) as theme}
+<svelte:element this="style">{theme.style}</svelte:element>
+{/each}

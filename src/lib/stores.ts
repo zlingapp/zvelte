@@ -42,5 +42,4 @@ export const showInErrorModal = writable(null);
 
 export const userSettingsOpen = writable(false);
 
-export const currentTheme = localStorageWritable<string>("active_theme",defaultTheme);
 export const themes = localStorageWritable<Array<Theme>>("themes",[]);

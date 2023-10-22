@@ -1,66 +1,24 @@
 <script lang="ts">
-    import type { Theme } from "../../lib/theme";
+    import { themeToFileString, type Theme } from "../../lib/theme";
     import { defaultTheme } from "../../lib/theme";
-    import { currentTheme, themes } from "../../lib/stores";
+    import { themes, localUser } from "../../lib/stores";
     import Button from "../base/Button.svelte";
-    import ZondiconsSaveDisk from "~icons/zondicons/save-disk";
-    import ZondiconsRefreshIcon from "~icons/zondicons/refresh";
+    import ZondiconsDownload from "~icons/zondicons/download";
+    import ZondiconsTrash from "~icons/zondicons/trash";
+    import ZondiconsEditPencil from "~icons/zondicons/edit-pencil";
+    import ZondiconsAddSolid from "~icons/zondicons/add-solid";
+    import Switch from "../base/Switch.svelte";
     import Modal from "../base/Modal.svelte";
-    import ContextMenu from "../base/ContextMenu.svelte";
-    import ThemeListContextMenu from "../context-menus/ThemeListContextMenu.svelte";
-    import DummyMessage from "../preview/DummyMessage.svelte";
-    import DummyMessageCaret from "../preview/DummyMessageCaret.svelte";
-    import dayjs from "dayjs";
+    import PreviewArea from "../preview/PreviewArea.svelte";
 
-    let saved = false;
-    let isSaveModalOpen = false;
-    let saveName = "";
-    let nameError = false;
-
-    function save() {
-        if (saveName == "") {
-            nameError = true;
-            return;
-        }
-
-        themes.update((x) =>
-            x.concat([{ name: saveName, style: $currentTheme }])
-        );
-        saved = true;
-        clear();
-    }
-    function clear() {
-        saveName = "";
-        nameError = false;
-        isSaveModalOpen = false;
-    }
-
-    let isOverrideWarningOpen = false;
-    function restoreDefault() {
-        if (!saved) {
-            isOverrideWarningOpen = true;
-            return;
-        }
-        isOverrideWarningOpen = false;
-        $currentTheme = defaultTheme;
-    }
-    let isLoadWarningOpen = false;
-    let setTheme: Theme;
-    function loadOther() {
-        if (setTheme == null) {
-            isLoadWarningOpen = false;
-            return;
-        }
-        if (!saved) {
-            isLoadWarningOpen = true;
-            return;
-        }
-        isLoadWarningOpen = false;
-        currentTheme.set(setTheme.style);
-        setTheme = null;
+    let currentThemeId = null;
+    let isEditModalShowing = false;
+    function currentTheme() {
+        // Read-only
+        return $themes.find((x) => x.id == currentThemeId);
     }
     function downloadTheme(t: Theme) {
-        var file = new Blob([t.style], { type: "text/css" });
+        var file = new Blob([themeToFileString(t)], { type: "text/css" });
         var link = document.createElement("a");
         var urlObject = URL.createObjectURL(file);
         link.download = t.name + ".css";
@@ -70,176 +28,162 @@
         document.body.removeChild(link);
         URL.revokeObjectURL(urlObject);
     }
+    function deleteTheme(t: Theme) {
+        themes.update((x) => x.filter((y) => y != t));
+    }
+    function createTheme() {
+        themes.update((x) =>
+            x.concat([
+                {
+                    id: Math.floor(Math.random() * 1000),
+                    name: "New Theme",
+                    author: $localUser.name.split("#")[0],
+                    enabled: false,
+                    style: defaultTheme.style,
+                },
+            ])
+        );
+    }
 </script>
 
-<h2>Appearance</h2>
+<h2 style="margin:0;">Appearance</h2>
 <h3>Preview</h3>
-<div class="preview">
-    <div class="preview-messages">
-        <DummyMessage
-            detailed
-            time={dayjs().subtract(5, "minute")}
-            message="This is a test message"
-        />
-        <DummyMessage
-            time={dayjs().subtract(1, "minute")}
-            message="This is another test message"
-        />
-        <DummyMessage
-            time={dayjs()}
-            message="The quick brown fox jumps over the lazy dog"
-        />
-    </div>
-    <DummyMessageCaret />
-</div>
-<div class="theme-edit-header">
-    <h3>Style Editor</h3>
-    {#if saved}
-        <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label style="color: var(--green);">Saved</label>
-    {/if}
-    <span style="flex-grow: 1;" />
-    <div class="theme-edit-buttons">
-        <Button
-            compact
-            tooltip="Save theme"
-            onClick={() => (isSaveModalOpen = true)}
-        >
-            <ZondiconsSaveDisk height="14px" width="14px" />
-        </Button>
-        <Button
-            compact
-            tooltip="Reset to default theme"
-            onClick={restoreDefault}
-        >
-            <ZondiconsRefreshIcon height="14px" width="14px" />
-        </Button>
-    </div>
-</div>
-<textarea
-    on:input={() => {
-        saved = false;
-    }}
-    spellcheck="false"
-    class="theme-edit-area"
-    bind:value={$currentTheme}
-/>
+<PreviewArea />
 
-{#if $themes.length != 0}
-    <h3>Saved Themes</h3>
-    <div class="theme-list">
-        {#each $themes as theme}
-            <ContextMenu>
+<Modal
+    bind:show={isEditModalShowing}
+    draggable
+    onClose={() => {
+        currentThemeId == null;
+        isEditModalShowing = false;
+    }}
+    dimmed={false}
+>
+    <svelte:fragment slot="title">Stylesheet Editor</svelte:fragment>
+    <svelte:fragment slot="content">
+        <p>
+            Editing {currentTheme().name}. Your changes are saved automatically.
+        </p>
+        <!-- Hello type warning -->
+        <textarea
+            spellcheck="false"
+            class="theme-edit-area"
+            value={currentTheme().style}
+            on:input={(event) => {
+                themes.update((x) => {
+                    x[x.findIndex((y) => y.id == currentThemeId)].style =
+                        event.target.value;
+                    return x;
+                });
+            }}
+        />
+    </svelte:fragment>
+</Modal>
+
+<h3>Saved Themes</h3>
+<div class="theme-list">
+    <div class="theme-entry">
+        <div class="theme-title">
+            <p>{defaultTheme.name}</p>
+            <!-- svelte-ignore a11y-label-has-associated-control -->
+            <label>{defaultTheme.author}</label>
+        </div>
+        <div class="theme-entry-buttons">
+            <Button
+                compact
+                tooltip={`Download default.css`}
+                onClick={() => {
+                    downloadTheme(defaultTheme);
+                }}><ZondiconsDownload height="14px" width="14px" /></Button
+            >
+        </div>
+    </div>
+    {#each $themes as theme}
+        <div class="theme-entry">
+            <div class="theme-title">
+                <p>{theme.name}</p>
+                <!-- svelte-ignore a11y-label-has-associated-control -->
+                <label>{theme.author}</label>
+            </div>
+            <div class="theme-entry-buttons">
                 <Button
-                    outline
-                    accent={theme.style == $currentTheme}
+                    compact
+                    tooltip={`Download ${theme.name}.css`}
                     onClick={() => {
-                        setTheme = theme;
-                        loadOther();
-                    }}>{theme.name}</Button
-                >
-                <ThemeListContextMenu
-                    onDelete={() => {
-                        themes.set($themes.filter((x) => x != theme));
-                    }}
-                    onExport={() => {
-                        console.log("Download " + theme.name);
                         downloadTheme(theme);
                     }}
-                    slot="menu"
+                >
+                    <ZondiconsDownload height="14px" width="14px" />
+                </Button>
+                <Button
+                    compact
+                    tooltip={`Edit ${theme.name}`}
+                    onClick={() => {
+                        currentThemeId = theme.id;
+                        isEditModalShowing = true;
+                    }}
+                >
+                    <ZondiconsEditPencil height="14px" width="14px" />
+                </Button>
+                <Button
+                    compact
+                    tooltip={`Delete ${theme.name}`}
+                    onClick={() => {
+                        deleteTheme(theme);
+                    }}
+                >
+                    <ZondiconsTrash height="14px" width="14px" />
+                </Button>
+                <Switch
+                    bind:value={theme.enabled}
+                    tooltip={`${theme.enabled ? `Disable` : `Enable`} ${
+                        theme.name
+                    }`}
                 />
-            </ContextMenu>
-        {/each}
+            </div>
+        </div>
+    {/each}
+    <!-- svelte-ignore a11y-click-events-have-key-events-->
+    <div class="create-theme theme-entry" on:click={createTheme}>
+        <ZondiconsAddSolid
+            width="14px"
+            height="14px"
+            style="padding-right:5px"
+        />
+        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <label style="color:var(--green)">Create Theme</label>
     </div>
-{/if}
-
-<!-- svelte-ignore a11y-label-has-associated-control -->
-<Modal bind:show={isSaveModalOpen} onClose={clear}>
-    <svelte:fragment slot="title">Save a Theme</svelte:fragment>
-
-    <svelte:fragment slot="content">
-        <label>Theme Name</label>
-        <input type="text" bind:value={saveName} placeholder="New Theme" />
-        {#if nameError}
-            <label style="color: var(--red)"
-                >Invalid or existing theme name</label
-            >
-        {/if}
-    </svelte:fragment>
-
-    <svelte:fragment slot="actions">
-        <Button grow onClick={clear}>Nevermind</Button>
-        <Button green grow onClick={save}>Save Theme</Button>
-    </svelte:fragment>
-</Modal>
-
-<!-- svelte-ignore a11y-label-has-associated-control -->
-<Modal
-    bind:show={isOverrideWarningOpen}
-    onClose={() => (isOverrideWarningOpen = false)}
->
-    <svelte:fragment slot="title">Restore Default</svelte:fragment>
-    <svelte:fragment slot="content"
-        >Are you sure you want to restore the default theme?
-        <br />This will override your current theme! <br />This action is
-        irreversible.</svelte:fragment
-    >
-    <svelte:fragment slot="actions">
-        <Button onClick={() => (isOverrideWarningOpen = false)}
-            >Take me back</Button
-        >
-        <Button
-            danger
-            onClick={() => {
-                saved = true;
-                restoreDefault();
-            }}>Restore</Button
-        >
-    </svelte:fragment>
-</Modal>
-
-<!-- svelte-ignore a11y-label-has-associated-control -->
-<Modal
-    bind:show={isLoadWarningOpen}
-    onClose={() => {
-        isLoadWarningOpen = false;
-    }}
->
-    <svelte:fragment slot="title">Confirm Load</svelte:fragment>
-    <svelte:fragment slot="content"
-        >Are you sure you want to load "{setTheme.name}"?
-        <br />This will override your current theme! <br />This action is
-        irreversible.</svelte:fragment
-    >
-    <svelte:fragment slot="actions">
-        <Button
-            onClick={() => {
-                isLoadWarningOpen = false;
-                setTheme = null;
-            }}>Take me back</Button
-        >
-        <Button
-            green
-            onClick={() => {
-                saved = true;
-                loadOther();
-            }}>Load</Button
-        >
-    </svelte:fragment>
-</Modal>
+</div>
 
 <style>
-    .preview {
-        border: 1px solid var(--text-color);
-        border-radius: 4px;
+    h3 {
+        margin: 0px;
+        padding-top: 20px;
     }
-    .preview-messages {
-        box-sizing: border-box;
-        padding-block-end: 20px;
+    *.create-theme {
+        color: var(--green);
+    }
+    .create-theme {
+        justify-content: unset !important;
+        align-items: center;
+    }
+    .theme-entry {
+        display: flex;
+        justify-content: space-between;
+        width: 500px;
+        background-color: var(--bg-1);
+        padding: 5px;
+        border-radius: 4px;
+        padding-left: 25px;
+    }
+    .theme-entry-buttons {
+        display: inline-flex;
+        align-items: center;
     }
     textarea {
-        width: 100%;
+        width: 500px;
         height: 500px;
+        color: var(--text-color);
         border: none;
         border-radius: 4px;
         background-color: var(--bg-1);
@@ -249,20 +193,6 @@
     }
     textarea:focus {
         outline: none;
-    }
-    .theme-edit-header {
-        width: 500px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0;
-    }
-
-    .theme-edit-buttons {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0;
     }
 
     .theme-list {

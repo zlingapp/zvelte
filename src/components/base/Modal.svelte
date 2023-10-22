@@ -1,8 +1,32 @@
 <script lang="ts">
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
-    export let show: boolean = false;
-    export let onClose: () => void = () => show = false;
+    export let show: boolean = null;
+    export let onClose: () => void = () => (show = false);
+    export let dimmed = true;
+    export let draggable = false;
+
+    let left = 0;
+    let top = 0;
+    let moving = false;
+    // Short-circuit dragging operations if the modal isnt draggable
+    function onMouseDown() {
+        if (!draggable) return;
+        moving = true;
+    }
+
+    function onMouseMove(e) {
+        if (!draggable) return;
+        if (moving) {
+            left += e.movementX * 2;
+            top += e.movementY * 2;
+        }
+    }
+
+    function onMouseUp() {
+        if (!draggable) return;
+        moving = false;
+    }
 
     let dialog: HTMLDialogElement;
 
@@ -16,12 +40,25 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 {#if show}
     <dialog
+        style={draggable
+            ? `left: ${left}px;top: ${top}px;position:absolute`
+            : ""}
+        class={dimmed ? "dimmed" : ""}
         bind:this={dialog}
-        on:close={onClose}
-        on:click|self={() => dialog.close()}
+        on:close={() => {
+            left = 0;
+            top = 0;
+            onClose();
+        }}
+        on:click|self={draggable ? () => {} : () => dialog.close()}
     >
+        <!-- WTF! stopPropagation?!??-->
         <div on:click|stopPropagation>
-            <div class="title">
+            <div
+                class="title"
+                on:mousedown={draggable ? onMouseDown : () => {}}
+                style={draggable ? "user-select: none; cursor: move;" : ""}
+            >
                 <slot name="title" />
                 <span style="flex-grow: 1;" />
                 <button class="close" on:click={() => dialog.close()}>
@@ -37,26 +74,28 @@
         </div>
     </dialog>
 {/if}
+<svelte:window on:mousemove={onMouseMove} on:mouseup={onMouseUp} />
 
 <style>
     dialog {
         border-radius: 6px;
-        border: none;
+        border: transparent;
         padding: 0;
-
         background-color: var(--bg-0);
         color: inherit;
 
         box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
             rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
     }
-
     dialog > div > div {
         padding: 16px;
     }
-
     dialog::backdrop {
-        background: var(--modal-bg);
+        background: none;
+    }
+    dialog.dimmed::backdrop {
+        /* Temporarily disabling var(--modal-bg) because it doesn't work */
+        background: rgba(0, 0, 0, 0.5);
     }
 
     dialog[open] {

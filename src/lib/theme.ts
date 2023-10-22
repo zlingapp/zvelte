@@ -1,9 +1,17 @@
 export type Theme = {
-    name: string;
-    style: string;
-};
+  id: number;
+  name: string;
+  author: string;
+  enabled: boolean;
+  style: string;
+}
 
-export const defaultTheme = `/* Feel free to edit this file to your liking. */
+export const defaultTheme = {
+  id: -1, 
+  name: "Zling default theme",
+  author: "Zling team",
+  enabled: true,
+  style: `/* Feel free to edit this file to your liking. */
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700&display=swap');
 
@@ -60,4 +68,26 @@ export const defaultTheme = `/* Feel free to edit this file to your liking. */
   font-family: 'Source Sans 3', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-}`;
+}`};
+
+const regex = /^\/\*theme ({(?:\s*"(?:name|author|version)":\s?".*",?)+\n?})\*\//g
+export function fileStringToTheme(s: string): Theme | null {
+
+  const match = regex.exec(s);
+
+  if (match == null) {
+    return null;
+  }
+
+  const parsed = JSON.parse(match[1]);
+
+  var css = s.slice(regex.lastIndex).trim();
+
+  const theme = { ...parsed, style: css };
+
+  return theme;
+}
+
+export function themeToFileString(t: Theme): string {
+  return `/*theme {\n    "name": "${t.name}",\n    "author": "${t.author}"\n}*/\n` + t.style;
+}
