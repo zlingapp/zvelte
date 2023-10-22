@@ -13,6 +13,7 @@
 
     let currentThemeId = null;
     let isEditModalShowing = false;
+
     function currentTheme() {
         // Read-only
         return $themes.find((x) => x.id == currentThemeId);
@@ -28,9 +29,11 @@
         document.body.removeChild(link);
         URL.revokeObjectURL(urlObject);
     }
+
     function deleteTheme(t: Theme) {
         themes.update((x) => x.filter((y) => y != t));
     }
+
     function createTheme() {
         themes.update((x) =>
             x.concat([
@@ -59,11 +62,13 @@
     }}
     dimmed={false}
 >
-    <svelte:fragment slot="title">Stylesheet Editor</svelte:fragment>
+    <svelte:fragment slot="title"
+        >Style Editor: {currentTheme().name}</svelte:fragment
+    >
     <svelte:fragment slot="content">
-        <p>
-            Editing {currentTheme().name}. Your changes are saved automatically.
-        </p>
+        <div style="color: var(--green); margin-bottom: 5px;">
+            Your changes are saved automatically.
+        </div>
         <!-- Hello type warning -->
         <textarea
             spellcheck="false"

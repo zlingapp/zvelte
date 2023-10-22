@@ -1,16 +1,35 @@
 <script lang="ts">
+    import { fade } from "svelte/transition";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
+    const __SLOTS = $$props.$$slots;
+
     export let show: boolean = false;
+
     export let onClose: () => void = () => (show = false);
+
     export let dimmed = true;
     export let draggable = false;
 
-    let left = 0;
-    let top = 0;
+    let element: HTMLDivElement;
+
+    // yes these are null at first but they get set in the $: block
+    let x: number = null;
+    let y: number = null;
+
     let moving = false;
+
+    $: {
+        if (draggable && show && element) {
+            // set x and y to the center of the screen initially
+            if (x === null) x = window.innerWidth / 2 - element.clientWidth / 2;
+            if (y === null)
+                y = window.innerHeight / 2 - element.clientHeight / 2;
+        }
+    }
+
     // Short-circuit dragging operations if the modal isnt draggable
-    function onMouseDown() {
+    function onTitleBarMouseDown() {
         if (!draggable) return;
         moving = true;
     }
@@ -18,8 +37,16 @@
     function onMouseMove(e) {
         if (!draggable) return;
         if (moving) {
-            left += e.movementX * 2;
-            top += e.movementY * 2;
+            // where we want to move to
+            let newX = x + e.movementX;
+            let newY = y + e.movementY;
+
+            const maxX = window.innerWidth - element.clientWidth;
+            const maxY = window.innerHeight - element.clientHeight;
+
+            // clamp between 0 and the max size
+            x = Math.min(Math.max(newX, 0), maxX);
+            y = Math.min(Math.max(newY, 0), maxY);
         }
     }
 
@@ -28,56 +55,67 @@
         moving = false;
     }
 
-    let dialog: HTMLDialogElement;
+    function toplevel(node) {
+        const portalChildren = [...node.children];
+        document.body.append(...portalChildren);
 
-    $: {
-        if (dialog)
-            if (show) dialog.showModal();
-            else dialog.close();
+        return {
+            destroy() {
+                for (const portalChild of portalChildren) portalChild.remove();
+            },
+        };
     }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 {#if show}
-    <dialog
-        style={draggable
-            ? `left: ${left}px;top: ${top}px;position:absolute`
-            : ""}
-        class={dimmed ? "dimmed" : ""}
-        bind:this={dialog}
-        on:close={() => {
-            left = 0;
-            top = 0;
-            onClose();
-        }}
-        on:click|self={draggable ? () => {} : () => dialog.close()}
+    <div
+        class="backdrop"
+        class:dimmed
+        on:mousedown|self={onClose}
+        transition:fade={{ duration: 100 }}
     >
-        <!-- WTF! stopPropagation?!??-->
-        <div on:click|stopPropagation>
-            <div
-                class="title"
-                on:mousedown={draggable ? onMouseDown : () => {}}
-                style={draggable ? "user-select: none; cursor: move;" : ""}
-            >
-                <slot name="title" />
-                <span style="flex-grow: 1;" />
-                <button class="close" on:click={() => dialog.close()}>
-                    <MaterialSymbolsCloseRounded />
-                </button>
-            </div>
-            <div class="content">
-                <slot name="content" />
-            </div>
-            <div class="actions">
-                <slot name="actions" />
+        <div
+            bind:this={element}
+            class="modal"
+            class:draggable
+            style:--x={x + "px"}
+            style:--y={y + "px"}
+        >
+            <div on:click|stopPropagation>
+                <div
+                    class="title"
+                    on:mousedown={onTitleBarMouseDown}
+                    class:draggable
+                >
+                    <slot name="title" />
+                    <span style="flex-grow: 1;" />
+                    <button class="close" on:click={onClose}>
+                        <MaterialSymbolsCloseRounded />
+                    </button>
+                </div>
+                <div class="content">
+                    <slot name="content" />
+                </div>
+                {#if __SLOTS.actions}
+                    <div class="actions">
+                        <slot name="actions" />
+                    </div>
+                {/if}
             </div>
         </div>
-    </dialog>
+    </div>
 {/if}
+
 <svelte:window on:mousemove={onMouseMove} on:mouseup={onMouseUp} />
 
 <style>
-    dialog {
+    .modal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
         border-radius: 6px;
         border: transparent;
         padding: 0;
@@ -86,42 +124,44 @@
 
         box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
             rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+
+        animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        pointer-events: all;
     }
-    dialog > div > div {
+
+    .title,
+    .content,
+    .actions {
         padding: 16px;
     }
-    dialog::backdrop {
-        background: none;
+
+    .backdrop {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 10;
+        pointer-events: none;
     }
-    dialog.dimmed::backdrop {
-        /* Temporarily disabling var(--modal-bg) because it doesn't work */
+
+    .backdrop.dimmed {
         background: rgba(0, 0, 0, 0.5);
+        pointer-events: all;
     }
 
-    dialog[open] {
-        animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .modal.draggable {
+        top: var(--y);
+        left: var(--x);
+        transform: none;
+        animation: zoom-draggable 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    @keyframes zoom {
-        from {
-            transform: scale(0.95);
-        }
-        to {
-            transform: scale(1);
-        }
-    }
-
-    dialog[open]::backdrop {
-        animation: fade 0.2s ease-out;
-    }
-
-    @keyframes fade {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+    .title.draggable {
+        user-select: none;
+        cursor: move;
     }
 
     .title {
@@ -129,6 +169,9 @@
         display: flex;
         background-color: var(--bg-2);
         align-items: center;
+
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
     }
 
     .close {
@@ -167,5 +210,24 @@
         display: flex;
         justify-content: flex-end;
         gap: 8px;
+    }
+
+    @keyframes zoom {
+        from {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+        to {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    @keyframes zoom-draggable {
+        /* same as above except with transform missing */
+        from {
+            transform: scale(0.95);
+        }
+        to {
+            transform: scale(1);
+        }
     }
 </style>
