@@ -1,5 +1,4 @@
 <script lang="ts">
-    import MessageAttachButton from "../text/MessageAttachButton.svelte";
     import MaterialSymbolsAddCircle from "~icons/material-symbols/add-circle";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
@@ -8,8 +7,8 @@
 <div class="message-caret-container">
     <div class="message-caret">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="upload-icon" on:click={()=>{}}>
-                <MaterialSymbolsAddCircle style="font-size: 20px;" />
+        <div class="upload-icon" on:click={() => {}}>
+            <MaterialSymbolsAddCircle style="font-size: 20px;" />
         </div>
         <input disabled class="input" placeholder="Send a message" />
         <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -31,7 +30,7 @@
         line-height: 0;
         cursor: pointer;
     }
-    
+
     input {
         border: none;
         background: none;

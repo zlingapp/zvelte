@@ -8,8 +8,8 @@ export type Theme = {
 
 export const defaultTheme = {
   id: -1, 
-  name: "Zling default theme",
-  author: "Zling team",
+  name: "Zling Dark",
+  author: "Zling Developers",
   enabled: true,
   style: `/* Feel free to edit this file to your liking. */
 

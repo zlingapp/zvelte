@@ -14,7 +14,7 @@
 
 <button
     {disabled}
-    title = {tooltip}
+    title={tooltip}
     class:grow
     class:green
     class:danger
