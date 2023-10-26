@@ -121,7 +121,17 @@ export async function apiFetch(
     url: string | URL,
     init?: RequestInit
 ): Promise<Response> {
-    url = new URL(get(currentInstance).url + url.toString());
+    // stringify url
+    url = url.toString();
+
+    // remove leading slash if present
+    if (url.startsWith("/")) {
+        url = url.substring(1);
+    }
+
+    const prefix = get(currentInstance).url;    
+
+    url = new URL(prefix + url);
     return fetch(url, init);
 }
 
