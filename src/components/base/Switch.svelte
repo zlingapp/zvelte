@@ -3,8 +3,7 @@
     export let tooltip = "";
 
     function handleClick(_) {
-        value = !value
-
+        value = !value;
     }
 </script>
 
@@ -32,6 +31,7 @@
         margin: 0 0 0 0.5em;
         background: var(--gray);
         border: none;
+        border-radius: 1.5em;
     }
 
     .slider button::before {
@@ -42,32 +42,24 @@
         background: #fff;
         top: 0.13em;
         right: 1.5em;
-        transition: transform 0.3s;
+        transition: transform 0.1s, width 0.1s;
+        border-radius: 1em;
     }
 
     .slider button[aria-checked="true"] {
-        background-color: var(--accent-color);
+        background-color: var(--green);
     }
 
     .slider button[aria-checked="true"]::before {
         transform: translateX(1.3em);
-        transition: transform 0.3s;
     }
 
-    .slider button:focus {
-        box-shadow: 0 0px 0px 1px var(--accent-color);
+    .slider button:active:hover::before {
+        width: 1.7em;
+        border-radius: 1em;
     }
 
-    .slider button {
-        border-radius: 1.5em;
-    }
-
-    .slider button::before {
-        border-radius: 100%;
-    }
-
-    .slider button:focus {
-        box-shadow: 0 0px 8px var(--accent-color);
-        border-radius: 1.5em;
+    .slider button[aria-checked="false"]:active:hover::before {
+        transform: translateX(0.47em);
     }
 </style>
