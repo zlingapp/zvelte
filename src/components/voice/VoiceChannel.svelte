@@ -34,7 +34,7 @@
 
 <style>
     .channel {
-        color: var(--channel);
+        color: var(--channel-fg);
         padding: 6px 0;
         cursor: pointer;
         border-radius: 6px;
