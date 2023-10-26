@@ -11,6 +11,8 @@
     import ZondiconsTrash from "~icons/zondicons/trash";
     import ZondiconsEditPencil from "~icons/zondicons/edit-pencil";
     import ZondiconsAddSolid from "~icons/zondicons/add-solid";
+    import ZondiconsUp from "~icons/zondicons/cheveron-up";
+    import ZondiconsDown from "~icons/zondicons/cheveron-down";
     import Switch from "../base/Switch.svelte";
     import PreviewArea from "../preview/PreviewArea.svelte";
 
@@ -71,6 +73,18 @@
             themes.update((x) => x.concat([t]));
         }
     }
+    function moveUp(t: Theme) {
+        let idx = $themes.findIndex((x) => x === t);
+        let temp = $themes[idx - 1];
+        $themes[idx - 1] = t;
+        $themes[idx] = temp;
+    }
+    function moveDown(t: Theme) {
+        let idx = $themes.findIndex((x) => x === t);
+        let temp = $themes[idx + 1];
+        $themes[idx + 1] = t;
+        $themes[idx] = temp;
+    }
 </script>
 
 <h2 style="margin:0;">Appearance</h2>
@@ -97,33 +111,61 @@
     </div>
     {#each $themes as theme}
         <div class="theme-entry">
-            <div class="theme-title">
-                <p>
-                    <input
-                        type="text"
-                        maxlength="24"
-                        id={theme.id.toString()}
-                        class="theme-title {editingName == theme
-                            ? 'editable'
-                            : ''}"
-                        readonly={editingName != theme}
-                        on:dblclick={(_) => {
-                            editingName = theme;
-                        }}
-                        on:input={(event) => {
-                            updateThemeName(theme, event);
-                        }}
-                        on:keypress={(event) => {
-                            if (event.key == "Enter") {
-                                validateThemeName(theme.id);
-                                editingName = null;
-                            }
-                        }}
-                        value={theme.name}
-                    />
-                </p>
-                <!-- svelte-ignore a11y-label-has-associated-control -->
-                <label>{theme.author}</label>
+            <div class="theme-left-items">
+                {#if $themes.length > 1}
+                    <div class="theme-arrows">
+                        {#if $themes.findIndex((x) => x === theme) != 0}
+                            <Button
+                                compact
+                                tooltip="Move {theme.name} up"
+                                onClick={() => {
+                                    moveUp(theme);
+                                }}
+                            >
+                                <ZondiconsUp width="18px" height="18px" />
+                            </Button>
+                        {/if}
+                        {#if $themes.findIndex((x) => x === theme) != $themes.length - 1}
+                            <Button
+                                compact
+                                tooltip="Move {theme.name} down"
+                                onClick={() => {
+                                    moveDown(theme);
+                                }}
+                            >
+                                <ZondiconsDown width="18px" height="18px" />
+                            </Button>
+                        {/if}
+                    </div>
+                {/if}
+                <div class="theme-title">
+                    <p>
+                        <input
+                            type="text"
+                            maxlength="24"
+                            id={theme.id.toString()}
+                            class="theme-title {editingName == theme
+                                ? 'editable'
+                                : ''}"
+                            readonly={editingName != theme}
+                            on:dblclick={(_) => {
+                                editingName = theme;
+                            }}
+                            on:input={(event) => {
+                                updateThemeName(theme, event);
+                            }}
+                            on:keypress={(event) => {
+                                if (event.key == "Enter") {
+                                    validateThemeName(theme.id);
+                                    editingName = null;
+                                }
+                            }}
+                            value={theme.name}
+                        />
+                    </p>
+                    <!-- svelte-ignore a11y-label-has-associated-control -->
+                    <label>{theme.author}</label>
+                </div>
             </div>
             <div class="theme-entry-buttons">
                 <Button
@@ -199,7 +241,10 @@
 <svelte:window
     on:click={(event) => {
         if (editingName == null) return;
-        if (event.target instanceof HTMLElement && !event.target.className.includes("editable")) {
+        if (
+            event.target instanceof HTMLElement &&
+            !event.target.className.includes("editable")
+        ) {
             if (document.getElementsByClassName("editable").length != 0) {
                 let id = parseInt(
                     document.getElementsByClassName("editable")[0].id
@@ -212,6 +257,16 @@
 />
 
 <style>
+    .theme-left-items {
+        display: inline-flex;
+    }
+    .theme-arrows {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        margin: 0px;
+        padding: 0px;
+    }
     .theme-title {
         border: none;
         display: inline;
@@ -256,7 +311,7 @@
         background-color: var(--bg-1);
         padding: 5px;
         border-radius: 4px;
-        padding-left: 25px;
+        padding-left: 10px;
     }
     .theme-entry-buttons {
         display: inline-flex;

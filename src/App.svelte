@@ -21,7 +21,8 @@
 <!-- prevents default context menu from opening -->
 <svelte:window on:contextmenu={(e) => e.preventDefault()} />
 
-{#each $themes.filter((x) => x.enabled) as theme}
+<!-- Load themes from bottom to top-->
+{#each $themes.toReversed().filter((x) => x.enabled) as theme}
     <svelte:element this="style">{theme.style}</svelte:element>
 {/each}
 
