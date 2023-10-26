@@ -185,12 +185,12 @@
         font-size: 16px;
         font-family: inherit;
         padding-left: 0;
-        color: #dbdee1;
+        color: var(--message-caret-fg);
         font-weight: 400;
     }
 
     input::placeholder {
-        color: #79797d;
+        color: var(--gray);
     }
 
     .message-caret {
@@ -210,7 +210,7 @@
     }
 
     .icon {
-        color: #b5bac1;
+        color: var(--gray-2);
         padding: 10px 16px;
         line-height: 0;
         cursor: pointer;

@@ -77,17 +77,24 @@
     }
 
     async function registerAccount() {
-        const res = await apiFetch("/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email,
-                username,
-                password,
-            }),
-        });
+        let res: Response;
+
+        try {
+            res = await apiFetch("/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    username,
+                    password,
+                }),
+            });
+        } catch (e) {
+            softError = `Failed to connect to ${$currentInstance.url.host}`;
+            return;
+        }
 
         if (res.status == 200) {
             navigate("/login");
@@ -125,7 +132,14 @@
             setTimeout(resolve, 500);
         });
 
-        let [res] = await Promise.all([req, placeboWait]);
+        let res: Response;
+
+        try {
+            [res] = await Promise.all([req, placeboWait]);
+        } catch (e) {
+            softError = `Failed to connect to ${$currentInstance.url.host}`;
+            return;
+        }
 
         if (res.status == 200) {
             let data = await res.json();

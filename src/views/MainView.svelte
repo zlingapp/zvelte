@@ -108,8 +108,7 @@
         flex-direction: column;
     }
     .bottom-user-drawer {
-        /* background-color: var(--bg-1); */
-        background-color: #141414;
+        background-color: var(--user-drawer-bg);
         /* box-shadow: 0px -2px 3px 0 rgba(0, 0, 0, 0.2); */
 
         box-sizing: border-box;
@@ -147,7 +146,7 @@
         text-align: center;
         font-weight: 600;
         font-size: 32px;
-        color: rgba(255, 255, 255, 0.08);
+        color: var(--lonely-message-fg);
         user-select: none;
     }
     .lonely-icon {

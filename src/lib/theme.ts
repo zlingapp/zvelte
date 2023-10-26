@@ -1,5 +1,18 @@
-/* @import url('https://fonts.cdnfonts.com/css/whitney-2'); */
-/* @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap'); */
+export type Theme = {
+  id: number;
+  name: string;
+  author: string;
+  enabled: boolean;
+  style: string;
+}
+
+export const defaultTheme = {
+  id: -1, 
+  name: "Zling Dark",
+  author: "Zling Developers",
+  enabled: true,
+  style: `/* Feel free to edit this file to your liking. */
+
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700&display=swap');
 
 :root {
@@ -52,65 +65,29 @@
   /* zzz there's no one here */
   --lonely-message-fg: rgba(255, 255, 255, 0.08);
 
-  --sproing: cubic-bezier(0, 0, 0.5, 2.5);
-
   font-family: 'Source Sans 3', sans-serif;
   line-height: 1.5;
   font-weight: 400;
+}`};
 
-  color-scheme: light dark;
-  color: var(--text-color);
-  background-color: var(--bg-0);
+export function fileStringToTheme(s: string): Theme | null {
+  const regex = /^\/\*theme ({(?:\s*"(?:name|author|version)":\s?".*",?)+\n?})\*\//g
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  const match = regex.exec(s);
+
+  if (match == null) {
+    return null;
+  }
+
+  const parsed = JSON.parse(match[1]);
+
+  var css = s.slice(regex.lastIndex).trim();
+
+  const theme = { ...parsed, style: css, id:Math.floor(Math.random() * 1000) };
+
+  return theme;
 }
 
-body {
-  margin: 0;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-}
-
-.b {
-  font-weight: 600;
-}
-
-p {
-  margin: 0;
-}
-
-a {
-  color: var(--accent-color);
-}
-
-input {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-
-  /* background-color: var(--bg-3); */
-  /* backdrop-filter: blur(200px); */
-  background: rgba(255, 255, 255, 0.09);
-  border: 3px solid rgba(255, 255, 255, 0.09);
-  padding: 12px 16px;
-  border-radius: 6px;
-
-  color: var(--text-color);
-}
-
-input:focus {
-  outline: none;
-}
-
-label {
-  color: var(--gray);
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
+export function themeToFileString(t: Theme): string {
+  return `/*theme {\n    "name": "${t.name}",\n    "author": "${t.author}"\n}*/\n` + t.style;
 }

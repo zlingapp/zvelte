@@ -60,7 +60,7 @@
 
         min-width: 172.77px;
 
-        background-color: #111214;
+        background-color: var(--context-menu-bg);
         border-radius: 4px;
         padding: 6px 6px;
 

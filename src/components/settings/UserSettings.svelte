@@ -4,6 +4,7 @@
     import { userSettingsOpen } from "../../lib/stores";
     import SettingsCategoryAccount from "./SettingsCategoryAccount.svelte";
     import SettingsCategoryMyBots from "./SettingsCategoryMyBots.svelte";
+    import SettingsCategoryAppearance from "./SettingsCategoryAppearance.svelte";
 
     let category = "my-account";
 </script>
@@ -21,7 +22,7 @@
             <div class="divider" />
             <!-- svelte-ignore a11y-label-has-associated-control -->
             <label>App Settings</label>
-            <button class="category">Appearance</button>
+            <button class="category" on:click={() => (category = "appearance")}>Appearance</button>
             <button class="category">Voice & Video</button>
             <button class="category">Text & Images</button>
             <button class="category">Notifications</button>
@@ -41,6 +42,8 @@
             <SettingsCategoryAccount />
         {:else if category == "my-bots"}
             <SettingsCategoryMyBots />
+        {:else if category == "appearance"}
+            <SettingsCategoryAppearance />
         {/if}
     </div>
     <div class="close-group">
@@ -61,7 +64,7 @@
         bottom: 0;
 
         background-color: var(--bg-0);
-        z-index: 1000;
+        z-index: 10;
 
         display: flex;
     }
@@ -69,7 +72,7 @@
     .categories {
         position: relative;
         background-color: var(--bg-1);
-        width: 670px;
+        width: 500px;
         height: 100%;
         box-sizing: border-box;
     }
@@ -84,7 +87,7 @@
         align-items: flex-start;
         padding: 60px 20px 60px 20px;
 
-        color: #b5bac1;
+        color: var(--gray-2);
         user-select: none;
     }
 
@@ -108,13 +111,21 @@
     }
 
     .category:hover {
-        color: #dadfe7;
-        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-color);
+        background-color: var(--category-hover-bg);
     }
 
     .category-content {
         padding: 60px 20px 60px 40px;
         max-width: 700px;
+        overflow-y: scroll;
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .category-content::-webkit-scrollbar {
+        display: none;
     }
 
     .category:active {

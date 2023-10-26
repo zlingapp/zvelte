@@ -89,7 +89,7 @@
 
 <style>
     .icon {
-        color: #b5bac1;
+        color: var(--gray-2);
         padding: 10px 16px;
         line-height: 0;
         cursor: pointer;

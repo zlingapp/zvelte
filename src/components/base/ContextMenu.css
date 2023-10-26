@@ -3,7 +3,7 @@
     margin: 2px 0;
     line-height: 18px;
     font-size: 14px;
-    color: #B5BAC1;
+    color: var(--text-color);
     border-radius: 2px;
     cursor: pointer;
 

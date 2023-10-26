@@ -7,12 +7,14 @@
     export let disabled: boolean = false;
     export let nobg: boolean = false;
     export let compact: boolean = false;
+    export let tooltip: string = "";
 
     export let onClick = () => {};
 </script>
 
 <button
     {disabled}
+    title={tooltip}
     class:grow
     class:green
     class:danger
@@ -36,10 +38,15 @@
         word-wrap: break-word;
         overflow: hidden;
         cursor: pointer;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
     }
 
     .green {
-        background-color: #00925f;
+        background-color: var(--green-btn);
     }
 
     .danger {

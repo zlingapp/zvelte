@@ -4,6 +4,8 @@ import type { Channel, TextChannel } from './channel';
 import type { Guild } from './guild';
 import { localStorageWritable } from './localStorageStore';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
+import type { Theme } from './theme';
+import {defaultTheme} from './theme';
 
 // ---- login stuff ---
 export const apiTokens = localStorageWritable<Tokens>("api_token", null);
@@ -39,3 +41,9 @@ export const contextMenu = writable(null);
 export const showInErrorModal = writable(null);
 
 export const userSettingsOpen = writable(false);
+
+// list of themes to show in the theme editor
+export const themes = localStorageWritable<Array<Theme>>("themes",[]);
+
+// should the theme editor be open and if so what theme id is it editing
+export const editingThemeId = writable<Theme["id"]>(null);

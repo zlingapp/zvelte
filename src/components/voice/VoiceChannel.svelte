@@ -34,7 +34,7 @@
 
 <style>
     .channel {
-        color: #888b8f;
+        color: var(--channel);
         padding: 6px 0;
         cursor: pointer;
         border-radius: 6px;
@@ -49,8 +49,8 @@
     }
 
     .channel:hover {
-        background-color: rgba(255, 255, 255, 0.025);
-        color: #fff;
+        background-color: var(--channel-hover-bg);
+        color: var(--channel-hover-fg);
     }
 
     .members {

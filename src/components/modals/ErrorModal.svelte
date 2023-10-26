@@ -39,6 +39,6 @@
         padding: 5px 10px;
         border-radius: 4px;
         color: orange;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: var(--modal-bg);
     }
 </style>
