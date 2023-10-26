@@ -2,7 +2,8 @@
     import { fade } from "svelte/transition";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
-    const __SLOTS = $$props.$$slots;
+    // accessor for the slots of this component
+    const slots = $$props.$$slots;
 
     export let show: boolean = false;
 
@@ -22,20 +23,25 @@
     $: {
         if (draggable && show && element) {
             // set x and y to the center of the screen initially
-            if (x === null) x = window.innerWidth / 2 - element.clientWidth / 2;
-            if (y === null)
+            if (x === null) {
+                x = window.innerWidth / 2 - element.clientWidth / 2;
+            }
+            if (y === null) {
                 y = window.innerHeight / 2 - element.clientHeight / 2;
+            }
         }
     }
 
-    // Short-circuit dragging operations if the modal isnt draggable
-    function onTitleBarMouseDown() {
+    function onPointerDown() {
+        // short-circuit dragging operations if the modal isnt draggable
         if (!draggable) return;
         moving = true;
     }
 
-    function onMouseMove(e) {
+    function onPointerMove(e) {
+        // short-circuit dragging operations if the modal isnt draggable
         if (!draggable) return;
+
         if (moving) {
             // where we want to move to
             let newX = x + e.movementX;
@@ -50,20 +56,9 @@
         }
     }
 
-    function onMouseUp() {
+    function onPointerUp() {
         if (!draggable) return;
         moving = false;
-    }
-
-    function toplevel(node) {
-        const portalChildren = [...node.children];
-        document.body.append(...portalChildren);
-
-        return {
-            destroy() {
-                for (const portalChild of portalChildren) portalChild.remove();
-            },
-        };
     }
 </script>
 
@@ -72,7 +67,7 @@
     <div
         class="backdrop"
         class:dimmed
-        on:mousedown|self={onClose}
+        on:pointerdown|self={onClose}
         transition:fade={{ duration: 100 }}
     >
         <div
@@ -85,7 +80,7 @@
             <div on:click|stopPropagation>
                 <div
                     class="title"
-                    on:mousedown={onTitleBarMouseDown}
+                    on:pointerdown={onPointerDown}
                     class:draggable
                 >
                     <slot name="title" />
@@ -97,7 +92,7 @@
                 <div class="content">
                     <slot name="content" />
                 </div>
-                {#if __SLOTS.actions}
+                {#if slots.actions}
                     <div class="actions">
                         <slot name="actions" />
                     </div>
@@ -107,7 +102,7 @@
     </div>
 {/if}
 
-<svelte:window on:mousemove={onMouseMove} on:mouseup={onMouseUp} />
+<svelte:window on:pointermove={onPointerMove} on:pointerup={onPointerUp} />
 
 <style>
     .modal {
