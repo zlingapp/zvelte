@@ -1,6 +1,7 @@
 import { ConfigEnv, defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import Icons from "unplugin-icons/vite";
+import mkcert from "vite-plugin-mkcert";
 
 import { execSync } from "child_process";
 
@@ -28,9 +29,18 @@ export default defineConfig((env: ConfigEnv) => {
             Icons({
                 compiler: "svelte",
             }),
+            mkcert(),
         ],
         define: {
             ZLING_VERSION: JSON.stringify(version),
         },
+        server: {
+            port: 2000,
+            https: true,
+            open: true,
+        },
+        preview: {
+            port: 2000,
+        }
     };
 });
