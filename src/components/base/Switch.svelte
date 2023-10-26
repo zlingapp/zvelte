@@ -42,7 +42,7 @@
         background: #fff;
         top: 0.13em;
         right: 1.5em;
-        transition: transform 0.1s, width 0.1s;
+        transition: transform 0.2s, width 0.2s;
         border-radius: 1em;
     }
 

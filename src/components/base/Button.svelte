@@ -38,6 +38,11 @@
         word-wrap: break-word;
         overflow: hidden;
         cursor: pointer;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
     }
 
     .green {
