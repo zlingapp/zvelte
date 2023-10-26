@@ -40,7 +40,7 @@
         width: 1.3em;
         height: 1.3em;
         background: #fff;
-        top: 0.13em;
+        top: 0.135em;
         right: 1.5em;
         transition: transform 0.2s, width 0.2s;
         border-radius: 1em;
