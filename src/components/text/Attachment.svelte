@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { urlRelativeToApiBase } from "../../lib/auth";
     import type { UploadedFile, UploadedFileType } from "../../lib/upload";
     import type { PendingUpload } from "./MessageAttachButton.svelte";
     import MdiFile from '~icons/mdi/file';
@@ -26,7 +27,7 @@
                 type = "blob";
             }
         } else {
-            url = attachment.url;
+            url = urlRelativeToApiBase(attachment.url).toString();
             name = attachment.name;
             type = attachment.type;
         }
