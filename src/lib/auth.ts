@@ -117,10 +117,7 @@ async function _ensureHaveValidTokens() {
     return tokens;
 }
 
-export async function apiFetch(
-    url: string | URL,
-    init?: RequestInit
-): Promise<Response> {
+function urlWithBase(url: string | URL): URL {
     // stringify url
     url = url.toString();
 
@@ -131,7 +128,14 @@ export async function apiFetch(
 
     const prefix = get(currentInstance).url;    
 
-    url = new URL(prefix + url);
+    return new URL(prefix + url);
+}
+
+export async function apiFetch(
+    url: string | URL,
+    init?: RequestInit
+): Promise<Response> {
+    url = urlWithBase(url)
     return fetch(url, init);
 }
 
@@ -160,7 +164,7 @@ export async function authXhr(
 ): Promise<XMLHttpRequest> {
     let tokens = await ensureHaveValidTokens();
 
-    url = new URL(get(currentInstance).url + url.toString());
+    url = urlWithBase(url)
 
     const xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
