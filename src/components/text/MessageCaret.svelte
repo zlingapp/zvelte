@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { currentChannel, currentGuild, localUser } from "../../lib/stores";
+    import { currentChannel, currentGuild, localUser, showInErrorModal } from "../../lib/stores";
 
     import dayjs from "dayjs";
     import { onMount } from "svelte";
@@ -95,7 +95,13 @@
 
         // do upload
         if (pendingUploads.length > 0) {
-            await uploadAllAttachments();
+            try {
+                await uploadAllAttachments();
+            } catch (e) {
+                $showInErrorModal = `Failed to upload attachments: ${e}`;
+                pendingUploads = [];
+                return;
+            }
         }
 
         const attachments = pendingUploads
