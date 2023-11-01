@@ -4,6 +4,7 @@
     import { fly } from "svelte/transition";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import { authFetch } from "../../lib/auth";
     import type { Message, TextChannel } from "../../lib/channel";
     import {
@@ -23,7 +24,7 @@
     let messages: Message[] = [];
     let messagesList: HTMLDivElement;
 
-    let loadingOlder = false;
+    let loading = false;
     let nothingOlder = false;
     let typing: Map<string, any> = new Map();
 
@@ -164,6 +165,8 @@
     }
 
     async function initialFetch() {
+        loading = true;
+        messages = [];
         // reset pending message since we're doing a reset from the beginning
         pendingOutgoingMessage = null;
 
@@ -171,13 +174,15 @@
         if (result.length < MESSAGE_FETCH_LIMIT) {
             nothingOlder = true;
         }
+        loading = false;
         messages = result;
         scrollToBottom();
     }
 
     async function onMessagesScroll() {
-        if (messagesList.scrollTop === 0 && !loadingOlder && !nothingOlder) {
-            loadingOlder = true;
+        if (messagesList.scrollTop === 0 && !loading && !nothingOlder) {
+            loading = true;
+            await tick();
 
             let messagesBefore = await fetchMessageHistory(
                 messages[0]?.createdAt
@@ -191,7 +196,7 @@
                 nothingOlder = true;
             }
 
-            loadingOlder = false;
+            loading = false;
         }
     }
 </script>
@@ -238,8 +243,10 @@
                     </div>
                     <div class="separator" />
                 {/if}
-                {#if loadingOlder}
-                    <div class="loading">Loading older messages...</div>
+                {#if loading}
+                    <div class="loading">
+                        <SvgSpinnersRingResize />
+                    </div>
                 {/if}
                 {#each messages as message, idx}
                     <!-- {"" + message.created_at.diff(messages[idx - 1]?.created_at, "hours")} -->
@@ -439,5 +446,15 @@
         border-top: 3px dashed rgba(255, 255, 255, 0.1);
         width: 100%;
         margin-bottom: 24px;
+    }
+
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        font-size: 32px;
+        color: var(--gray);
+        user-select: none;
     }
 </style>

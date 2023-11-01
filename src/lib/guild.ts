@@ -11,7 +11,7 @@ export interface Guild {
 
 export interface Member {
     id: string,
-    name: string,
+    username: string,
     discrim: string,
     avatar: string,
     status: MemberStatus

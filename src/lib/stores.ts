@@ -12,7 +12,7 @@ export const apiTokens = localStorageWritable<Tokens>("api_token", null);
 export const localUser = writable<LocalUser>(null);
 
 // --- guild state ---
-
+export const guilds = writable<Guild[]>([]);
 export const currentGuild = writable<Guild>(null);
 export const currentChannel = writable<TextChannel>(null);
 

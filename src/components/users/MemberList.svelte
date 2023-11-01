@@ -5,29 +5,76 @@
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import type { EventSocketMessage } from "../../lib/socket";
     import TopicConsumer from "../TopicConsumer.svelte";
-    import { currentGuild } from "../../lib/stores";
+    import { currentGuild, guilds } from "../../lib/stores";
+    import { onMount } from "svelte";
 
-    export let guild_id: string;
-    let members: PublicUserInfo[] = [];
-
+    let previousGuildId: string;
     let loading = true;
-    async function fetchMembers() {
-        loading = true;
-        const resp = await authFetch(`/guilds/${guild_id}/members`);
+
+    async function fetchMembers(silent = false) {
+        const guildId = $currentGuild?.id;
+
+        if (guildId == null) {
+            return;
+        }
+
+        if (!silent) {
+            loading = true;
+        }
+        const resp = await authFetch(`/guilds/${guildId}/members`);
+
+        // the line above took a considerable amount of time in which the user
+        // could have clicked on another guild, so check that the current guild
+        // is STILL the one we're trying to get the members for
+        // see ChannelList.svelte for similar code
+        if (guildId != $currentGuild?.id) {
+            return;
+        }
 
         if (!resp.ok) {
-            alert("Failed to fetch members");
+            console.error("failed to fetch members");
             loading = false;
             return;
         }
 
-        members = await resp.json();
+        const members = await resp.json();
+
+        currentGuild.update((guild) => {
+            guild.members = members;
+            return guild;
+        });
+
+        // cache  results in the guilds list for when we switch back next 
+        guilds.update((guilds) =>
+            guilds.map((g) => {
+                if (g.id == guildId) {
+                    g.members = members;
+                }
+                return g;
+            })
+        );
+
         loading = false;
     }
 
-    currentGuild.subscribe((_)=>{fetchMembers()})
+    onMount(() => {
+        currentGuild.subscribe(async (guild) => {
+            if (guild.id === previousGuildId) {
+                previousGuildId = guild.id;
+                return;
+            }
 
-    $: fetchMembers();
+            if (guild.members == null) {
+                // fetch right now
+                await fetchMembers();
+            } else {
+                // fetch in bg
+                fetchMembers(true);
+            }
+
+            previousGuildId = guild.id;
+        });
+    });
 
     async function onRelevantEvent(esm: EventSocketMessage) {
         if (esm.event.type == "memberListUpdate") {
@@ -47,8 +94,8 @@
         <div class="status"><SvgSpinnersRingResize /></div>
     {:else}
         <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label>Members — {members.length}</label>
-        {#each members as member}
+        <label>Members — {$currentGuild.members.length}</label>
+        {#each $currentGuild.members as member}
             <MemberListMember {member} />
         {/each}
     {/if}

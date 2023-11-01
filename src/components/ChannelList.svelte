@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import type { Guild } from "../lib/guild";
-    import { currentChannel, currentGuild } from "../lib/stores";
+    import { currentChannel, currentGuild, guilds } from "../lib/stores";
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import type { Channel, TextChannel } from "../lib/channel";
     import UiTextChannel from "./text/UiTextChannel.svelte";
@@ -22,13 +22,32 @@
     // guild id of the last guild we subscribed to
     let previousGuildId = null;
 
-    let menuOpen = false;
-
     async function getChannelList() {
-        let resp = await authFetch(`/guilds/${$currentGuild.id}/channels`);
+        const guildId = $currentGuild.id;
+
+        let resp = await authFetch(`/guilds/${guildId}/channels`);
+        // the line above took a considerable amount of time in which the user
+        // could have clicked on another guild, so check that the current guild
+        // is STILL the one we're trying to get the channels for
+        if ($currentGuild.id != guildId) {
+            return;
+        }
+
         let channels: Channel[] = await resp.json();
         currentGuild.update((g) => ({ ...g, channels }));
 
+        // cache results in the guilds list for when we switch back next 
+        guilds.update((guilds) =>
+            guilds.map((g) => {
+                if (g.id == guildId) {
+                    g.channels = channels;
+                }
+                return g;
+            })
+        );
+    }
+
+    function autoSelectChannel() {
         const currentChannelInCurrentGuild = $currentGuild?.channels?.find(
             (c) => c.id === $currentChannel?.id
         );
@@ -37,11 +56,13 @@
             return;
         }
 
-        if (channels?.length > 0) {
-            // auto-open the first text channel or if there aren't any text channels, set to null
-            let auto =
-                (channels.find((c) => c.type == "text") as TextChannel) || null;
-            $currentChannel = auto;
+        if ($currentGuild.channels?.length > 0) {
+            // auto-open the first text channel or if there aren't any text
+            // channels, set to null
+            const firstTextChannel = $currentGuild.channels.find(
+                (c) => c.type == "text"
+            ) as TextChannel;
+            $currentChannel = firstTextChannel || null;
         } else {
             // if there are no channels, set to null
             $currentChannel = null;
@@ -49,27 +70,40 @@
     }
 
     async function subscribeToTopics(guild: Guild) {
-        // subscribe to new guild events
-        await eventSocketSubscribe([{ type: "guild", id: guild.id }]);
-
-        if (previousGuildId != null && previousGuildId !== guild.id) {
+        if (previousGuildId != null) {
             // transitioning from one guild to another, so unsubscribe from the old one
             await eventSocketUnsubscribe([
                 { type: "guild", id: previousGuildId },
             ]);
         }
 
+        // subscribe to new guild events
+        await eventSocketSubscribe([{ type: "guild", id: guild.id }]);
+
         previousGuildId = guild.id;
     }
 
     onMount(async () => {
         currentGuild.subscribe(async (guild) => {
-            if (guild.channels != null) {
+            if (guild == null) {
+                return;
+            }
+
+            if (guild.id == previousGuildId) {
                 return;
             }
 
             await subscribeToTopics(guild);
-            await getChannelList();
+
+            if (guild.channels == null) {
+                // get the channel list right now
+                await getChannelList();
+            } else {
+                // we have cache, so get the channel list a little later
+                getChannelList();
+            }
+
+            autoSelectChannel();
         });
     });
 
@@ -79,19 +113,16 @@
             return;
         }
 
-        let resp = await authFetch(
-            `/guilds/${$currentGuild.id}/channels`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name,
-                    type,
-                }),
-            }
-        );
+        let resp = await authFetch(`/guilds/${$currentGuild.id}/channels`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name,
+                type,
+            }),
+        });
 
         if (!resp.ok) {
             alert(`Failed to create channel: ${await resp.text()}`);

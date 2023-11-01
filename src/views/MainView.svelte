@@ -69,7 +69,7 @@
                         guild_id={$currentGuild.id}
                     >
                         <div slot="sidebar" class="sidebar">
-                            <MemberList guild_id={$currentGuild.id} />
+                            <MemberList />
                         </div>
                     </MessageList>
                 {:else}

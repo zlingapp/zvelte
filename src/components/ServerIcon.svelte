@@ -13,8 +13,8 @@
 
     function switchGuild() {
         if ($currentGuild?.id !== guild.id) {
-                        $currentGuild = { ...guild };
-                    }
+            $currentGuild = guild;
+        }
     }
 </script>
 

@@ -2,21 +2,19 @@
     import { onMount } from "svelte";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import { authFetch } from "../lib/auth";
-    import { localUser, showInErrorModal } from "../lib/stores";
+    import { guilds, localUser, showInErrorModal } from "../lib/stores";
     import ServerIcon from "./ServerIcon.svelte";
     import Button from "./base/Button.svelte";
     import IconUpload from "./base/IconUpload.svelte";
     import Modal from "./base/Modal.svelte";
     import Tooltip from "./base/Tooltip.svelte";
 
-    let guilds: { name: string; id: string; icon: string; }[] = [];
-
     async function fetchGuilds() {
         let resp = await authFetch("/guilds");
         if (resp.status != 200) {
             return;
         }
-        guilds = await resp.json();
+        $guilds = await resp.json();
     }
 
     onMount(async () => {
@@ -79,7 +77,7 @@
 </script>
 
 <div class="server-list">
-    {#each guilds as guild}
+    {#each $guilds as guild}
         <ServerIcon {guild} />
     {/each}
 

@@ -39,7 +39,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <ContextMenu>
-    <div class="channel" class:current={$currentChannel.id == channel.id}  on:click={switchChannel}>
+    <div class="channel" class:current={$currentChannel?.id == channel.id}  on:click={switchChannel}>
         <p class="channel-name">
             <MajesticonsHashtagLine /><span>{channel.name}</span>
         </p>
