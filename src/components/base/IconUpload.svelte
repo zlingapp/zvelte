@@ -1,10 +1,15 @@
 <script lang="ts">
     import Button from "./Button.svelte";
 
-    import BiQuestionSquare from '~icons/bi/question-square';
+    import BiQuestionSquare from "~icons/bi/question-square";
     import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
-    import { FILESIZE_LIMIT_ICONS, uploadFile, type UploadedFile } from "../../lib/upload";
+    import {
+        FILESIZE_LIMIT_ICONS,
+        uploadFile,
+        type UploadedFile,
+    } from "../../lib/upload";
     import { humanFileSize } from "../../lib/util";
+    import { urlRelativeToApiBase } from "../../lib/auth";
 
     let input: HTMLInputElement;
 
@@ -12,7 +17,7 @@
     export let sizeLimit = FILESIZE_LIMIT_ICONS;
     export let defaultImage: string = null;
     export let onChange: Function = (UploadedFile) => {};
-    
+
     let loading = false;
 
     async function imageChanged(event) {
@@ -40,7 +45,12 @@
     {#if uploadedFile || defaultImage}
         <div class="present-image">
             <!-- svelte-ignore a11y-missing-attribute -->
-            <img class="icon" src={uploadedFile?.url || defaultImage} />
+            <img
+                class="icon"
+                src={uploadedFile
+                    ? urlRelativeToApiBase(uploadedFile.url).toString()
+                    : defaultImage}
+            />
             {#if uploadedFile?.name}
                 <span class="filename">{uploadedFile.name}</span>
             {/if}
@@ -67,7 +77,10 @@
                     Select
                 </div>
             </Button>
-            <div>Maximum {humanFileSize(FILESIZE_LIMIT_ICONS, true, 0)},<br />at least 64x64</div>
+            <div>
+                Maximum {humanFileSize(FILESIZE_LIMIT_ICONS, true, 0)},<br />at
+                least 64x64
+            </div>
         </div>
     {/if}
 </div>
@@ -93,7 +106,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--bg-0)
+        color: var(--bg-0);
     }
 
     .upload {
@@ -126,7 +139,7 @@
         font-size: 12px;
         color: var(--gray);
         word-wrap: break-word;
-        
+
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

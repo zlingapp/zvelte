@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { logOut } from "../lib/auth";
+    import { logOut, urlRelativeToApiBase } from "../lib/auth";
     import { localUser, userSettingsOpen } from "../lib/stores";
     import Tooltip from "./base/Tooltip.svelte";
     import MaterialSymbolsSettings from "~icons/material-symbols/settings";
@@ -11,7 +11,7 @@
     <div class="info">
         <Tooltip text="Click to Log Out">
             <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <img src={$localUser.avatar} alt="avatar" on:click={logOut} />
+            <img src={urlRelativeToApiBase($localUser.avatar).toString()} alt="avatar" on:click={logOut} />
         </Tooltip>
         <div class="name-tag">
             <div class="name">{name}</div>

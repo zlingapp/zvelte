@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { urlRelativeToApiBase } from "../../lib/auth";
+
     export let url: string;
     export let status: "online" | "offline" | "idle" | "dnd";
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
 <div class="avatar">
-    <img src={url} />
+    <img src={urlRelativeToApiBase(url).toString()} />
     {#if status != "offline"}
         <div class="status {status}" />
     {/if}

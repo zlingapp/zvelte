@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { authFetch } from "../../lib/auth";
+    import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
     import { localUser } from "../../lib/stores";
     import IconUpload from "../base/IconUpload.svelte";
 
@@ -25,7 +25,7 @@
 
 <section>
     <h2>My Account</h2>
-    <IconUpload onChange={setAvatar} defaultImage={$localUser.avatar} />
+    <IconUpload onChange={setAvatar} defaultImage={urlRelativeToApiBase($localUser.avatar).toString()} />
 </section>
 
 <style></style>

@@ -5,7 +5,7 @@
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
     import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import { authFetch } from "../../lib/auth";
+    import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
     import type { Message, TextChannel } from "../../lib/channel";
     import {
         type EventSocketMessage,
@@ -290,7 +290,7 @@
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img
                                 class="typer-avatar overlap-avatar"
-                                src={typer.avatar}
+                                src={urlRelativeToApiBase(typer.avatar).toString()}
                                 height="14px"
                             />
                         {/each}
@@ -299,7 +299,7 @@
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img
                                 class="typer-avatar"
-                                src={typer.avatar}
+                                src={urlRelativeToApiBase(typer.avatar).toString()}
                                 height="14px"
                             />
                             <span class="typer">

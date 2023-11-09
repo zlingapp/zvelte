@@ -29,14 +29,14 @@ export default defineConfig((env: ConfigEnv) => {
             Icons({
                 compiler: "svelte",
             }),
-            mkcert(),
+            // mkcert(),
         ],
         define: {
             ZLING_VERSION: JSON.stringify(version),
         },
         server: {
             port: 2000,
-            https: true,
+            // https: true,
             open: true,
         },
         preview: {

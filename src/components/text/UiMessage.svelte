@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { authFetch } from "../../lib/auth";
+    import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
     import type { Message } from "../../lib/channel";
     import { unimplemented } from "../../lib/dev";
     import {
@@ -50,7 +50,7 @@
     <div class="message" class:detailed>
         {#if detailed}
             <ContextMenu>
-                <img class="avatar" src={message.author.avatar} alt="avatar" />
+                <img class="avatar" src={urlRelativeToApiBase(message.author.avatar).toString()} alt="avatar" />
             </ContextMenu>
             <div class="header">
                 <span class="username">

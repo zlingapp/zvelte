@@ -36,10 +36,10 @@
 
 <div class="attachment">
     {#if type === "image"}
-        <img src={url} alt={name} class="multimedia" />
+        <img src={urlRelativeToApiBase(url).toString()} alt={name} class="multimedia" />
     {:else if type === "video"}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video src={url} class="multimedia" controls></video>
+        <video src={urlRelativeToApiBase(url).toString()} class="multimedia" controls></video>
     {:else}
         <a class="file" href={url} download="{name}" target=”_blank”>
             <MdiFile font-size="30px" color="var(--gray)" />

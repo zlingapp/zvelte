@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { urlRelativeToApiBase } from "../../lib/auth";
     import type { Peer } from "../../lib/voice";
     import VoiceMemberDuplicateTag from "./VoiceMemberDuplicateTag.svelte";
 
@@ -57,7 +58,7 @@
 
 <div class="voice-member">
     <!-- svelte-ignore a11y-missing-attribute -->
-    <img class="avatar" src={peer.user.avatar} class:lit={speaking} />
+    <img class="avatar" src={urlRelativeToApiBase(peer.user.avatar).toString()} class:lit={speaking} />
     <div class="name">
         <span>{peer.user.username.split("#")[0]}</span>
         {#if isDuplicate}

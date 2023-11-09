@@ -124,6 +124,8 @@ export function urlRelativeToApiBase(url: string | URL): URL {
     // remove leading slash if present
     if (url.startsWith("/")) {
         url = url.substring(1);
+    } else if (url.startsWith("http")) {
+        return new URL(url);
     }
 
     const prefix = get(currentInstance).url;    
