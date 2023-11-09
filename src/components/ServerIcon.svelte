@@ -4,6 +4,7 @@
     import ContextMenu from "./base/ContextMenu.svelte";
     import GuildContextMenu from "./context-menus/GuildContextMenu.svelte";
     import Tooltip from "./base/Tooltip.svelte";
+    import { urlRelativeToApiBase } from "../lib/auth";
 
     export let guild: Guild;
 
@@ -27,7 +28,7 @@
         {#if guild.icon != null}
             <!-- svelte-ignore a11y-missing-attribute -->
             <img
-                src={guild.icon}
+                src={urlRelativeToApiBase(guild.icon).toString()}
                 class="guild-icon"
                 class:current={guild.id == $currentGuild?.id}
                 on:click={switchGuild}

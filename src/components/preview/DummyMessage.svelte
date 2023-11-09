@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { urlRelativeToApiBase } from "../../lib/auth";
     import { localUser } from "../../lib/stores";
     import Tooltip from "../base/Tooltip.svelte";;
     export let detailed = false;
@@ -16,7 +17,7 @@
 
     <div class="message" class:detailed>
         {#if detailed}
-            <img class="avatar" src={$localUser.avatar} alt="avatar" />
+            <img class="avatar" src={urlRelativeToApiBase($localUser.avatar).toString()} alt="avatar" />
             <div class="header">
                 <span class="username">
                     {$localUser.name.split("#")[0]}
