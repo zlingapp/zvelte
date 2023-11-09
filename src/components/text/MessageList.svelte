@@ -47,7 +47,7 @@
             return;
         }
 
-        let url = `/guilds/${guild_id}/channels/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
+        let url = `/channels/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
 
         if (before != null) {
             url += `&before=${before.toISOString()}`;

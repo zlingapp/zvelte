@@ -33,7 +33,7 @@
         const channelId = $currentChannel.id;
 
         let resp = await authFetch(
-            `/guilds/${guildId}/channels/${channelId}/messages/${message.id}`,
+            `/channels/${channelId}/messages/${message.id}`,
             {
                 method: "DELETE",
             }

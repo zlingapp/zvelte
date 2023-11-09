@@ -63,7 +63,7 @@
 
     async function sendTyping() {
         await authFetch(
-            `/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/typing`,
+            `/channels/${$currentChannel.id}/typing`,
             {
                 method: "POST",
             }
@@ -111,7 +111,7 @@
         pendingUploads = [];
 
         await authFetch(
-            `/guilds/${$currentGuild.id}/channels/${$currentChannel.id}/messages`,
+            `/channels/${$currentChannel.id}/messages`,
             {
                 method: "POST",
                 headers: {
