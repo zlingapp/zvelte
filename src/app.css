@@ -20,8 +20,8 @@
   --disabled-text: rgba(255, 255, 255, 0.3);
 
   /* for the pop up text tooltips */
-  --tooltip-bg: #000;
-  --tooltip-fg: #fff;
+  --tooltip-bg: var(--accent-color);
+  --tooltip-fg: var(--text-color);
 
   /* right click menus */
   --context-menu-bg: #111214;
