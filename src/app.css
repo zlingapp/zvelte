@@ -54,7 +54,9 @@
 
   --sproing: cubic-bezier(0, 0, 0.5, 2.5);
 
-  font-family: 'Source Sans 3', sans-serif;
+  --font: 'Source Sans 3', sans-serif;
+
+  font-family: var(--font), sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

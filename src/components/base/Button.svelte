@@ -7,6 +7,7 @@
     export let disabled: boolean = false;
     export let nobg: boolean = false;
     export let compact: boolean = false;
+    export let left: boolean = false;
     export let tooltip: string = "";
 
     export let onClick = () => {};
@@ -23,6 +24,7 @@
     class:disabled
     class:nobg
     class:compact
+    class:left
     on:click|stopPropagation={onClick}><slot /></button
 >
 
@@ -81,5 +83,9 @@
 
     .compact {
         padding: 4px;
+    }
+
+    .left {
+        justify-content: left;
     }
 </style>
