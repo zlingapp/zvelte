@@ -12,6 +12,8 @@
     let loading = true;
 
     async function fetchMembers(silent = false) {
+        // WARNING: previousGuildId is INVALID IN THIS FUNCTION
+
         const guildId = $currentGuild?.id;
 
         if (guildId == null) {
@@ -60,9 +62,10 @@
     onMount(() => {
         currentGuild.subscribe(async (guild) => {
             if (guild.id === previousGuildId) {
-                previousGuildId = guild.id;
                 return;
             }
+
+            previousGuildId = guild.id;
 
             if (guild.members == null) {
                 // fetch right now
@@ -71,8 +74,6 @@
                 // fetch in bg
                 fetchMembers(true);
             }
-
-            previousGuildId = guild.id;
         });
     });
 
