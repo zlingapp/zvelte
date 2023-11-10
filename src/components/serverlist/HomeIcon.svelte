@@ -13,7 +13,7 @@
     <div slot="text" class="home-tooltip-name">Direct Messages</div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
-        class="server-list-button guild-icon"
+        class="server-list-button guild-icon home-icon"
         class:current={$currentGuild == null}
         on:click={onClick}
     >

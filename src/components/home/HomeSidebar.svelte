@@ -1,15 +1,23 @@
 <script lang="ts">
+    import { dmChannelOpen, localUser } from "../../lib/stores";
     import Button from "../base/Button.svelte";
-    import MaterialSymbolsEmojiPeopleRounded from "~icons/material-symbols/emoji-people-rounded";
+    import IcBaselinePeople from '~icons/ic/baseline-people'
+    import MemberListMember from "../users/MemberListMember.svelte";
+
+    $: friendsOpen = $dmChannelOpen == null;
 </script>
 
 <div class="home-sidebar">
-    <Button left compact>
-        <div class="home-category">
-            <MaterialSymbolsEmojiPeopleRounded />
+    <Button left compact grow>
+        <div class="home-category" class:active={friendsOpen}>
+            <IcBaselinePeople />
             <span>Friends</span>
         </div>
     </Button>
+
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label>Direct Messages</label>
+    <MemberListMember member={{...$localUser, username: $localUser.name }} />
 </div>
 
 <style>
@@ -31,5 +39,9 @@
         padding-inline: 10px;
         padding-block: 5px;
         color: var(--gray);
+    }
+
+    .home-category.active {
+        color: var(--text-color);
     }
 </style>

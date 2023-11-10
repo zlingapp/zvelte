@@ -47,3 +47,5 @@ export const themes = localStorageWritable<Array<Theme>>("themes",[]);
 
 // should the theme editor be open and if so what theme id is it editing
 export const editingThemeId = writable<Theme["id"]>(null);
+
+export const dmChannelOpen = writable<TextChannel>(null);

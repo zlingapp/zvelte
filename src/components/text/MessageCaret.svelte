@@ -7,7 +7,7 @@
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import { authFetch } from "../../lib/auth";
-    import type { Message } from "../../lib/channel";
+    import type { Message, TextChannel } from "../../lib/channel";
     import AttachmentUploadIndicator from "./AttachmentUploadIndicator.svelte";
     import MessageAttachButton, {
         type PendingUpload,
@@ -21,6 +21,7 @@
     let pendingUploads: PendingUpload[];
 
     export let onOutgoingMessage: (msg: Message) => void = () => {};
+    export let channel: TextChannel;
 
     let typingLastSent = 0;
     const RESEND_TYPING_EVERY = 4000;
@@ -63,7 +64,7 @@
 
     async function sendTyping() {
         await authFetch(
-            `/channels/${$currentChannel.id}/typing`,
+            `/channels/${channel.id}/typing`,
             {
                 method: "POST",
             }
@@ -111,7 +112,7 @@
         pendingUploads = [];
 
         await authFetch(
-            `/channels/${$currentChannel.id}/messages`,
+            `/channels/${channel.id}/messages`,
             {
                 method: "POST",
                 headers: {
@@ -165,7 +166,7 @@
             on:keyup={onKeyUp}
             bind:value
             class="input"
-            placeholder="Message #{$currentChannel.name}"
+            placeholder="Message #{channel.name}"
         />
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div

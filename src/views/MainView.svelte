@@ -67,10 +67,7 @@
 
             <section class="content">
                 {#if $currentChannel}
-                    <MessageList
-                        channel={$currentChannel}
-                        guild_id={$currentGuild.id}
-                    >
+                    <MessageList channel={$currentChannel}>
                         <div slot="sidebar" class="sidebar">
                             <MemberList />
                         </div>
@@ -121,6 +118,7 @@
 
         box-sizing: border-box;
         padding: 12px 16px;
+        margin-top: 8px;
 
         display: flex;
         align-items: center;

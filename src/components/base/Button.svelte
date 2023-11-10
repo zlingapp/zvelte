@@ -11,6 +11,7 @@
     export let tooltip: string = "";
 
     export let onClick = () => {};
+    export let extraStyle = "";
 </script>
 
 <button
@@ -25,6 +26,7 @@
     class:nobg
     class:compact
     class:left
+    style={extraStyle}
     on:click|stopPropagation={onClick}><slot /></button
 >
 
@@ -76,8 +78,7 @@
         filter: brightness(1.2);
     }
 
-    .danger.nobg {
-        background-color: transparent;
+    .danger {
         color: var(--red);
     }
 
@@ -87,5 +88,9 @@
 
     .left {
         justify-content: left;
+    }
+
+    .nobg {
+        background-color: transparent;
     }
 </style>

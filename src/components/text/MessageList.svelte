@@ -17,7 +17,6 @@
     import MessageCaret from "./MessageCaret.svelte";
     import UiMessage from "./UiMessage.svelte";
 
-    export let guild_id: string;
     export let channel: TextChannel;
     let channelOld: TextChannel;
 
@@ -270,6 +269,7 @@
                 {/if}
             </div>
             <MessageCaret
+                {channel}
                 onOutgoingMessage={(msg) => {
                     pendingOutgoingMessage = msg;
                 }}
@@ -350,6 +350,7 @@
 
     .channel-title {
         font-weight: 600;
+        line-height: 0;
     }
 
     .body {
