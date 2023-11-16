@@ -17,7 +17,6 @@
     import MessageCaret from "./MessageCaret.svelte";
     import UiMessage from "./UiMessage.svelte";
 
-    export let guild_id: string;
     export let channel: TextChannel;
     let channelOld: TextChannel;
 
