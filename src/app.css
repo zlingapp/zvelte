@@ -15,13 +15,14 @@
   --gray-2: #b5bac1;
   --green-btn: #00925f;
   --green-transparent: #00b5760a;
+  --red-transparent: #c94b440a;
 
   --accent-color: #2764ff;
   --disabled: #888b8f3f;
   --disabled-text: rgba(255, 255, 255, 0.3);
 
   /* for the pop up text tooltips */
-  --tooltip-bg: var(--accent-color);
+  --tooltip-bg: #000;
   --tooltip-fg: var(--text-color);
 
   /* right click menus */

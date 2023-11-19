@@ -78,8 +78,12 @@
         filter: brightness(1.2);
     }
 
-    .danger {
+    .danger.nobg {
         color: var(--red);
+    }
+
+    .green.nobg {
+        color: var(--green);
     }
 
     .compact {

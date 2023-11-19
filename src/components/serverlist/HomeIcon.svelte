@@ -1,7 +1,7 @@
 <script lang="ts">
     import { currentChannel, currentGuild } from "../../lib/stores";
     import Tooltip from "../base/Tooltip.svelte";
-    import IcTwotoneChat from "~icons/ic/twotone-chat";
+    import IcBaselineChat from "~icons/ic/baseline-chat";
 
     function onClick() {
         $currentGuild = null;
@@ -17,7 +17,7 @@
         class:current={$currentGuild == null}
         on:click={onClick}
     >
-        <IcTwotoneChat class="no-image" font-size="20px" />
+        <IcBaselineChat class="no-image" font-size="20px" />
     </div>
 </Tooltip>
 
