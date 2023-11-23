@@ -27,9 +27,22 @@ export type Event =
     | {
         type: "typing";
         user: PublicUserInfo;
+    }
+    | {
+        type: "friendRequestUpdate";
+        state: "sent" | "accepted";
+        user: PublicUserInfo;
+    }
+    | {
+        type: "friendRequestRemove";
+        user: PublicUserInfo;
+    }
+    | {
+        type: "friendRemove";
+        user: PublicUserInfo;
     };
 
-export type TopicType = "channel" | "guild";
+export type TopicType = "channel" | "dm_channel" | "guild" | "user";
 export interface Topic {
     type: TopicType;
     id: string;

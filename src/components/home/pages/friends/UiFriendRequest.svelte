@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { authFetch } from "../../lib/auth";
-    import type { FriendRequest } from "../../lib/friends";
-    import { showInErrorModal } from "../../lib/stores";
-    import Button from "../base/Button.svelte";
-    import Tooltip from "../base/Tooltip.svelte";
+    import { authFetch } from "../../../../lib/auth";
+    import type { FriendRequest } from "../../../../lib/friends";
+    import { showInErrorModal } from "../../../../lib/stores";
+    import { getErrorMessage } from "../../../../lib/util";
+    import Button from "../../../base/Button.svelte";
+    import Tooltip from "../../../base/Tooltip.svelte";
 
-    import MemberListMember from "../users/MemberListMember.svelte";
+    import MemberListMember from "../../../users/MemberListMember.svelte";
     import IcBaselineCheck from "~icons/ic/baseline-check";
     import IcBaselineClose from "~icons/ic/baseline-close";
 
     export let request: FriendRequest;
-
     export let callback = () => {};
 
     async function accept() {
@@ -19,7 +19,7 @@
         });
 
         if (!resp.ok) {
-            const errorMessage = (await resp.json()).message;
+            const errorMessage = getErrorMessage(resp);
             $showInErrorModal = `Failed to accept friend request: ${errorMessage}`;
             return;
         }
@@ -33,7 +33,7 @@
         });
 
         if (!resp.ok) {
-            const errorMessage = (await resp.json()).message;
+            const errorMessage = getErrorMessage(resp);
             $showInErrorModal = `Failed to deny friend request: ${errorMessage}`;
             return;
         }

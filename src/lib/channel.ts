@@ -15,6 +15,12 @@ export interface TextChannel extends Channel {
     type: "text";
 }
 
+export interface DMChannel extends TextChannel {
+    type: "text";
+    friend: PublicUserInfo;
+    // todo: set permissions to be a type that only allows read
+}
+
 export interface Message {
     id: string;
     createdAt: Dayjs;

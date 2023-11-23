@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Guild } from "../../lib/guild";
-    import { currentGuild } from "../../lib/stores";
+    import { currentGuild, dmChannelOpen } from "../../lib/stores";
     import ContextMenu from "../base/ContextMenu.svelte";
     import GuildContextMenu from "../context-menus/GuildContextMenu.svelte";
     import Tooltip from "../base/Tooltip.svelte";
@@ -13,9 +13,10 @@
     }
 
     function switchGuild() {
-        if ($currentGuild?.id !== guild.id) {
-            $currentGuild = guild;
+        if ($currentGuild?.id === guild.id) {
+            return;
         }
+        $currentGuild = guild;
     }
 </script>
 

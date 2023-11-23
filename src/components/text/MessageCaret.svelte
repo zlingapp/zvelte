@@ -12,6 +12,7 @@
     import MessageAttachButton, {
         type PendingUpload,
     } from "./MessageAttachButton.svelte";
+    import { getErrorMessage } from "../../lib/util";
 
     let value;
     let sendButton: HTMLDivElement;
@@ -21,6 +22,7 @@
     let pendingUploads: PendingUpload[];
 
     export let onOutgoingMessage: (msg: Message) => void = () => {};
+    export let dm: boolean = false;
     export let channel: TextChannel;
 
     let typingLastSent = 0;
@@ -64,7 +66,7 @@
 
     async function sendTyping() {
         await authFetch(
-            `/channels/${channel.id}/typing`,
+            `/${dm ? "friends" : "channels"}/${channel.id}/typing`,
             {
                 method: "POST",
             }
@@ -111,8 +113,8 @@
 
         pendingUploads = [];
 
-        await authFetch(
-            `/channels/${channel.id}/messages`,
+        const resp = await authFetch(
+            `/${dm ? "friends" : "channels"}/${channel.id}/messages`,
             {
                 method: "POST",
                 headers: {
@@ -121,6 +123,12 @@
                 body: JSON.stringify({ content, attachments }),
             }
         );
+
+        if (!resp.ok) {
+            const errorMessage = await getErrorMessage(resp);
+            $showInErrorModal = `Failed to send message: ${errorMessage}`;
+            return;
+        }
 
         // immediately send typing upon next keystrokes
         // this is needed here because clients usually immediately remove the

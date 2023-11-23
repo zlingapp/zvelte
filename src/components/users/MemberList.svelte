@@ -61,6 +61,10 @@
 
     onMount(() => {
         currentGuild.subscribe(async (guild) => {
+            if (guild == null) {
+                return;
+            }
+
             if (guild.id === previousGuildId) {
                 return;
             }

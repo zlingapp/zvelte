@@ -8,7 +8,7 @@
 </script>
 
 <div class="home-sidebar">
-    <Button left compact grow>
+    <Button left compact grow onClick={() => $dmChannelOpen = null}>
         <div class="home-category" class:active={friendsOpen}>
             <IcBaselinePeople />
             <span>Friends</span>
@@ -17,7 +17,7 @@
 
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label>Direct Messages</label>
-    <MemberListMember member={{...$localUser, username: $localUser.name }} />
+    <!-- <MemberListMember member={{...$localUser, username: $localUser.name }} /> -->
 </div>
 
 <style>
