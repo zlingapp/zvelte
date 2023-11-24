@@ -7,6 +7,8 @@
         currentGuild,
         localUser,
         userSettingsOpen,
+        showInErrorModal,
+        guilds,
     } from "../lib/stores";
 
     import ServerHeader from "../components/ServerHeader.svelte";
@@ -18,15 +20,35 @@
     import ErrorModal from "../components/modals/ErrorModal.svelte";
     import EventSocketManager from "../components/EventSocketManager.svelte";
     import { onMount } from "svelte";
-    import { ensureHaveValidTokens, ensureLoggedIn } from "../lib/auth";
+    import {
+        ensureHaveValidTokens,
+        ensureLoggedIn,
+        authFetch,
+    } from "../lib/auth";
     import LoadingScreen from "../components/LoadingScreen.svelte";
     import UserSettings from "../components/settings/UserSettings.svelte";
     import MemberList from "../components/users/MemberList.svelte";
-
+    import { navigate } from "svelte-routing";
     let socketDisconnected;
-
+    export let invite = null;
     onMount(async () => {
         await ensureLoggedIn();
+        if (invite !== null) {
+            let resp = await authFetch(`/invites/${invite}`, {
+                method: "POST",
+            });
+            if (resp.ok) {
+                let json = await resp.json();
+                currentGuild.set(json);
+                let gresp = await authFetch("/guilds");
+                if (gresp.ok) {
+                    $guilds = await gresp.json();
+                }
+            } else {
+                $showInErrorModal = `Error joining server: ${resp.statusText}`;
+            }
+            history.replaceState(null, "Zling", "/");
+        }
     });
 </script>
 

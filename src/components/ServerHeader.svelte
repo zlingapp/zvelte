@@ -48,7 +48,7 @@
         }
         isInviteErrorShowing = false;
         let json = await resp.json();
-        navigator.clipboard.writeText(window.location.href + "/invite/" + json.code);
+        navigator.clipboard.writeText(window.location.protocol + "//" + window.location.host + "/invite/" + json.code);
         isInviteModalOpen = false;
     }
 </script>
@@ -94,6 +94,10 @@
         </select>
         <br/>
         <span style="color: var(--green)">The invite link will be copied to your clipboard</span>
+        {#if isInviteErrorShowing}
+        <br />
+        <span style="color: var(--red)">Something went wrong...</span>
+        {/if}
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

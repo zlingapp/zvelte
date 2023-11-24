@@ -11,14 +11,14 @@
     <Route path="/">
         <MainView />
     </Route>
+    <Route path="/invite/:id", let:params> 
+        <MainView invite={params.id} />
+    </Route>
     <Route path="/login">
         <LoginView />
     </Route>
     <Route path="/register">
         <LoginView register />
-    </Route>
-    <Route path="/invite/:code" let:params>
-        <InviteView code={params.code} />
     </Route>
 </Router>
 
