@@ -16,6 +16,7 @@
     }
 
     async function addFriend(username) {
+        userName = "";
         const resp = await authFetch("/friends/requests", {
             method: "POST",
             headers: {
