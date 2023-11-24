@@ -8,7 +8,8 @@
         localUser,
         userSettingsOpen,
     } from "../lib/stores";
-    
+
+    import ServerHeader from "../components/ServerHeader.svelte";
     import LocalUserControls from "../components/LocalUserControls.svelte";
     import ServerList from "../components/ServerList.svelte";
     import MessageList from "../components/text/MessageList.svelte";
@@ -26,7 +27,7 @@
 
     onMount(async () => {
         await ensureLoggedIn();
-    })
+    });
 </script>
 
 <ErrorModal />
@@ -45,9 +46,7 @@
 
             <div class="sidebar">
                 {#if $currentGuild}
-                    <div class="server-head">
-                        <p class="server-name">{$currentGuild.name}</p>
-                    </div>
+                    <ServerHeader />
                 {/if}
 
                 <div class="server-channels">
@@ -64,10 +63,7 @@
 
             <section class="content">
                 {#if $currentChannel}
-                    <MessageList
-                        channel={$currentChannel}
-                        guild_id={$currentGuild.id}
-                    >
+                    <MessageList channel={$currentChannel}>
                         <div slot="sidebar" class="sidebar">
                             <MemberList />
                         </div>
@@ -113,22 +109,6 @@
 
         box-sizing: border-box;
         padding: 12px 16px;
-    }
-    .server-head {
-        height: 48px;
-        background-color: var(--bg-1);
-        box-shadow: 0px 2px 3px 0 rgba(0, 0, 0, 0.3);
-
-        box-sizing: border-box;
-        padding: 12px 16px;
-
-        display: flex;
-        align-items: center;
-    }
-    .server-name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
     .content {
         flex-grow: 1;

@@ -2,10 +2,13 @@
     import { onMount } from "svelte";
     import { clickOutside } from "../../lib/clickOutside";
     import { contextMenu } from "../../lib/stores";
+    import { slide } from "svelte/transition";
 
-    let open = false;
-    let x = 0;
-    let y = 0;
+    export let animate = false;
+    export let open = false;
+    export let x = 0;
+    export let y = 0;
+
 
     function onContext(e) {
         // this doesn't really mean anything, it's just to trigger the store event lol
@@ -48,6 +51,7 @@
         use:ensureNotOffscreen
         on:click_outside={close}
         on:click={close}
+        in:slide={{duration: animate ? 500 : 0}}
     >
         <slot name="menu" />
     </div>

@@ -4,6 +4,7 @@
     import LoginView from "./views/LoginView.svelte";
     import { themes } from "./lib/stores";
     import ThemeEditor from "./components/modals/ThemeEditor.svelte";
+    import InviteView from "./views/InviteView.svelte";
 </script>
 
 <Router>
@@ -15,6 +16,9 @@
     </Route>
     <Route path="/register">
         <LoginView register />
+    </Route>
+    <Route path="/invite/:code" let:params>
+        <InviteView code={params.code} />
     </Route>
 </Router>
 

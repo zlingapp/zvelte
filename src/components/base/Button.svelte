@@ -9,7 +9,7 @@
     export let compact: boolean = false;
     export let tooltip: string = "";
 
-    export let onClick = () => {};
+    export let onClick = (e) => {};
 </script>
 
 <button
