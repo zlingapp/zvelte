@@ -4,6 +4,7 @@
     import {
         dmChannelOpen,
         guilds,
+        recentDMs,
         showInErrorModal,
         unreadDMs,
     } from "../../lib/stores";
@@ -17,6 +18,7 @@
     import type { UnreadDM } from "../../lib/friends";
     import { flip } from "svelte/animate";
     import { fade, fly } from "svelte/transition";
+    import type { PublicUserInfo } from "../../lib/channel";
 
     async function fetchGuilds() {
         let resp = await authFetch("/guilds");
@@ -66,13 +68,22 @@
 
         const userId = msg.topic.id;
 
+        recentDMs.update((arr: PublicUserInfo[]) => {
+            const index = arr.findIndex((u) => u.id === userId);
+            if (index !== -1) {
+                const [el] = arr.splice(index, 1);
+                arr.unshift(el);
+            }
+            return arr;
+        });
+
         if ($dmChannelOpen?.id == userId) {
             return;
         }
 
         unreadDMs.update((obj) => {
             const author = (msg.event as any).author;
-            
+
             if (author.id != userId) {
                 // rare case where we get an event about ourselves
                 return obj;
@@ -105,7 +116,7 @@
     <div class="divider" />
 
     {#if unreadDmsList.length > 0}
-        <div class="server-list" transition:fly={{ duration: 300 }}>
+        <div class="server-list" transition:fly={{ duration: 250 }}>
             {#each unreadDmsList as [id, unread] (id)}
                 <DmIcon {id} user={unread.user} unread={unread.count} />
             {/each}

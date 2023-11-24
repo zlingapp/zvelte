@@ -47,7 +47,6 @@
         display: flex;
         gap: 10px;
         align-items: center;
-        cursor: pointer;
         padding: 10px;
         background: var(--bg-1);
         border-radius: 4px;

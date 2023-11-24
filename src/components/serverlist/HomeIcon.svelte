@@ -1,11 +1,16 @@
 <script lang="ts">
-    import { currentChannel, currentGuild } from "../../lib/stores";
+    import { openDmWith } from "../../lib/friends";
+    import { currentChannel, currentGuild, recentDMs } from "../../lib/stores";
     import Tooltip from "../base/Tooltip.svelte";
     import IcBaselineChat from "~icons/ic/baseline-chat";
 
     function onClick() {
-        $currentGuild = null;
-        $currentChannel = null;
+        if ($recentDMs.length > 0) {
+            openDmWith($recentDMs[0]);
+        } else {
+            $currentGuild = null;
+            $currentChannel = null;
+        }
     }
 </script>
 

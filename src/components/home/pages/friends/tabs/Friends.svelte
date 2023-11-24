@@ -2,7 +2,7 @@
     import { authFetch } from "../../../../../lib/auth";
     import type { PublicUserInfo } from "../../../../../lib/channel";
     import { openDmWith } from "../../../../../lib/friends";
-    import { dmChannelOpen, showInErrorModal } from "../../../../../lib/stores";
+    import { dmChannelOpen, recentDMs, showInErrorModal } from "../../../../../lib/stores";
     import { getErrorMessage } from "../../../../../lib/util";
     import MemberListMember from "../../../../users/MemberListMember.svelte";
     import Friend from "../Friend.svelte";
@@ -27,6 +27,7 @@
         }
 
         friends = friends.filter((f) => f.id !== friend.id);
+        $recentDMs = $recentDMs.filter((user) => user.id != friend.id);
     }
 </script>
 

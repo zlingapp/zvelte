@@ -5,7 +5,7 @@
     import type { PublicUserInfo } from "../../../../lib/channel";
     import type { FriendRequest } from "../../../../lib/friends";
     import { authFetch } from "../../../../lib/auth";
-    import { showInErrorModal } from "../../../../lib/stores";
+    import { recentDMs, showInErrorModal } from "../../../../lib/stores";
     import Button from "../../../base/Button.svelte";
     import AddFriendButton from "../../AddFriendButton.svelte";
     import FriendRequests from "./tabs/FriendRequests.svelte";
@@ -106,6 +106,7 @@
             case "friendRemove": {
                 const id = msg.event.user.id;
                 friends = friends.filter((f) => f.id != id);
+                $recentDMs = $recentDMs.filter((user) => user.id != id);
                 break;
             }
         }

@@ -53,3 +53,5 @@ export const dmChannelOpen = writable<DMChannel | null>(null);
 
 // map of unread DMs by friend id
 export const unreadDMs = localStorageWritable<Record<string, UnreadDM>>("unread_dms", {});
+
+export const recentDMs = localStorageWritable<PublicUserInfo[]>("recent_dms", []);
