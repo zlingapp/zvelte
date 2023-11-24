@@ -47,10 +47,16 @@
         $showInErrorModal = `Failed to fetch friend requests: ${errorMessage}`;
     }
 
-    async function postFriendActionCallback() {
+    async function onSubmitFriendRequest() {
         await fetchFriendRequests();
         filter = Filter.Pending;
         fetchFriends();
+    }
+
+    async function onFriendRequestAction() {
+        fetchFriendRequests();
+        fetchFriends();
+        filter = Filter.Online;
     }
 
     onMount(() => {
@@ -159,7 +165,7 @@
             </Button> -->
 
             <!-- add friend -->
-            <AddFriendButton addFriendCallback={postFriendActionCallback} />
+            <AddFriendButton addFriendCallback={onSubmitFriendRequest} />
         </div>
     </div>
 
@@ -193,7 +199,7 @@
                 </div>
                 <div style="display: flex;">
                     <AddFriendButton
-                        addFriendCallback={postFriendActionCallback}
+                        addFriendCallback={onSubmitFriendRequest}
                     />
                     <Button
                         nobg
@@ -234,7 +240,7 @@
         <FriendRequests
             {outgoingFriendRequests}
             {incomingFriendRequests}
-            {postFriendActionCallback}
+            postFriendActionCallback={onFriendRequestAction}
         />
     {:else}
         <div class="center">

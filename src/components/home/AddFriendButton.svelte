@@ -4,9 +4,10 @@
     import Modal from "../base/Modal.svelte";
     import { authFetch } from "../../lib/auth";
     import { showInErrorModal } from "../../lib/stores";
+    import { getErrorMessage } from "../../lib/util";
 
     let modalOpen = false;
-    let userId: string;
+    let userName: string;
 
     export let addFriendCallback = () => {};
 
@@ -14,15 +15,13 @@
         modalOpen = true;
     }
 
-    async function addFriend(id) {
-        // check if id is ascii alphanumeric
-        if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
-            $showInErrorModal = "Invalid user ID";
-            return;
-        }
-
-        const resp = await authFetch(`/friends/requests/${id}`, {
+    async function addFriend(username) {
+        const resp = await authFetch("/friends/requests", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username }),
         });
 
         if (resp.ok) {
@@ -30,7 +29,8 @@
             addFriendCallback();
             return;
         } else {
-            $showInErrorModal = (await resp.json()).message;
+            const errorMessage = await getErrorMessage(resp);
+            $showInErrorModal = "Failed to add friend: " + errorMessage;
         }
     }
 </script>
@@ -49,13 +49,14 @@
         <svelte:fragment slot="content">
             <div style="min-width: 230px;" />
             <p>
-                You need to get the User ID<br />of the person you want to add.
+                What is the username of the <br /> 
+                friend you want to add?
             </p>
-            <label>User ID</label>
+            <label>Username</label>
             <input
                 type="text"
                 style="font-family: monospace;"
-                bind:value={userId}
+                bind:value={userName}
             />
         </svelte:fragment>
 
@@ -65,7 +66,7 @@
                 grow
                 onClick={async () => {
                     modalOpen = false;
-                    await addFriend(userId);
+                    await addFriend(userName);
                 }}
             >
                 Add

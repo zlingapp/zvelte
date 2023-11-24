@@ -14,8 +14,14 @@
     export let callback = () => {};
 
     async function accept() {
-        const resp = await authFetch(`/friends/requests/${request.user.id}`, {
+        const resp = await authFetch(`/friends/requests`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: request.user.id,
+            }),
         });
 
         if (!resp.ok) {
