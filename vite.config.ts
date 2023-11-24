@@ -2,6 +2,8 @@ import { ConfigEnv, defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import Icons from "unplugin-icons/vite";
 import mkcert from "vite-plugin-mkcert";
+import os from "os";
+import path from "path";
 
 import { execSync } from "child_process";
 
@@ -29,14 +31,14 @@ export default defineConfig((env: ConfigEnv) => {
             Icons({
                 compiler: "svelte",
             }),
-            // mkcert(),
+            mkcert({savePath: path.join(os.homedir(),".local","share","zling-certs")}),
         ],
         define: {
             ZLING_VERSION: JSON.stringify(version),
         },
         server: {
             port: 2000,
-            // https: true,
+            https: true,
             open: true,
         },
         preview: {
