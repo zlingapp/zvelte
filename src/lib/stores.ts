@@ -1,11 +1,12 @@
 import { writable } from 'svelte/store';
 import type { LocalUser, Tokens } from './auth';
-import type { Channel, DMChannel, TextChannel } from './channel';
+import type { Channel, DMChannel, PublicUserInfo, TextChannel } from './channel';
 import type { Guild } from './guild';
 import { localStorageWritable } from './localStorageStore';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 import type { Theme } from './theme';
 import {defaultTheme} from './theme';
+import type { UnreadDM } from './friends';
 
 // ---- login stuff ---
 export const apiTokens = localStorageWritable<Tokens>("api_token", null);
@@ -49,3 +50,6 @@ export const themes = localStorageWritable<Array<Theme>>("themes",[]);
 export const editingThemeId = writable<Theme["id"]>(null);
 
 export const dmChannelOpen = writable<DMChannel | null>(null);
+
+// map of unread DMs by friend id
+export const unreadDMs = localStorageWritable<Record<string, UnreadDM>>("unread_dms", {});

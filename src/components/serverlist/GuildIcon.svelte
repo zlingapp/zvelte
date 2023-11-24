@@ -17,6 +17,7 @@
             return;
         }
         $currentGuild = guild;
+        $dmChannelOpen = null;
     }
 </script>
 

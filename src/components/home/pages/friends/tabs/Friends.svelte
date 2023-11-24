@@ -1,6 +1,7 @@
 <script lang="ts">
     import { authFetch } from "../../../../../lib/auth";
     import type { PublicUserInfo } from "../../../../../lib/channel";
+    import { openDmWith } from "../../../../../lib/friends";
     import { dmChannelOpen, showInErrorModal } from "../../../../../lib/stores";
     import { getErrorMessage } from "../../../../../lib/util";
     import MemberListMember from "../../../../users/MemberListMember.svelte";
@@ -27,17 +28,6 @@
 
         friends = friends.filter((f) => f.id !== friend.id);
     }
-
-    async function openFriendDMs(friend: PublicUserInfo) {
-        // get dm channel
-        $dmChannelOpen = {
-            id: friend.id,
-            friend: friend,
-            type: "text",
-            name: friend.username.split("#")[0],
-            permissions: null,
-        }
-    }
 </script>
 
 <div class="friends">
@@ -49,7 +39,7 @@
     {/if}
     <div class="friends-list">
         {#each friends as friend}
-            <Friend onMessage={openFriendDMs} onRemove={removeFriend} {friend} />
+            <Friend onMessage={openDmWith} onRemove={removeFriend} {friend} />
         {/each}
     </div>
 </div>

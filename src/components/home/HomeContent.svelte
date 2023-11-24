@@ -11,8 +11,8 @@
     <MessageList dm channel={$dmChannelOpen} />
     <TopicConsumer
         eventFilter={(msg) =>
-            msg.topic.id == $dmChannelOpen.friend.id &&
             msg.topic.type == "user" &&
+            msg.topic.id == $dmChannelOpen.friend.id &&
             msg.event.type == "friendRemove"
         }
         onRelevantEvent={() => {
