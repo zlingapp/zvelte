@@ -3,10 +3,11 @@
     import { tick } from "svelte";
     import { fly } from "svelte/transition";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
+    import IcBaselineAlternateEmail from "~icons/ic/baseline-alternate-email";
     import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
     import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
-    import type { Message, TextChannel } from "../../lib/channel";
+    import type { DMChannel, Message, TextChannel } from "../../lib/channel";
     import {
         type EventSocketMessage,
         eventSocketSubscribe,
@@ -17,8 +18,10 @@
     import MessageCaret from "./MessageCaret.svelte";
     import UiMessage from "./UiMessage.svelte";
 
-    export let channel: TextChannel;
-    let channelOld: TextChannel;
+    export let dm: boolean = false;
+    export let channel: TextChannel | DMChannel;
+
+    let channelOld: TextChannel | DMChannel;
 
     let messages: Message[] = [];
     let messagesList: HTMLDivElement;
@@ -34,19 +37,21 @@
 
     async function fetchMessageHistory(
         before: Dayjs = null,
-        after: Dayjs = null
+        after: Dayjs = null,
     ) {
         let channel_id = channel?.id;
         if (channel_id == null) {
             console.warn(
                 "channel_id of",
                 channel,
-                "was null, cannot get history"
+                "was null, cannot get history",
             );
             return;
         }
 
-        let url = `/channels/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
+        let url = `/${
+            dm ? "friends" : "channels"
+        }/${channel_id}/messages?limit=${MESSAGE_FETCH_LIMIT}`;
 
         if (before != null) {
             url += `&before=${before.toISOString()}`;
@@ -67,14 +72,23 @@
     }
 
     async function resubscribeToTopics() {
-        // subscribe to new channel
-        await eventSocketSubscribe([{ type: "channel", id: channel?.id }]);
+        // no need to subscribe in dms, we are unable to stop listening
+        if (!dm) {
+            // subscribe to new channel
+            await eventSocketSubscribe([{ type: "channel", id: channel?.id }]);
+        }
 
         if (channelOld != null && channelOld.id !== channel.id) {
-            // transitioning from one channel to another, so unsubscribe from the old one
-            await eventSocketUnsubscribe([
-                { type: "channel", id: channelOld.id },
-            ]);
+            // transitioning from one channel to another, so unsubscribe from
+            // the old one
+
+            // check if the old channel was a dm channel
+            // if so, don't bother unsubscribing because we can't
+            if (channelOld["friend"] == undefined) {
+                await eventSocketUnsubscribe([
+                    { type: "channel", id: channelOld.id },
+                ]);
+            }
         }
 
         channelOld = channel;
@@ -141,7 +155,7 @@
                 typing = typing;
             case "deleteMessage":
                 messages = messages.filter(
-                    (m) => m.id !== (esm.event as any).id
+                    (m) => m.id !== (esm.event as any).id,
                 );
                 break;
             default:
@@ -184,7 +198,7 @@
             await tick();
 
             let messagesBefore = await fetchMessageHistory(
-                messages[0]?.createdAt
+                messages[0]?.createdAt,
             );
 
             if (messagesBefore.length > 0) {
@@ -206,14 +220,19 @@
         resubscribeToTopics();
     }}
     eventFilter={(msg) =>
-        msg.topic.type === "channel" && msg.topic.id === channel?.id}
+        msg.topic.type === (dm ? "dm_channel" : "channel") &&
+        msg.topic.id === channel?.id}
     {onRelevantEvent}
 />
 
 <div class="channel-content">
     <div class="head">
         <span class="icon">
-            <MajesticonsHashtagLine />
+            {#if dm}
+                <IcBaselineAlternateEmail />
+            {:else}
+                <MajesticonsHashtagLine />
+            {/if}
         </span>
         <div class="channel-title">
             {channel.name}
@@ -229,11 +248,25 @@
             >
                 {#if nothingOlder}
                     <div class="beginning">
-                        <div>Beware! Here begins the history of...</div>
+                        {#if dm}
+                            <div>
+                                Beware! Here begins the conversation with...
+                            </div>
+                        {:else}
+                            <div>Beware! Here begins the history of...</div>
+                        {/if}
                         <div
                             style="display:flex; align-items: center; gap: 5px; font-size: 32px;"
                         >
-                            <MajesticonsHashtagLine color="var(--text-color)" />
+                            {#if dm}
+                                <IcBaselineAlternateEmail
+                                    color="var(--text-color)"
+                                />
+                            {:else}
+                                <MajesticonsHashtagLine
+                                    color="var(--text-color)"
+                                />
+                            {/if}
                             <span
                                 style="color: var(--text-color); font-weight: 600;"
                                 >{channel.name}</span
@@ -253,7 +286,7 @@
                         {message}
                         detailed={shouldSeparateMessage(
                             messages[idx - 1],
-                            message
+                            message,
                         )}
                     />
                 {/each}
@@ -263,12 +296,14 @@
                         message={pendingOutgoingMessage}
                         detailed={shouldSeparateMessage(
                             messages[messages.length - 1],
-                            pendingOutgoingMessage
+                            pendingOutgoingMessage,
                         )}
                     />
                 {/if}
             </div>
             <MessageCaret
+                {dm}
+                {channel}
                 onOutgoingMessage={(msg) => {
                     pendingOutgoingMessage = msg;
                 }}
@@ -289,7 +324,9 @@
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img
                                 class="typer-avatar overlap-avatar"
-                                src={urlRelativeToApiBase(typer.avatar).toString()}
+                                src={urlRelativeToApiBase(
+                                    typer.avatar,
+                                ).toString()}
                                 height="14px"
                             />
                         {/each}
@@ -298,7 +335,9 @@
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <img
                                 class="typer-avatar"
-                                src={urlRelativeToApiBase(typer.avatar).toString()}
+                                src={urlRelativeToApiBase(
+                                    typer.avatar,
+                                ).toString()}
                                 height="14px"
                             />
                             <span class="typer">
@@ -349,6 +388,7 @@
 
     .channel-title {
         font-weight: 600;
+        line-height: 0;
     }
 
     .body {

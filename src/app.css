@@ -14,6 +14,8 @@
   --gray: #888b8f;
   --gray-2: #b5bac1;
   --green-btn: #00925f;
+  --green-transparent: #00b5760a;
+  --red-transparent: #c94b440a;
 
   --accent-color: #2764ff;
   --disabled: #888b8f3f;
@@ -21,7 +23,7 @@
 
   /* for the pop up text tooltips */
   --tooltip-bg: #000;
-  --tooltip-fg: #fff;
+  --tooltip-fg: var(--text-color);
 
   /* right click menus */
   --context-menu-bg: #111214;
@@ -54,7 +56,9 @@
 
   --sproing: cubic-bezier(0, 0, 0.5, 2.5);
 
-  font-family: 'Source Sans 3', sans-serif;
+  --font: 'Source Sans 3', sans-serif;
+
+  font-family: var(--font);
   line-height: 1.5;
   font-weight: 400;
 

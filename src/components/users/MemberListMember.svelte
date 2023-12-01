@@ -3,11 +3,14 @@
     import Avatar from "./Avatar.svelte";
 
     export let member: PublicUserInfo;
+    export let fullUsername = false;
+
+    $: name = fullUsername ? member.username : member.username.split("#")[0];
 </script>
 
 <div class="member">
     <Avatar url={member.avatar} status="online" />
-    <div class="name">{member.username.split("#")[0]}</div>
+    <div class="name" class:fullUsername>{name}</div>
 </div>
 
 <style>

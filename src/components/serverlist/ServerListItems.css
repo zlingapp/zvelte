@@ -1,0 +1,76 @@
+.server-list-button {
+    background-color: var(--bg-1);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+
+    outline: 0px solid rgba(255, 255, 255, 0.2);
+    transition: border-radius 50ms ease-in-out, outline 50ms ease-in-out;
+    
+    overflow: hidden;
+}
+
+button.server-list-button {
+    border: none;
+    color: var(--green);
+}
+
+.guild-icon::before {
+    content: '';
+    position: absolute;
+    /* display: none; */
+
+    width: 4px;
+    height: 10px;
+
+    background-color: var(--text-color);
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+
+    left: -16px;
+
+    transition: height 90ms ease-in-out, left 90ms ease-in-out;
+}
+
+.guild-icon > img {
+    width: 48px;
+    height: 48px;
+}
+
+.guild-icon.current {
+    outline-width: 3px;
+    border-radius: 40%;
+    user-select: none;
+}
+
+.guild-icon.unread::before {
+    left: -12px;
+}
+
+.guild-icon:hover::before {
+    left: -12px;
+    height: 16px;
+}
+
+.guild-icon.current::before {
+    left: -12px;
+    height: 25px;
+}
+
+.no-image {
+    color: var(--gray);
+    font-weight: 600;
+    transition: color 90ms ease-in-out;
+}
+
+.guild-icon.current > .no-image, 
+.guild-icon:hover > .no-image {
+    color: var(--text-color);
+}

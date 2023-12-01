@@ -8,11 +8,10 @@
         localUser,
         userSettingsOpen,
     } from "../lib/stores";
-    
+
     import LocalUserControls from "../components/LocalUserControls.svelte";
-    import ServerList from "../components/ServerList.svelte";
+    import ServerList from "../components/serverlist/ServerList.svelte";
     import MessageList from "../components/text/MessageList.svelte";
-    import IconParkOutlineSleepOne from "~icons/icon-park-outline/sleep-one";
     import ChannelList from "../components/ChannelList.svelte";
     import ErrorModal from "../components/modals/ErrorModal.svelte";
     import EventSocketManager from "../components/EventSocketManager.svelte";
@@ -21,12 +20,14 @@
     import LoadingScreen from "../components/LoadingScreen.svelte";
     import UserSettings from "../components/settings/UserSettings.svelte";
     import MemberList from "../components/users/MemberList.svelte";
+    import HomeSidebar from "../components/home/HomeSidebar.svelte";
+    import HomeContent from "../components/home/HomeContent.svelte";
 
     let socketDisconnected;
 
     onMount(async () => {
         await ensureLoggedIn();
-    })
+    });
 </script>
 
 <ErrorModal />
@@ -48,13 +49,15 @@
                     <div class="server-head">
                         <p class="server-name">{$currentGuild.name}</p>
                     </div>
-                {/if}
 
-                <div class="server-channels">
-                    {#if $currentGuild}
+                    <div class="sidebar-content">
                         <ChannelList />
-                    {/if}
-                </div>
+                    </div>
+                {:else}
+                    <div class="sidebar-content">
+                        <HomeSidebar />
+                    </div>
+                {/if}
 
                 <div class="bottom-user-drawer">
                     <VoiceControls />
@@ -64,21 +67,13 @@
 
             <section class="content">
                 {#if $currentChannel}
-                    <MessageList
-                        channel={$currentChannel}
-                        guild_id={$currentGuild.id}
-                    >
+                    <MessageList channel={$currentChannel}>
                         <div slot="sidebar" class="sidebar">
                             <MemberList />
                         </div>
                     </MessageList>
                 {:else}
-                    <div class="lonely">
-                        <div class="lonely-icon">
-                            <IconParkOutlineSleepOne />
-                        </div>
-                        <div>*crickets*</div>
-                    </div>
+                    <HomeContent />
                 {/if}
             </section>
         </main>
@@ -117,10 +112,13 @@
     .server-head {
         height: 48px;
         background-color: var(--bg-1);
-        box-shadow: 0px 2px 3px 0 rgba(0, 0, 0, 0.3);
+        /* background-color: var(--user-drawer-bg); */
+        /* box-shadow: 0px 2px 3px 0 rgba(0, 0, 0, 0.3); */
+        font-weight: 500;
 
         box-sizing: border-box;
         padding: 12px 16px;
+        margin-top: 8px;
 
         display: flex;
         align-items: center;
@@ -137,20 +135,8 @@
         align-items: center;
         justify-content: center;
     }
-    .server-channels {
+    .sidebar-content {
         position: relative;
         flex-grow: 1;
-    }
-
-    .lonely {
-        text-align: center;
-        font-weight: 600;
-        font-size: 32px;
-        color: var(--lonely-message-fg);
-        user-select: none;
-    }
-    .lonely-icon {
-        line-height: 0;
-        font-size: 128px;
     }
 </style>

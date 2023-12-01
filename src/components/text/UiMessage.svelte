@@ -5,9 +5,11 @@
     import {
         currentChannel,
         currentGuild,
+        dmChannelOpen,
         localUser,
         showInErrorModal,
     } from "../../lib/stores";
+    import { getErrorMessage } from "../../lib/util";
     import ContextMenu from "../base/ContextMenu.svelte";
     import Tooltip from "../base/Tooltip.svelte";
     import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
@@ -27,21 +29,26 @@
     });
 
     async function onDelete() {
-        // warning: getting these this way is bound to cause some issues
-        // yell at myself later for this
-        const guildId = $currentGuild.id;
-        const channelId = $currentChannel.id;
+        let dm = false;
+        let channelId;
+
+        if ($currentChannel == null && $dmChannelOpen != null) {
+            dm = true;
+            channelId = $dmChannelOpen.id;
+        } else {
+            channelId = $currentChannel.id;
+        }
 
         let resp = await authFetch(
-            `/channels/${channelId}/messages/${message.id}`,
+            `/${dm ? "friends" : "channels"}/${channelId}/messages/${message.id}`,
             {
                 method: "DELETE",
             }
         );
+
         if (!resp.ok) {
-            showInErrorModal.set(
-                `Delete message failed: ${await resp.text()} (${resp.status})`
-            );
+            const errorMessage = await getErrorMessage(resp);
+            $showInErrorModal = `Deleting message failed: ${errorMessage}`
         }
     }
 </script>

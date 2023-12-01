@@ -30,13 +30,13 @@
 
     .status {
         position: absolute;
-        right: 0;
-        bottom: 0;
+        right: 1px;
+        bottom: 1px;
 
-        width: 9px;
+        width: 8px;
         height: 8px;
         
-        border-radius: 50%;
+        border-radius: 4px;
         box-sizing: content-box;
         outline: 4px solid var(--bg-1);
     }

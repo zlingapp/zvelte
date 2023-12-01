@@ -21,3 +21,12 @@ export function humanFileSize(bytes, si = false, dp = 1) {
 
     return bytes.toFixed(dp) + " " + units[u];
 }
+
+export async function getErrorMessage(resp: Response): Promise<string> {
+    let errorMessage = `${resp.status} ${resp.statusText}`
+    try {
+        errorMessage += ": " + (await resp.json()).message;
+    } catch (e) {}
+
+    return errorMessage;
+}

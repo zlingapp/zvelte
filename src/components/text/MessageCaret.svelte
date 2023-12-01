@@ -7,11 +7,12 @@
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import { authFetch } from "../../lib/auth";
-    import type { Message } from "../../lib/channel";
+    import type { Message, TextChannel } from "../../lib/channel";
     import AttachmentUploadIndicator from "./AttachmentUploadIndicator.svelte";
     import MessageAttachButton, {
         type PendingUpload,
     } from "./MessageAttachButton.svelte";
+    import { getErrorMessage } from "../../lib/util";
 
     let value;
     let sendButton: HTMLDivElement;
@@ -21,6 +22,8 @@
     let pendingUploads: PendingUpload[];
 
     export let onOutgoingMessage: (msg: Message) => void = () => {};
+    export let dm: boolean = false;
+    export let channel: TextChannel;
 
     let typingLastSent = 0;
     const RESEND_TYPING_EVERY = 4000;
@@ -63,7 +66,7 @@
 
     async function sendTyping() {
         await authFetch(
-            `/channels/${$currentChannel.id}/typing`,
+            `/${dm ? "friends" : "channels"}/${channel.id}/typing`,
             {
                 method: "POST",
             }
@@ -110,8 +113,8 @@
 
         pendingUploads = [];
 
-        await authFetch(
-            `/channels/${$currentChannel.id}/messages`,
+        const resp = await authFetch(
+            `/${dm ? "friends" : "channels"}/${channel.id}/messages`,
             {
                 method: "POST",
                 headers: {
@@ -120,6 +123,12 @@
                 body: JSON.stringify({ content, attachments }),
             }
         );
+
+        if (!resp.ok) {
+            const errorMessage = await getErrorMessage(resp);
+            $showInErrorModal = `Failed to send message: ${errorMessage}`;
+            return;
+        }
 
         // immediately send typing upon next keystrokes
         // this is needed here because clients usually immediately remove the
@@ -165,7 +174,7 @@
             on:keyup={onKeyUp}
             bind:value
             class="input"
-            placeholder="Message #{$currentChannel.name}"
+            placeholder="Message #{channel.name}"
         />
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div

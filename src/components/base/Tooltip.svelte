@@ -60,7 +60,7 @@
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: black transparent transparent transparent;
+        border-color: var(--tooltip-bg) transparent transparent transparent;
     }
 
     .tooltip.right {
@@ -77,7 +77,7 @@
         margin-top: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: transparent black transparent transparent;
+        border-color: transparent var(--tooltip-bg) transparent transparent;
     }
 
     .has-tooltip:hover > .tooltip {

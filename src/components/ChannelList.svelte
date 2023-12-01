@@ -22,14 +22,12 @@
     // guild id of the last guild we subscribed to
     let previousGuildId = null;
 
-    async function getChannelList() {
-        const guildId = $currentGuild.id;
-
-        let resp = await authFetch(`/guilds/${guildId}/channels`);
+    async function getChannelList(guild: Guild) {
+        let resp = await authFetch(`/guilds/${guild.id}/channels`);
         // the line above took a considerable amount of time in which the user
         // could have clicked on another guild, so check that the current guild
         // is STILL the one we're trying to get the channels for
-        if ($currentGuild.id != guildId) {
+        if ($currentGuild?.id != guild.id) {
             return;
         }
 
@@ -39,7 +37,7 @@
         // cache results in the guilds list for when we switch back next 
         guilds.update((guilds) =>
             guilds.map((g) => {
-                if (g.id == guildId) {
+                if (g.id == guild.id) {
                     g.channels = channels;
                 }
                 return g;
@@ -47,8 +45,8 @@
         );
     }
 
-    function autoSelectChannel() {
-        const currentChannelInCurrentGuild = $currentGuild?.channels?.find(
+    function autoSelectChannel(guild: Guild) {
+        const currentChannelInCurrentGuild = guild.channels?.find(
             (c) => c.id === $currentChannel?.id
         );
 
@@ -56,12 +54,13 @@
             return;
         }
 
-        if ($currentGuild.channels?.length > 0) {
+        if (guild.channels?.length > 0) {
             // auto-open the first text channel or if there aren't any text
             // channels, set to null
-            const firstTextChannel = $currentGuild.channels.find(
+            const firstTextChannel = guild.channels.find(
                 (c) => c.type == "text"
             ) as TextChannel;
+
             $currentChannel = firstTextChannel || null;
         } else {
             // if there are no channels, set to null
@@ -97,13 +96,13 @@
 
             if (guild.channels == null) {
                 // get the channel list right now
-                await getChannelList();
+                await getChannelList(guild);
             } else {
                 // we have cache, so get the channel list a little later
-                getChannelList();
+                getChannelList(guild);
             }
 
-            autoSelectChannel();
+            autoSelectChannel(guild);
         });
     });
 
@@ -132,7 +131,7 @@
 
     async function onRelevantEvent(esm: EventSocketMessage) {
         if (esm.event.type == "channelListUpdate") {
-            await getChannelList();
+            await getChannelList($currentGuild);
         }
     }
 
@@ -150,8 +149,15 @@
     eventFilter={(esm) =>
         esm.topic.type == "guild" && esm.topic.id == $currentGuild.id}
     onReconnect={async () => {
-        await subscribeToTopics($currentGuild);
-        await getChannelList();
+        const guild = $currentGuild;
+        
+        if (guild == null) {
+            // if somehow we *just* switched from guilds to dms, then we don't need to resubscribe
+            return;
+        }
+
+        await subscribeToTopics(guild);
+        await getChannelList(guild);
     }}
 />
 <ContextMenu>

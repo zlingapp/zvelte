@@ -7,9 +7,11 @@
     export let disabled: boolean = false;
     export let nobg: boolean = false;
     export let compact: boolean = false;
+    export let left: boolean = false;
     export let tooltip: string = "";
 
     export let onClick = () => {};
+    export let extraStyle = "";
 </script>
 
 <button
@@ -23,6 +25,8 @@
     class:disabled
     class:nobg
     class:compact
+    class:left
+    style={extraStyle}
     on:click|stopPropagation={onClick}><slot /></button
 >
 
@@ -75,11 +79,22 @@
     }
 
     .danger.nobg {
-        background-color: transparent;
         color: var(--red);
+    }
+
+    .green.nobg {
+        color: var(--green);
     }
 
     .compact {
         padding: 4px;
+    }
+
+    .left {
+        justify-content: left;
+    }
+
+    .nobg {
+        background-color: transparent;
     }
 </style>
