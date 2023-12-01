@@ -125,8 +125,8 @@
     }
 
     .unread-counter {
-        width: 17px;
-        height: 18px;
+        width: 17.5px;
+        height: 17.5px;
         font-size: 12px;
         background-color: var(--red);
         color: white;

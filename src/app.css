@@ -58,7 +58,7 @@
 
   --font: 'Source Sans 3', sans-serif;
 
-  font-family: var(--font), sans-serif;
+  font-family: var(--font);
   line-height: 1.5;
   font-weight: 400;
 
