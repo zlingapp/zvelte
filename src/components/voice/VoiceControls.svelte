@@ -4,19 +4,19 @@
         voiceChannelTarget,
         voicePeers,
         voiceState,
-    } from "../../lib/stores";
+    } from "src/lib/stores";
 
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import VoiceLatencyIcon from "src/components/voice/VoiceLatencyIcon.svelte";
+    import VoiceMemberDuplicateTag from "src/components/voice/VoiceMemberDuplicateTag.svelte";
+    import { VoiceState, disconnectFromVoice, isPeerDuplicate } from "src/lib/voice";
     import { onMount } from "svelte";
     import DisconnectIcon from "~icons/majesticons/phone-missed-call";
-    import { VoiceState, disconnectFromVoice, isPeerDuplicate } from "../../lib/voice";
-    import Tooltip from "../base/Tooltip.svelte";
-    import VoiceLatencyIcon from "./VoiceLatencyIcon.svelte";
-    import VoiceMemberDuplicateTag from "./VoiceMemberDuplicateTag.svelte";
 
     let statsInterval: number;
     let latencyMs: number = 0;
 
-    $: me = [...$voicePeers.values()].find((p) => p.is_me);
+    $: me = [...$voicePeers.values()].find((p) => p.is_me)!;
 
     onMount(() => {
         statsInterval = setInterval(async () => {
@@ -24,7 +24,7 @@
             
             let stats;
             try {
-                stats = await me.producer.getStats();
+                stats = await me.producer!.getStats();
             } catch (e) {
                 clearInterval(statsInterval);
                 return;

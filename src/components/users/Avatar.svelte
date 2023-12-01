@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { urlRelativeToApiBase } from "../../lib/auth";
+    import { urlRelativeToApiBase } from "src/lib/auth";
 
     export let url: string;
     export let status: "online" | "offline" | "idle" | "dnd";

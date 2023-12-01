@@ -1,19 +1,18 @@
 <script lang="ts">
-    import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
-    import type { Message } from "../../lib/channel";
-    import { unimplemented } from "../../lib/dev";
+    import ContextMenu from "src/components/base/ContextMenu.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import MessageContextMenu from "src/components/context-menus/MessageContextMenu.svelte";
+    import MessageAttachments from "src/components/text/MessageAttachments.svelte";
+    import { authFetch, urlRelativeToApiBase } from "src/lib/auth";
+    import type { Message } from "src/lib/channel";
+    import { unimplemented } from "src/lib/dev";
     import {
         currentChannel,
-        currentGuild,
         dmChannelOpen,
         localUser,
-        showInErrorModal,
-    } from "../../lib/stores";
-    import { getErrorMessage } from "../../lib/util";
-    import ContextMenu from "../base/ContextMenu.svelte";
-    import Tooltip from "../base/Tooltip.svelte";
-    import MessageContextMenu from "../context-menus/MessageContextMenu.svelte";
-    import MessageAttachments from "./MessageAttachments.svelte";
+        showInErrorModal
+    } from "src/lib/stores";
+    import { getErrorMessage } from "src/lib/util";
 
     export let message: Message;
     export let detailed: boolean = true;
@@ -36,7 +35,7 @@
             dm = true;
             channelId = $dmChannelOpen.id;
         } else {
-            channelId = $currentChannel.id;
+            channelId = $currentChannel!.id;
         }
 
         let resp = await authFetch(
@@ -51,6 +50,8 @@
             $showInErrorModal = `Deleting message failed: ${errorMessage}`
         }
     }
+
+    $: localUser_ = $localUser!; // because typescript is dumb
 </script>
 
 <ContextMenu>
@@ -84,7 +85,7 @@
                 >
             {/if}
         </div>
-        {#if message.attachments?.length > 0}
+        {#if message.attachments?.length}
             <MessageAttachments attachments={message.attachments} />
         {/if}
     </div>
@@ -99,8 +100,8 @@
                 onCopyText={unimplemented}
                 onReply={unimplemented}
                 onPin={unimplemented}
-                editAllowed={message.author.id === $localUser.id}
-                modAllowed={message.author.id === $localUser.id}
+                editAllowed={message.author.id === localUser_.id}
+                modAllowed={message.author.id === localUser_.id}
             />
         {/if}
     </svelte:fragment>

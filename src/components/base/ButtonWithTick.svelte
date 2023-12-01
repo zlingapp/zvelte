@@ -1,5 +1,5 @@
 <script lang="ts">
-    import IcRoundCheck from '~icons/ic/round-check'
+    import IcRoundCheck from '~icons/ic/round-check';
 
     let done = false;
     export let onClick: () => void = () => {};

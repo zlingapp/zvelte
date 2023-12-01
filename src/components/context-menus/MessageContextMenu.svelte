@@ -12,14 +12,10 @@
     export let modAllowed: boolean;
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="cm-action" on:click={onReply}>Reply</div>
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="cm-action" on:click={onCopyText}>Copy Message Text</div>
 <div class="cm-divider" />
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="cm-action cm-unimportant" on:click={onMarkAsRead}>Mark As Read</div>
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="cm-action" on:click={onCopyLink}>Copy Message Link</div>
 
 {#if editAllowed || modAllowed}
@@ -38,7 +34,6 @@
     <div class="cm-action cm-dangerous" on:click={onDelete}>Delete Message</div>
 {/if}
 <div class="cm-divider" />
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="cm-action cm-unimportant" on:click={onCopyId}>Copy Message ID</div>
 
 <style>

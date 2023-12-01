@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { PublicUserInfo } from "../../../../lib/channel";
-    import Tooltip from "../../../base/Tooltip.svelte";
-    import MemberListMember from "../../../users/MemberListMember.svelte";
-    import MaterialSymbolsChatBubble from "~icons/material-symbols/chat-bubble";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import MemberListMember from "src/components/users/MemberListMember.svelte";
+    import type { PublicUserInfo } from "src/lib/channel";
     import IcBaselineClose from "~icons/ic/baseline-close";
+    import MaterialSymbolsChatBubble from "~icons/material-symbols/chat-bubble";
     // import IcBaselineCall from '~icons/ic/baseline-call'
     // import IcBaselineVideoCall from '~icons/ic/baseline-video-call'
 
@@ -17,7 +17,6 @@
     <span style="flex-grow: 1;" />
     <div class="actions">
         <Tooltip text={`Message ${friend.username.split("#")[0]}`}>
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <div class="friend-action" on:click={() => onMessage(friend)}>
                 <MaterialSymbolsChatBubble />
             </div>
@@ -34,7 +33,6 @@
         </Tooltip> -->
         <div class="divider" />
         <Tooltip text={`Unfriend ${friend.username.split("#")[0]}`}>
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <div class="friend-action" on:click={() => onRemove(friend)}>
                 <IcBaselineClose />
             </div>

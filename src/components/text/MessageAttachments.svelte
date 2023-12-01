@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { UploadedFile } from "../../lib/upload";
-    import Attachment from "./Attachment.svelte";
-    import type { PendingUpload } from "./MessageAttachButton.svelte";
+    import Attachment from "src/components/text/Attachment.svelte";
+    import type { PendingUpload } from "src/components/text/MessageAttachButton.svelte";
+    import type { UploadedFile } from "src/lib/upload";
 
     export let attachments: (PendingUpload | UploadedFile)[];
 </script>

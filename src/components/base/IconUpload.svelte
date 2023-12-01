@@ -1,26 +1,26 @@
 <script lang="ts">
-    import Button from "./Button.svelte";
+    import Button from "src/components/base/Button.svelte";
 
-    import BiQuestionSquare from "~icons/bi/question-square";
-    import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
+    import { urlRelativeToApiBase } from "src/lib/auth";
     import {
         FILESIZE_LIMIT_ICONS,
         uploadFile,
         type UploadedFile,
-    } from "../../lib/upload";
-    import { humanFileSize } from "../../lib/util";
-    import { urlRelativeToApiBase } from "../../lib/auth";
+    } from "src/lib/upload";
+    import { humanFileSize } from "src/lib/util";
+    import BiQuestionSquare from "~icons/bi/question-square";
+    import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
 
     let input: HTMLInputElement;
 
-    export let uploadedFile: UploadedFile = null;
+    export let uploadedFile: UploadedFile | null = null;
     export let sizeLimit = FILESIZE_LIMIT_ICONS;
-    export let defaultImage: string = null;
-    export let onChange: Function = (UploadedFile) => {};
+    export let defaultImage: string | null = null;
+    export let onChange: Function = (file: UploadedFile) => {};
 
     let loading = false;
 
-    async function imageChanged(event) {
+    async function imageChanged(event: any) {
         uploadedFile = null;
 
         const file: File = event.target.files[0];

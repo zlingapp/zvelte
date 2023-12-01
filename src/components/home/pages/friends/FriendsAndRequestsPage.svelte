@@ -1,18 +1,18 @@
 <script lang="ts">
-    import IcBaselinePeople from "~icons/ic/baseline-people";
+    import TopicConsumer from "src/components/TopicConsumer.svelte";
+    import Button from "src/components/base/Button.svelte";
+    import AddFriendButton from "src/components/home/AddFriendButton.svelte";
+    import FriendRequests from "src/components/home/pages/friends/tabs/FriendRequests.svelte";
+    import Friends from "src/components/home/pages/friends/tabs/Friends.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { PublicUserInfo } from "src/lib/channel";
+    import type { FriendRequest } from "src/lib/friends";
+    import type { EventSocketMessage } from "src/lib/socket";
+    import { recentDMs, showInErrorModal } from "src/lib/stores";
+    import { getErrorMessage } from "src/lib/util";
     import { onMount } from "svelte";
+    import IcBaselinePeople from "~icons/ic/baseline-people";
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import type { PublicUserInfo } from "../../../../lib/channel";
-    import type { FriendRequest } from "../../../../lib/friends";
-    import { authFetch } from "../../../../lib/auth";
-    import { recentDMs, showInErrorModal } from "../../../../lib/stores";
-    import Button from "../../../base/Button.svelte";
-    import AddFriendButton from "../../AddFriendButton.svelte";
-    import FriendRequests from "./tabs/FriendRequests.svelte";
-    import Friends from "./tabs/Friends.svelte";
-    import { getErrorMessage } from "../../../../lib/util";
-    import TopicConsumer from "../../../TopicConsumer.svelte";
-    import type { Event, EventSocketMessage } from "../../../../lib/socket";
 
     enum Filter {
         Online,
@@ -22,8 +22,8 @@
     }
 
     let filter: Filter = Filter.Online;
-    let friends: PublicUserInfo[] = undefined;
-    let friendRequests: FriendRequest[] = undefined;
+    let friends: PublicUserInfo[] | null | undefined = undefined;
+    let friendRequests: FriendRequest[] | null | undefined = undefined;
 
     async function fetchFriends() {
         friends = undefined;
@@ -68,10 +68,11 @@
 
     $: outgoingFriendRequests = friendRequests?.filter(
         (r) => r.direction == "outgoing",
-    );
+    ) as FriendRequest[]; // technically this is a lie, it's still FriendRequest[] | undefined... but it's fine
     $: incomingFriendRequests = friendRequests?.filter(
         (r) => r.direction == "incoming",
-    );
+    ) as FriendRequest[];
+    
 
     async function onRelevantEvent(msg: EventSocketMessage) {
         switch (msg.event.type) {
@@ -80,7 +81,7 @@
                     case "sent":
                         // someone sent us a friend request
                         friendRequests = [
-                            ...friendRequests,
+                            ...friendRequests!,
                             {
                                 direction: "incoming",
                                 user: msg.event.user,
@@ -90,8 +91,8 @@
                     case "accepted":
                         const id = msg.event.user.id;
                         // someone accepted our friend request
-                        friends = [...friends, msg.event.user];
-                        friendRequests = friendRequests.filter(
+                        friends = [...friends!, msg.event.user];
+                        friendRequests = friendRequests!.filter(
                             (r) => r.user.id != id,
                         );
                         break;
@@ -100,12 +101,12 @@
             }
             case "friendRequestRemove": {
                 const id = msg.event.user.id;
-                friendRequests = friendRequests.filter((r) => r.user.id != id);
+                friendRequests = friendRequests!.filter((r) => r.user.id != id);
                 break;
             }
             case "friendRemove": {
                 const id = msg.event.user.id;
-                friends = friends.filter((f) => f.id != id);
+                friends = friends!.filter((f) => f.id != id);
                 $recentDMs = $recentDMs.filter((user) => user.id != id);
                 break;
             }
@@ -151,7 +152,7 @@
                     <span>Pending</span>
                     <div
                         class="indicator"
-                        class:red={incomingFriendRequests?.length > 0}
+                        class:red={incomingFriendRequests?.length}
                     >
                         {incomingFriendRequests?.length || 0}
                     </div>
@@ -211,7 +212,7 @@
                             <span>Pending</span>
                             <div
                                 class="indicator"
-                                class:red={incomingFriendRequests?.length > 0}
+                                class:red={incomingFriendRequests?.length}
                             >
                                 {incomingFriendRequests?.length}
                             </div>

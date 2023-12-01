@@ -1,6 +1,6 @@
 <script lang="ts">
-    import MaterialSymbolsAddCircle from "~icons/material-symbols/add-circle";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
+    import MaterialSymbolsAddCircle from "~icons/material-symbols/add-circle";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
 </script>
 

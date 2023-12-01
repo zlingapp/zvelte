@@ -1,5 +1,5 @@
-import type { PublicUserInfo } from "./channel";
-import { currentChannel, currentGuild, dmChannelOpen, recentDMs, unreadDMs } from "./stores";
+import type { PublicUserInfo } from "src/lib/channel";
+import { currentChannel, currentGuild, dmChannelOpen, recentDMs, unreadDMs } from "src/lib/stores";
 
 export interface FriendRequest {
     direction: "incoming" | "outgoing";
@@ -20,7 +20,7 @@ export function openDmWith(friend: PublicUserInfo) {
         friend: friend,
         type: "text",
         name: friend.username.split("#")[0],
-        permissions: null,
+        permissions: {},
     });
 
     recentDMs.update((arr: PublicUserInfo[]) => {
@@ -36,7 +36,7 @@ export function openDmWith(friend: PublicUserInfo) {
 }
 
 export function markDmRead(id: string) {
-    unreadDMs.update((obj) => {
+    unreadDMs.update((obj: Record<string, UnreadDM>) => {
         delete obj[id];
         return obj;
     })

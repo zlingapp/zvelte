@@ -1,22 +1,22 @@
 <script lang="ts">
     import dayjs, { Dayjs } from "dayjs";
-    import { tick } from "svelte";
-    import { fly } from "svelte/transition";
-    import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
-    import IcBaselineAlternateEmail from "~icons/ic/baseline-alternate-email";
-    import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
-    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
-    import type { DMChannel, Message, TextChannel } from "../../lib/channel";
+    import TopicConsumer from "src/components/TopicConsumer.svelte";
+    import MessageCaret from "src/components/text/MessageCaret.svelte";
+    import UiMessage from "src/components/text/UiMessage.svelte";
+    import { authFetch, urlRelativeToApiBase } from "src/lib/auth";
+    import type { DMChannel, Message, TextChannel } from "src/lib/channel";
     import {
-        type EventSocketMessage,
         eventSocketSubscribe,
         eventSocketUnsubscribe,
-    } from "../../lib/socket";
-    import { localUser } from "../../lib/stores";
-    import TopicConsumer from "../TopicConsumer.svelte";
-    import MessageCaret from "./MessageCaret.svelte";
-    import UiMessage from "./UiMessage.svelte";
+        type EventSocketMessage,
+    } from "src/lib/socket";
+    import { localUser } from "src/lib/stores";
+    import { tick } from "svelte";
+    import { fly } from "svelte/transition";
+    import IcBaselineAlternateEmail from "~icons/ic/baseline-alternate-email";
+    import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
+    import SvgSpinners3DotsFade from "~icons/svg-spinners/3-dots-fade";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
     export let dm: boolean = false;
     export let channel: TextChannel | DMChannel;
@@ -30,15 +30,12 @@
     let nothingOlder = false;
     let typing: Map<string, any> = new Map();
 
-    let pendingOutgoingMessage: Message = null;
+    let pendingOutgoingMessage: Message | null = null;
 
     const MESSAGE_FETCH_LIMIT = 50;
     const CONSIDER_TYPING_STOPPED_AFTER = 5000;
 
-    async function fetchMessageHistory(
-        before: Dayjs = null,
-        after: Dayjs = null,
-    ) {
+    async function fetchMessageHistory(before?: Dayjs, after?: Dayjs) {
         let channel_id = channel?.id;
         if (channel_id == null) {
             console.warn(
@@ -84,7 +81,7 @@
 
             // check if the old channel was a dm channel
             // if so, don't bother unsubscribing because we can't
-            if (channelOld["friend"] == undefined) {
+            if ((channelOld as DMChannel)["friend"] === undefined) {
                 await eventSocketUnsubscribe([
                     { type: "channel", id: channelOld.id },
                 ]);
@@ -117,7 +114,7 @@
             case "message":
                 const message = parseMessage(esm.event as unknown as Message);
 
-                if (message.author.id == $localUser.id) {
+                if (message.author.id == $localUser?.id) {
                     // TODO: make a better system for this with a ref value
                     pendingOutgoingMessage = null;
                 }
@@ -134,7 +131,7 @@
                 scrollToBottom();
                 break;
             case "typing":
-                if (esm.event.user.id === $localUser.id) return;
+                if (esm.event.user.id === $localUser?.id) return;
 
                 const existing = typing.get(esm.event.user.id);
                 if (existing) {
@@ -184,11 +181,11 @@
         pendingOutgoingMessage = null;
 
         let result = await fetchMessageHistory();
-        if (result.length < MESSAGE_FETCH_LIMIT) {
+        if (result!.length < MESSAGE_FETCH_LIMIT) {
             nothingOlder = true;
         }
         loading = false;
-        messages = result;
+        messages = result!;
         scrollToBottom();
     }
 
@@ -201,11 +198,11 @@
                 messages[0]?.createdAt,
             );
 
-            if (messagesBefore.length > 0) {
-                messages = [...messagesBefore, ...messages];
+            if (messagesBefore!.length > 0) {
+                messages = [...messagesBefore!, ...messages];
             }
 
-            if (messagesBefore.length < MESSAGE_FETCH_LIMIT) {
+            if (messagesBefore!.length < MESSAGE_FETCH_LIMIT) {
                 nothingOlder = true;
             }
 

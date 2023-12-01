@@ -27,14 +27,35 @@ export default defineConfig((env: ConfigEnv) => {
 
     return {
         plugins: [
-            svelte({ compilerOptions: { cssHash: zvelteCssHash } }),
+            svelte({
+                compilerOptions: { cssHash: zvelteCssHash },
+                onwarn: (warning, handler) => {
+                    if (warning.code.startsWith("a11y-")) {
+                        // I sincerely hope you're not crippled or blind
+                        return;
+                    }
+                    handler(warning);
+                },
+            }),
             Icons({
                 compiler: "svelte",
             }),
-            mkcert({savePath: path.join(os.homedir(),".local","share","zling-certs")}),
+            mkcert({
+                savePath: path.join(
+                    os.homedir(),
+                    ".local",
+                    "share",
+                    "zling-certs"
+                ),
+            }),
         ],
         define: {
             ZLING_VERSION: JSON.stringify(version),
+        },
+        resolve: {
+            alias: {
+                src: "/src",
+            },
         },
         server: {
             port: 2000,
@@ -43,6 +64,6 @@ export default defineConfig((env: ConfigEnv) => {
         },
         preview: {
             port: 2000,
-        }
+        },
     };
 });

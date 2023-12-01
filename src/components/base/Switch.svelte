@@ -2,7 +2,7 @@
     export let value = false;
     export let tooltip = "";
 
-    function handleClick(_) {
+    function handleClick() {
         value = !value;
     }
 </script>

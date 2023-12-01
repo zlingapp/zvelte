@@ -1,14 +1,14 @@
 <script lang="ts">
+    import Button from "src/components/base/Button.svelte";
+    import IconUpload from "src/components/base/IconUpload.svelte";
+    import Modal from "src/components/base/Modal.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import { localUser } from "src/lib/stores";
+    import type { UploadedFile } from "src/lib/upload";
     import MaterialSymbolsAdd from "~icons/material-symbols/add";
-    import Tooltip from "../base/Tooltip.svelte";
-    import Modal from "../base/Modal.svelte";
-    import Button from "../base/Button.svelte";
-    import IconUpload from "../base/IconUpload.svelte";
-    import { localUser } from "../../lib/stores";
-    import type { UploadedFile } from "../../lib/upload";
 
-    export let createServer: (name: String, icon?: UploadedFile) => void;
-    export let joinServer: (id: String) => void;
+    export let createServer: (name: string, icon?: UploadedFile) => void;
+    export let joinServer: (id: string) => void;
 
     let isAddModalVisible = false; // show the "would you like to create or join a server" modal
 
@@ -24,7 +24,7 @@
 
     let isCreateModalVisible = false; // show the "create a server" modal
     let createServerName = `${$localUser?.name.split("#")[0]}'s Server`;
-    let createServerIcon: UploadedFile = null;
+    let createServerIcon: UploadedFile | null = null;
 
     let isJoinModalVisible = false; // show the "Join server?" modal
     let joinServerId = "";
@@ -80,7 +80,10 @@
             grow
             onClick={() => {
                 isCreateModalVisible = false;
-                createServer(createServerName, createServerIcon);
+                createServer(
+                    createServerName,
+                    createServerIcon ?? undefined,
+                );
             }}
         >
             Let's go!
@@ -131,6 +134,7 @@
     </svelte:fragment>
 </Modal>
 
+<!-- svelte-ignore css-unused-selector -->
 <style>
     @import "./ServerListItems.css";
 

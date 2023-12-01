@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { urlRelativeToApiBase } from "../../lib/auth";
-    import type { UploadedFile, UploadedFileType } from "../../lib/upload";
-    import type { PendingUpload } from "./MessageAttachButton.svelte";
+    import type { PendingUpload } from "src/components/text/MessageAttachButton.svelte";
+    import { urlRelativeToApiBase } from "src/lib/auth";
+    import type { UploadedFile, UploadedFileType } from "src/lib/upload";
     import MdiFile from '~icons/mdi/file';
 
     export let attachment: PendingUpload | UploadedFile;

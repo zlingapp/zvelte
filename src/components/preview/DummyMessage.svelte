@@ -1,10 +1,13 @@
 <script lang="ts">
-    import { urlRelativeToApiBase } from "../../lib/auth";
-    import { localUser } from "../../lib/stores";
-    import Tooltip from "../base/Tooltip.svelte";;
+    import type dayjs from "dayjs";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import { urlRelativeToApiBase } from "src/lib/auth";
+    import { localUser } from "src/lib/stores";
+    
     export let detailed = false;
     export let message = ""
-    export let time = null;
+    export let time: dayjs.Dayjs;
+
     $: formattedTime = time.calendar(null, {
         sameDay: "[Today at] h:mm A",
         nextDay: "[Tomorrow at] h:mm A",
@@ -13,14 +16,16 @@
         lastWeek: "DD/MM/YYYY hh:mm A",
         sameElse: "DD/MM/YYYY hh:mm A",
     });
+
+    $: localUser_ = $localUser!;
 </script>
 
     <div class="message" class:detailed>
         {#if detailed}
-            <img class="avatar" src={urlRelativeToApiBase($localUser.avatar).toString()} alt="avatar" />
+            <img class="avatar" src={urlRelativeToApiBase(localUser_.avatar).toString()} alt="avatar" />
             <div class="header">
                 <span class="username">
-                    {$localUser.name.split("#")[0]}
+                    {localUser_.name.split("#")[0]}
                 </span>
 
                 <span class="time"

@@ -1,26 +1,24 @@
 <script lang="ts">
-    import { link, navigate } from "svelte-routing";
-    import IcOutlineClose from "~icons/ic/outline-close";
-    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import { apiTokens, localUser } from "../lib/stores";
-    import { onMount, tick } from "svelte";
+    import InstancePicker from "src/components/InstancePicker.svelte";
     import {
         EMAIL_REGEX,
         USERNAME_REGEX,
-        currentInstance,
         apiFetch,
-        tokenExpiryTimestamp,
-        tryObtainLocalUser,
-    } from "../lib/auth";
-    import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
+        currentInstance,
+        tryObtainLocalUser
+    } from "src/lib/auth";
+    import { onMount } from "svelte";
+    import { link, navigate } from "svelte-routing";
+    import IcOutlineClose from "~icons/ic/outline-close";
     import MaterialSymbolsVisibilityOffOutlineRounded from "~icons/material-symbols/visibility-off-outline-rounded";
-    import InstancePicker from "../components/InstancePicker.svelte";
+    import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
     export let register: boolean = false;
     export let instancePickerOpen: boolean = false;
 
-    let error: string = null;
-    let softError: string = null;
+    let error: string | null = null;
+    let softError: string | null  = null;
     let loading: boolean = false;
     let showPassword: boolean = false;
 
@@ -90,9 +88,7 @@
                     username,
                     password,
                 }),
-            });
-        } catch (e) {
-            softError = `Failed to connect to ${$currentInstance.url.host}`;
+            });channelFailed to connect to ${$currentInstance.url.host}`;
             return;
         }
 
@@ -211,8 +207,10 @@
                     <input
                         value={password}
                         on:change={(e) => {
-                            password = e.target["value"];
-                            validate();
+                            if (e.target instanceof HTMLInputElement) {
+                                password = e.target["value"];
+                                validate();
+                            }
                         }}
                         on:input={(e) => (softError = null)}
                         name="password"

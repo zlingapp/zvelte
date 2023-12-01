@@ -2,6 +2,7 @@
     import type {
         Device,
         Producer,
+        RtpCapabilities,
         Transport,
     } from "mediasoup-client/lib/types";
 
@@ -10,9 +11,9 @@
         voiceAuthFetch,
         type Peer,
         type VoiceChannelInfo,
-    } from "../../lib/voice";
+    } from "src/lib/voice";
 
-    import { currentInstance, authFetch } from "../../lib/auth";
+    import { authFetch, currentInstance } from "src/lib/auth";
     import {
         voiceChannelCurrent as currentChannelStore,
         localUser,
@@ -20,23 +21,23 @@
         voiceChannelTarget,
         voicePeers as voicePeersStore,
         voiceState,
-    } from "../../lib/stores";
+    } from "src/lib/stores";
 
-    let device: Device = null;
+    let device: Device | null = null;
 
-    export let identity: string = null;
-    let token: string = null;
+    export let identity: string | null = null;
+    let token: string | null = null;
 
-    let socket: WebSocket = null;
-    let heartbeat_handle: number = null;
+    let socket: WebSocket | null = null;
+    let heartbeat_handle: number | null = null;
 
-    let send_transport: Transport = null;
-    export let producer: Producer = null;
+    let send_transport: Transport | null = null;
+    export let producer: Producer | null = null;
 
-    let recv_transport: Transport = null;
+    let recv_transport: Transport | null = null;
     let voicePeers: Map<string, Peer> = new Map();
 
-    let currentChannel: VoiceChannelInfo = null;
+    let currentChannel: VoiceChannelInfo | null = null;
 
     // list of peers
     $: current_peers = [...voicePeers.values()];
@@ -87,8 +88,8 @@
 
             const resp = await authFetch(`/voice/join?c=${channelId}`);
             const data = await resp.json();
-            identity = data.identity;
-            token = data.token;
+            identity = data.identity as string;
+            token = data.token as string;
 
             // create websocket url
             // wss or ws depending on secure
@@ -125,7 +126,7 @@
             // in browsers, websockets disconnect after 30 seconds of inactivity
             // which means we need to send a message periodically to keep the connection alive
             heartbeat_handle = setInterval(
-                () => socket.send("heartbeat"),
+                () => socket?.send("heartbeat"),
                 5000
             ) as any;
         } catch (error) {
@@ -153,7 +154,7 @@
         }
 
         if (socket) {
-            socket.onclose = undefined;
+            socket.onclose = undefined as any;
             socket.close();
             socket = null;
         }
@@ -174,8 +175,8 @@
             recv_transport = null;
         }
 
-        for (let peer of voicePeers.values()) {
-            removePeer(peer);
+        for (let peer_id of voicePeers.keys()) {
+            removePeer(peer_id);
         }
         // for some reason voicePeers is not being reset
 
@@ -202,7 +203,7 @@
                 identity,
                 token,
                 `/voice/leave`,
-                null,
+                undefined,
                 false
             );
         } catch (e) {
@@ -217,7 +218,7 @@
      *
      * @param rtp_capabilities The RTP capabilities of the server
      */
-    async function startConnection(routerRtpCapabilities) {
+    async function startConnection(routerRtpCapabilities: RtpCapabilities) {
         voiceState.set(VoiceState.PERMISSION_REQUEST);
 
         // get all the tracks
@@ -250,15 +251,15 @@
         await initRecvTransport();
 
         // start producer
-        producer = await send_transport.produce({ track: audio_track });
+        producer = await send_transport!.produce({ track: audio_track });
 
         // add self to voice peers
         await addPeer(
-            identity,
+            identity!,
             {
-                id: $localUser.id,
-                username: $localUser.name,
-                avatar: $localUser.avatar,
+                id: $localUser!.id,
+                username: $localUser!.name,
+                avatar: $localUser!.avatar,
             },
             true,
             producer
@@ -285,7 +286,7 @@
      */
     async function initSendTransport() {
         // voice_status = "ST Creating..."; // ST = Send Transport
-        send_transport = device.createSendTransport(
+        send_transport = device!.createSendTransport(
             await voiceAuthFetch(
                 identity,
                 token,
@@ -315,7 +316,7 @@
                     callback();
                 } catch (e) {
                     console.error(e);
-                    errback(e);
+                    errback(e as any);
                 }
             }
         );
@@ -364,7 +365,7 @@
                     callback({ id });
                 } catch (e) {
                     console.error(e);
-                    errback(e);
+                    errback(e as any);
                 }
             }
         );
@@ -374,7 +375,7 @@
      * Sets up the receive transport and hooks events.
      */
     async function initRecvTransport() {
-        recv_transport = device.createRecvTransport(
+        recv_transport = device!.createRecvTransport(
             await voiceAuthFetch(
                 identity,
                 token,
@@ -404,7 +405,7 @@
                     callback();
                 } catch (e) {
                     console.error(e);
-                    errback(e);
+                    errback(e as any);
                 }
             }
         );
@@ -491,7 +492,7 @@
             user,
             is_me: is_me === true,
             consumers: new Map(),
-            producer,
+            producer: producer,
         });
         voicePeers = voicePeers;
 
@@ -502,7 +503,7 @@
      * Removes a `Peer` from the voicePeers map, and signals reactivity (voicePeers = voicePeers).
      * @param identity The peer's identity
      */
-    async function removePeer(identity) {
+    async function removePeer(identity: string) {
         let peer = voicePeers.get(identity);
         if (peer == null) return false;
 
@@ -526,7 +527,7 @@
         let peer = voicePeers.get(peerIdentity);
         if (peer === undefined) return;
 
-        let consumer = await recv_transport.consume(
+        let consumer = await recv_transport!.consume(
             await voiceAuthFetch(identity, token, "/voice/consume", {
                 method: "POST",
                 headers: {
@@ -534,7 +535,7 @@
                 },
                 body: JSON.stringify({
                     producerId,
-                    rtpCapabilities: device.rtpCapabilities,
+                    rtpCapabilities: device!.rtpCapabilities,
                 }),
             })
         );
@@ -550,11 +551,12 @@
     /**
      * Useful hook for Svelte to update the audio element's srcObject.
      */
-    function srcObject(node, stream) {
-        node.srcObject = stream;
+    function srcObject(node: HTMLMediaElement, stream?: MediaStream) {
+        node.srcObject = stream as any;
+
         return {
-            update(nextStream) {
-                node.srcObject = stream;
+            update(nextStream: any) {
+                node.srcObject = nextStream;
             },
             destroy() {
                 /* stream revoking logic here */

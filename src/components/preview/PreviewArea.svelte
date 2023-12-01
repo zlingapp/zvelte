@@ -1,7 +1,7 @@
 <script lang="ts">
-    import DummyMessage from "./DummyMessage.svelte";
     import dayjs from "dayjs";
-    import DummyMessageCaret from "./DummyMessageCaret.svelte";
+    import DummyMessage from "src/components/preview/DummyMessage.svelte";
+    import DummyMessageCaret from "src/components/preview/DummyMessageCaret.svelte";
 </script>
 
 <div class="preview">

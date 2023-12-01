@@ -1,12 +1,11 @@
 <script lang="ts">
-    import type { PublicUserInfo } from "../../lib/channel";
-    import MemberListMember from "./MemberListMember.svelte";
-    import { authFetch } from "../../lib/auth";
-    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import type { EventSocketMessage } from "../../lib/socket";
-    import TopicConsumer from "../TopicConsumer.svelte";
-    import { currentGuild, guilds } from "../../lib/stores";
+    import TopicConsumer from "src/components/TopicConsumer.svelte";
+    import MemberListMember from "src/components/users/MemberListMember.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { EventSocketMessage } from "src/lib/socket";
+    import { currentGuild, guilds } from "src/lib/stores";
     import { onMount } from "svelte";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
     let previousGuildId: string;
     let loading = true;
@@ -42,6 +41,10 @@
         const members = await resp.json();
 
         currentGuild.update((guild) => {
+            if (guild == null) {
+                return guild;
+            }
+
             guild.members = members;
             return guild;
         });
@@ -91,13 +94,13 @@
 <TopicConsumer
     {onRelevantEvent}
     eventFilter={(esm) =>
-        esm.topic.type == "guild" && esm.topic.id == $currentGuild.id}
+        esm.topic.type == "guild" && esm.topic.id == $currentGuild?.id}
     onReconnect={fetchMembers}
 />
 <div class="member-list">
     {#if loading}
         <div class="status"><SvgSpinnersRingResize /></div>
-    {:else}
+    {:else if $currentGuild?.members?.length}
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label>Members — {$currentGuild.members.length}</label>
         {#each $currentGuild.members as member}

@@ -1,9 +1,9 @@
 <script lang="ts">
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import type { PendingUpload } from "src/components/text/MessageAttachButton.svelte";
+    import { humanFileSize } from "src/lib/util";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
     import MaterialSymbolsUploadFile from "~icons/material-symbols/upload-file";
-    import { humanFileSize } from "../../lib/util";
-    import Tooltip from "../base/Tooltip.svelte";
-    import type { PendingUpload } from "./MessageAttachButton.svelte";
 
     export let upload: PendingUpload;
     export let onRemove: () => void = () => {};

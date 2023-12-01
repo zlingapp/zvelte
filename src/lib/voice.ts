@@ -1,7 +1,7 @@
 import type { Consumer, Producer } from "mediasoup-client/lib/types";
 import { get } from "svelte/store";
-import { authFetch } from "./auth";
-import { voiceChannelTarget, voicePeers } from "./stores";
+import { authFetch } from "src/lib/auth";
+import { voiceChannelTarget, voicePeers } from "src/lib/stores";
 
 export enum VoiceState {
     PERMISSION_REQUEST,
@@ -21,7 +21,7 @@ export interface Peer {
     }
     consumers: Map<string, Consumer>;
     is_me: boolean;
-    producer: Producer; // used only for the local peer
+    producer?: Producer; // used only for the local peer
 }
 
 export interface VoiceChannelInfo {

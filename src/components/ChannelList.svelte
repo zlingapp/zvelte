@@ -1,26 +1,23 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import type { Guild } from "../lib/guild";
-    import { currentChannel, currentGuild, guilds } from "../lib/stores";
-    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import type { Channel, TextChannel } from "../lib/channel";
-    import UiTextChannel from "./text/UiTextChannel.svelte";
-    import Button from "./base/Button.svelte";
-    import { text } from "svelte/internal";
-    import MaterialSymbolsAdd from "~icons/material-symbols/add";
-    import VoiceChannel from "./voice/VoiceChannel.svelte";
-    import { authFetch } from "../lib/auth";
+    import TopicConsumer from "src/components/TopicConsumer.svelte";
+    import ContextMenu from "src/components/base/ContextMenu.svelte";
+    import ChannelListContextMenu from "src/components/context-menus/ChannelListContextMenu.svelte";
+    import UiTextChannel from "src/components/text/UiTextChannel.svelte";
+    import VoiceChannel from "src/components/voice/VoiceChannel.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { Channel, TextChannel } from "src/lib/channel";
+    import type { Guild } from "src/lib/guild";
     import {
-        type EventSocketMessage,
         eventSocketSubscribe,
         eventSocketUnsubscribe,
-    } from "../lib/socket";
-    import TopicConsumer from "./TopicConsumer.svelte";
-    import ContextMenu from "./base/ContextMenu.svelte";
-    import ChannelListContextMenu from "./context-menus/ChannelListContextMenu.svelte";
+        type EventSocketMessage,
+    } from "src/lib/socket";
+    import { currentChannel, currentGuild, guilds } from "src/lib/stores";
+    import { onMount } from "svelte";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
     // guild id of the last guild we subscribed to
-    let previousGuildId = null;
+    let previousGuildId: string | null = null;
 
     async function getChannelList(guild: Guild) {
         let resp = await authFetch(`/guilds/${guild.id}/channels`);
@@ -32,33 +29,33 @@
         }
 
         let channels: Channel[] = await resp.json();
-        currentGuild.update((g) => ({ ...g, channels }));
+        currentGuild.update((g) => ({ ...(g as Guild), channels }));
 
-        // cache results in the guilds list for when we switch back next 
+        // cache results in the guilds list for when we switch back next
         guilds.update((guilds) =>
             guilds.map((g) => {
                 if (g.id == guild.id) {
                     g.channels = channels;
                 }
                 return g;
-            })
+            }),
         );
     }
 
     function autoSelectChannel(guild: Guild) {
         const currentChannelInCurrentGuild = guild.channels?.find(
-            (c) => c.id === $currentChannel?.id
+            (c) => c.id === $currentChannel?.id,
         );
 
         if (currentChannelInCurrentGuild != null) {
             return;
         }
 
-        if (guild.channels?.length > 0) {
+        if (guild.channels?.length) {
             // auto-open the first text channel or if there aren't any text
             // channels, set to null
             const firstTextChannel = guild.channels.find(
-                (c) => c.type == "text"
+                (c) => c.type == "text",
             ) as TextChannel;
 
             $currentChannel = firstTextChannel || null;
@@ -112,7 +109,7 @@
             return;
         }
 
-        let resp = await authFetch(`/guilds/${$currentGuild.id}/channels`, {
+        let resp = await authFetch(`/guilds/${$currentGuild!.id}/channels`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -131,7 +128,7 @@
 
     async function onRelevantEvent(esm: EventSocketMessage) {
         if (esm.event.type == "channelListUpdate") {
-            await getChannelList($currentGuild);
+            await getChannelList($currentGuild!);
         }
     }
 
@@ -142,15 +139,17 @@
     async function onCreateVoiceChannel() {
         await createChannel("voice");
     }
+
+    $: currentGuild_ = $currentGuild!; // because typescript is dumb
 </script>
 
 <TopicConsumer
     {onRelevantEvent}
     eventFilter={(esm) =>
-        esm.topic.type == "guild" && esm.topic.id == $currentGuild.id}
+        esm.topic.type == "guild" && esm.topic.id == currentGuild_.id}
     onReconnect={async () => {
         const guild = $currentGuild;
-        
+
         if (guild == null) {
             // if somehow we *just* switched from guilds to dms, then we don't need to resubscribe
             return;
@@ -162,19 +161,19 @@
 />
 <ContextMenu>
     <div class="channel-list">
-        {#if $currentGuild.channels == null}
+        {#if currentGuild_.channels == null}
             <!-- loading -->
             <div class="status"><SvgSpinnersRingResize /></div>
-        {:else if $currentGuild.channels.length > 0}
+        {:else if currentGuild_.channels.length > 0}
             <!-- show channel list -->
-            {#each $currentGuild.channels as channel}
+            {#each currentGuild_.channels as channel}
                 {#if channel.type == "text"}
                     <UiTextChannel {channel} />
                 {:else if channel.type == "voice"}
                     <VoiceChannel
                         name={channel.name}
                         id={channel.id}
-                        guild_name={$currentGuild.name}
+                        guild_name={currentGuild_.name}
                     />
                 {/if}
             {/each}

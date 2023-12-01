@@ -1,25 +1,22 @@
 <script lang="ts">
-    import { flip } from "svelte/animate";
-    
+    import Button from "src/components/base/Button.svelte";
+    import Switch from "src/components/base/Switch.svelte";
+    import PreviewArea from "src/components/preview/PreviewArea.svelte";
+    import { editingThemeId, localUser, themes } from "src/lib/stores";
     import {
-        themeToFileString,
+        defaultTheme,
         fileStringToTheme,
+        themeToFileString,
         type Theme,
-    } from "../../lib/theme";
-    import { defaultTheme } from "../../lib/theme";
-    import { themes, localUser, editingThemeId } from "../../lib/stores";
-    
-    import Button from "../base/Button.svelte";
-    import Switch from "../base/Switch.svelte";
-    import PreviewArea from "../preview/PreviewArea.svelte";
-
-    import IcRoundPlus from "~icons/ic/round-plus";
+    } from "src/lib/theme";
+    import { flip } from "svelte/animate";
     import IcBaselineFileOpen from "~icons/ic/baseline-file-open";
-    import ZondiconsDownload from "~icons/zondicons/download";
-    import ZondiconsTrash from "~icons/zondicons/trash";
-    import ZondiconsEditPencil from "~icons/zondicons/edit-pencil";
-    import ZondiconsUp from "~icons/zondicons/cheveron-up";
+    import IcRoundPlus from "~icons/ic/round-plus";
     import ZondiconsDown from "~icons/zondicons/cheveron-down";
+    import ZondiconsUp from "~icons/zondicons/cheveron-up";
+    import ZondiconsDownload from "~icons/zondicons/download";
+    import ZondiconsEditPencil from "~icons/zondicons/edit-pencil";
+    import ZondiconsTrash from "~icons/zondicons/trash";
 
     // downloads a theme's css as a file
     function downloadTheme(t: Theme) {
@@ -34,53 +31,60 @@
         URL.revokeObjectURL(urlObject);
     }
 
-    function deleteTheme(t: Theme) {
-        themes.update((x) => x.filter((y) => y != t));
+    function deleteTheme(theme: Theme) {
+        themes.update((arr: Theme[]) => arr.filter((item) => item != theme));
     }
 
     function createTheme() {
-        themes.update((x) =>
-            x.concat([
+        themes.update((arr: Theme[]) =>
+            arr.concat([
                 {
                     id: Math.floor(Math.random() * 1000),
                     name: "Untitled Theme",
-                    author: $localUser.name.split("#")[0],
+                    author: $localUser!.name.split("#")[0],
                     enabled: false,
                     style: defaultTheme.style,
                 },
-            ])
+            ]),
         );
     }
-    var editingName: Theme = null;
-    function updateThemeName(t: Theme, event) {
-        themes.update((x) => {
-            x.find((y) => y == t)["name"] = event.target.value;
-            return x;
+    
+    var editingTheme: Theme | null = null;
+
+    function updateThemeName(theme: Theme, event: any) {
+        themes.update((arr: Theme[]) => {
+            let t = arr.find((item) => item == theme);
+            if (t == null) return arr;
+
+            t.name = event.target.value;
+            return arr;
         });
     }
 
     function validateThemeName(id: Number) {
-        themes.update((x) => {
-            let t = x.find((y) => y.id == id);
-            t.name = t.name.trim() == "" ? "New Theme" : t.name.trim();
-            return x;
+        themes.update((arr: Theme[]) => {
+            let theme = arr.find((item) => item.id == id);
+            if (theme == null) return arr;
+
+            theme.name = theme.name.trim() == "" ? "New Theme" : theme.name.trim();
+            return arr;
         });
     }
 
-    var files: FileList = null;
+    var files: FileList | null = null;
     var invalidFile = false;
     var fileInput: HTMLInputElement;
 
     async function submitImport() {
-        let text = await files[0].text();
-        let t = fileStringToTheme(text);
+        let text = await files![0].text();
+        let theme = fileStringToTheme(text);
         files = null;
 
-        if (t === null) {
+        if (theme === null) {
             invalidFile = true;
         } else {
             invalidFile = false;
-            themes.update((x) => x.concat([t]));
+            themes.update((arr: Theme[]) => arr.concat([ theme! ]));
         }
     }
 
@@ -157,10 +161,10 @@
                         size="15"
                         id={theme.id.toString()}
                         class="theme-title"
-                        class:editable={editingName == theme}
-                        readonly={editingName != theme}
+                        class:editable={editingTheme == theme}
+                        readonly={editingTheme != theme}
                         on:click={(_) => {
-                            editingName = theme;
+                            editingTheme = theme;
                         }}
                         on:input={(event) => {
                             updateThemeName(theme, event);
@@ -168,7 +172,7 @@
                         on:keypress={(event) => {
                             if (event.key == "Enter") {
                                 validateThemeName(theme.id);
-                                editingName = null;
+                                editingTheme = null;
                             }
                         }}
                         value={theme.name}
@@ -241,18 +245,18 @@
 </div>
 <svelte:window
     on:click={(event) => {
-        if (editingName == null) return;
+        if (editingTheme == null) return;
         if (
             event.target instanceof HTMLElement &&
             !event.target.className.includes("editable")
         ) {
             if (document.getElementsByClassName("editable").length != 0) {
                 let id = parseInt(
-                    document.getElementsByClassName("editable")[0].id
+                    document.getElementsByClassName("editable")[0].id,
                 );
                 validateThemeName(id);
             }
-            editingName = null;
+            editingTheme = null;
         }
     }}
 />
@@ -287,7 +291,9 @@
 
         border-radius: 3px;
 
-        transition: padding-left 0.1s ease-in-out, outline 0.1s ease-in-out;
+        transition:
+            padding-left 0.1s ease-in-out,
+            outline 0.1s ease-in-out;
 
         cursor: pointer;
     }

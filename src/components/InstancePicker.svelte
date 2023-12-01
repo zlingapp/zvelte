@@ -1,19 +1,19 @@
 <script lang="ts">
+    import Button from "src/components/base/Button.svelte";
+    import Dropdown from "src/components/base/Dropdown.svelte";
+    import Modal from "src/components/base/Modal.svelte";
+    import { currentInstance, instances, type Instance } from "src/lib/auth";
+    import { slide } from "svelte/transition";
+    import MaterialSymbolsAdd from "~icons/material-symbols/add";
     import ZondiconsNetwork from "~icons/zondicons/network";
     import ZondiconsTrash from "~icons/zondicons/trash";
-    import Dropdown from "./base/Dropdown.svelte";
-    import { fly, slide } from "svelte/transition";
-    import Button from "./base/Button.svelte";
-    import MaterialSymbolsAdd from "~icons/material-symbols/add";
-    import { currentInstance, instances } from "../lib/auth";
-    import Modal from "./base/Modal.svelte";
 
     export let open: boolean = true;
     let isAddModalOpen = false;
     let urlError = false;
     let dupError = false;
-    let addInstanceName = null;
-    let addInstanceUrl = null;
+    let addInstanceName: string | null = null;
+    let addInstanceUrl: string | null = null;
 
     function clear() {
         isAddModalOpen = false;
@@ -26,18 +26,37 @@
     function addInstance() {
         dupError = false;
         urlError = false;
-        let url = null;
-        try {
-            url = new URL(addInstanceUrl)
-        } catch {
-            urlError=true;
+        if (!addInstanceUrl) {
+            urlError = true;
             return;
         }
-        if (($instances.filter((x)=>(x.url.toString()==url.toString())).length != 0)) {
+
+        let url: URL | null = null;
+
+        try {
+            url = new URL(addInstanceUrl);
+        } catch {
+            urlError = true;
+            return;
+        }
+        if (
+            $instances.filter(
+                (instance) => instance.url.toString() == url?.toString(),
+            ).length
+        ) {
             dupError = true;
             return;
-        } 
-        instances.update((x)=>x.concat([{"name":addInstanceName??"New Instance","url":new URL(addInstanceUrl)}]))
+        }
+
+        instances.update((arr: Instance[]) =>
+            arr.concat([
+                {
+                    name: addInstanceName ?? "New Instance",
+                    url: new URL(addInstanceUrl!),
+                },
+            ]),
+        );
+
         isAddModalOpen = false;
         addInstanceName = null;
         addInstanceUrl = null;
@@ -47,6 +66,10 @@
         if (url.pathname.endsWith("/"))
             return url.host + url.pathname.slice(0, -1);
         return url.host + url.pathname;
+    }
+
+    function removeInstance(instance: Instance): void {
+        instances.update((arr: Instance[]) => arr.filter((i) => i.url != instance.url));
     }
 </script>
 
@@ -69,30 +92,35 @@
 {#if open}
     <div class="options" transition:slide={{ duration: 200 }}>
         {#each $instances as instance}
-            <Button compact outline onClick={() => {
-                $currentInstance = instance
-            }}>
+            <Button
+                compact
+                outline
+                onClick={() => {
+                    $currentInstance = instance;
+                }}
+            >
                 <div class="instance option">
                     <ZondiconsNetwork width="20px" height="20px" />
                     <div>
                         <div class="name">{instance.name}</div>
                         <div class="url">{formatUrl(instance.url)}</div>
                     </div>
-                    {#if (instance.url.toString()!="https://api.zlingapp.com/")}
-                    <div style="margin-left:auto;margin-right:0">
-                        <Button compact onClick={()=>instances.update((v)=>v.filter((x)=>x.url != instance.url))}>
-                            <ZondiconsTrash width="14px" height="14px"/>
-                        </Button>
-                    </div>
+                    {#if instance.url.toString() != "https://api.zlingapp.com/"}
+                        <div style="margin-left:auto;margin-right:0">
+                            <Button
+                                compact
+                                onClick={() => removeInstance(instance)}
+                            >
+                                <ZondiconsTrash width="14px" height="14px" />
+                            </Button>
+                        </div>
                     {/if}
                 </div>
             </Button>
         {/each}
         <Button outline onClick={() => (isAddModalOpen = true)}>
             <div class="add-instance">
-                <MaterialSymbolsAdd
-                    font-size="18px"
-                />Add Instance
+                <MaterialSymbolsAdd font-size="18px" />Add Instance
             </div>
         </Button>
     </div>
@@ -102,14 +130,24 @@
 
         <svelte:fragment slot="content">
             <label>Instance Name</label>
-            <input type="text" bind:value={addInstanceName} placeholder="New Instance"/>
+            <input
+                type="text"
+                bind:value={addInstanceName}
+                placeholder="New Instance"
+            />
             <label>Base URL</label>
-            <input type="text" bind:value={addInstanceUrl} placeholder="https://example.com/"/>
+            <input
+                type="text"
+                bind:value={addInstanceUrl}
+                placeholder="https://example.com/"
+            />
             {#if urlError}
-            <label style="color: var(--red)">Invalid URL</label>
+                <label style="color: var(--red)">Invalid URL</label>
             {/if}
             {#if dupError}
-            <label style="color: var(--red)">That instance already exists</label>
+                <label style="color: var(--red)"
+                    >That instance already exists</label
+                >
             {/if}
         </svelte:fragment>
 

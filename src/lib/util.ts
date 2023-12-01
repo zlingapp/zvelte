@@ -1,4 +1,4 @@
-export function humanFileSize(bytes, si = false, dp = 1) {
+export function humanFileSize(bytes: number, si = false, dp = 1) {
     const thresh = si ? 1000 : 1024;
 
     if (Math.abs(bytes) < thresh) {
@@ -23,7 +23,7 @@ export function humanFileSize(bytes, si = false, dp = 1) {
 }
 
 export async function getErrorMessage(resp: Response): Promise<string> {
-    let errorMessage = `${resp.status} ${resp.statusText}`
+    let errorMessage = `${resp.status} ${resp.statusText}`;
     try {
         errorMessage += ": " + (await resp.json()).message;
     } catch (e) {}

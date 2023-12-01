@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { dmChannelOpen } from "../../lib/stores";
-    import TopicConsumer from "../TopicConsumer.svelte";
-    import MessageList from "../text/MessageList.svelte";
-    import FriendsPage from "./pages/friends/FriendsAndRequestsPage.svelte";
+    import TopicConsumer from "src/components/TopicConsumer.svelte";
+    import FriendsPage from "src/components/home/pages/friends/FriendsAndRequestsPage.svelte";
+    import MessageList from "src/components/text/MessageList.svelte";
+    import { dmChannelOpen } from "src/lib/stores";
 </script>
 
 {#if $dmChannelOpen == null}
@@ -12,7 +12,7 @@
     <TopicConsumer
         eventFilter={(msg) =>
             msg.topic.type == "user" &&
-            msg.topic.id == $dmChannelOpen.friend.id &&
+            msg.topic.id == $dmChannelOpen?.friend.id &&
             msg.event.type == "friendRemove"
         }
         onRelevantEvent={() => {

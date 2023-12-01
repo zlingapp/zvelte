@@ -1,18 +1,18 @@
 <script lang="ts">
+    import type { EventSocketMessage } from "src/lib/socket";
+    import { eventSocket } from "src/lib/stores";
     import { onDestroy, onMount } from "svelte";
     import type { Unsubscriber } from "svelte/store";
-    import type { EventSocketMessage } from "../lib/socket";
-    import { eventSocket } from "../lib/stores";
 
     // function to call when the socket is reconnected
     export let onReconnect: Function;
 
     // function to call when ANY message is received
-    export let onAnyMessage: (msg: EventSocketMessage) => void = undefined;
+    export let onAnyMessage: (msg: EventSocketMessage) => void = undefined as any;
     // function to decide if a message is relevant to this component
-    export let eventFilter: (msg: EventSocketMessage) => boolean = undefined;
+    export let eventFilter: (msg: EventSocketMessage) => boolean = undefined as any;
     // function to call when a relevant message is received
-    export let onRelevantEvent: (msg: EventSocketMessage) => void = undefined;
+    export let onRelevantEvent: (msg: EventSocketMessage) => void = undefined as any;
 
     let socketStoreUnsubscribe: Unsubscriber;
     let firstTimeSocketSubscribe = false;

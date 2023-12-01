@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Guild } from "../../lib/guild";
-    import { currentGuild, dmChannelOpen } from "../../lib/stores";
-    import ContextMenu from "../base/ContextMenu.svelte";
-    import GuildContextMenu from "../context-menus/GuildContextMenu.svelte";
-    import Tooltip from "../base/Tooltip.svelte";
-    import { urlRelativeToApiBase } from "../../lib/auth";
+    import ContextMenu from "src/components/base/ContextMenu.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import GuildContextMenu from "src/components/context-menus/GuildContextMenu.svelte";
+    import { urlRelativeToApiBase } from "src/lib/auth";
+    import type { Guild } from "src/lib/guild";
+    import { currentGuild, dmChannelOpen } from "src/lib/stores";
 
     export let guild: Guild;
 
@@ -26,7 +26,6 @@
         <div class="guild-tooltip-name" slot="text">
             {guild.name}
         </div>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
             class="server-list-button guild-icon"
             class:current={guild.id == $currentGuild?.id}
@@ -37,7 +36,6 @@
                     {guild.name[0]}
                 </span>
             {:else}
-                <!-- svelte-ignore a11y-missing-attribute -->
                 <img src={urlRelativeToApiBase(guild.icon).toString()} />
             {/if}
         </div>
@@ -45,6 +43,7 @@
     <GuildContextMenu slot="menu" {onCopyId} />
 </ContextMenu>
 
+<!-- svelte-ignore css-unused-selector -->
 <style>
     @import "./ServerListItems.css";
 

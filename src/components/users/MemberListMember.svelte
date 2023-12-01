@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { PublicUserInfo } from "../../lib/channel";
-    import Avatar from "./Avatar.svelte";
+    import Avatar from "src/components/users/Avatar.svelte";
+    import type { PublicUserInfo } from "src/lib/channel";
 
     export let member: PublicUserInfo;
     export let fullUsername = false;

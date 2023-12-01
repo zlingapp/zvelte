@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { openDmWith } from "../../lib/friends";
-    import { currentChannel, currentGuild, recentDMs } from "../../lib/stores";
-    import Tooltip from "../base/Tooltip.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import { openDmWith } from "src/lib/friends";
+    import { currentChannel, currentGuild, recentDMs } from "src/lib/stores";
     import IcBaselineChat from "~icons/ic/baseline-chat";
 
     function onClick() {
@@ -16,7 +16,6 @@
 
 <Tooltip direction="right" selectable>
     <div slot="text" class="home-tooltip-name">Direct Messages</div>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
         class="server-list-button guild-icon home-icon"
         class:current={$currentGuild == null}
@@ -26,6 +25,7 @@
     </div>
 </Tooltip>
 
+<!-- svelte-ignore css-unused-selector -->
 <style>
     @import "./ServerListItems.css";
 

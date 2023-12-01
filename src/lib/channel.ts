@@ -1,6 +1,6 @@
 import type { Dayjs } from "dayjs";
-import type { UploadedFile } from "./upload";
-import type { PendingUpload } from "../components/text/MessageAttachButton.svelte";
+import type { PendingUpload } from "src/components/text/MessageAttachButton.svelte";
+import type { UploadedFile } from "src/lib/upload";
 
 export interface Channel {
     id: string;

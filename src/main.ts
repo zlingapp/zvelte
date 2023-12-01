@@ -1,20 +1,20 @@
+import App from "src/App.svelte";
 import "./app.css";
-import App from "./App.svelte";
 
 import * as dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
-import utc from 'dayjs/plugin/utc'
-import tz from 'dayjs/plugin/timezone'
+import tz from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc)
 dayjs.extend(tz)
 dayjs.extend(calendar);
 
 
-const target = document.getElementById("app");
+const target = document.getElementById("app")!;
 
 const app = new App({
-    target: target.parentElement,
+    target: target.parentElement!,
     anchor: target,
 });
 

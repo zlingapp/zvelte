@@ -1,8 +1,8 @@
 <script lang="ts">
+    import Tooltip from "src/components/base/Tooltip.svelte";
     import HealthiconsHighBars from "~icons/healthicons/high-bars";
     import HealthiconsLowBars from '~icons/healthicons/low-bars';
     import HealthiconsMediumBars from '~icons/healthicons/medium-bars';
-    import Tooltip from "../base/Tooltip.svelte";
     
     export let latency: number;
 </script>

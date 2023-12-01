@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { authFetch } from "../../../../lib/auth";
-    import type { FriendRequest } from "../../../../lib/friends";
-    import { showInErrorModal } from "../../../../lib/stores";
-    import { getErrorMessage } from "../../../../lib/util";
-    import Button from "../../../base/Button.svelte";
-    import Tooltip from "../../../base/Tooltip.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { FriendRequest } from "src/lib/friends";
+    import { showInErrorModal } from "src/lib/stores";
+    import { getErrorMessage } from "src/lib/util";
+    import Button from "src/components/base/Button.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
 
-    import MemberListMember from "../../../users/MemberListMember.svelte";
+    import MemberListMember from "src/components/users/MemberListMember.svelte";
     import IcBaselineCheck from "~icons/ic/baseline-check";
     import IcBaselineClose from "~icons/ic/baseline-close";
 

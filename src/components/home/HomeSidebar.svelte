@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { dmChannelOpen, recentDMs, unreadDMs } from "../../lib/stores";
-    import Button from "../base/Button.svelte";
-    import IcBaselinePeople from "~icons/ic/baseline-people";
-    import MemberListMember from "../users/MemberListMember.svelte";
-    import { openDmWith } from "../../lib/friends";
+    import Button from "src/components/base/Button.svelte";
+    import MemberListMember from "src/components/users/MemberListMember.svelte";
+    import { openDmWith } from "src/lib/friends";
+    import { dmChannelOpen, recentDMs, unreadDMs } from "src/lib/stores";
     import IcBaselineClose from "~icons/ic/baseline-close";
+    import IcBaselinePeople from "~icons/ic/baseline-people";
 
     $: friendsOpen = $dmChannelOpen == null;
 

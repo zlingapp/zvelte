@@ -1,16 +1,20 @@
 <script lang="ts">
-    import { urlRelativeToApiBase } from "../../lib/auth";
-    import type { Peer } from "../../lib/voice";
-    import VoiceMemberDuplicateTag from "./VoiceMemberDuplicateTag.svelte";
+    import VoiceMemberDuplicateTag from "src/components/voice/VoiceMemberDuplicateTag.svelte";
+    import { urlRelativeToApiBase } from "src/lib/auth";
+    import type { Peer } from "src/lib/voice";
 
     export let peer: Peer;
     export let isDuplicate: boolean = false;
 
-    let analyzer: AnalyserNode = null;
+    let analyzer: AnalyserNode | null = null;
     let speaking: Boolean = false;
-    let intervalHandle: number = null;
+    let intervalHandle: number | null = null;
 
     function isSoundDetected() {
+        if (analyzer == null) {
+            return false;
+        }
+
         const bufferLength = analyzer.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
         analyzer.getByteFrequencyData(dataArray);
@@ -37,9 +41,9 @@
 
         const stream = new MediaStream();
 
-        if (peer.producer) {
+        if (peer.producer?.track) {
             stream.addTrack(peer.producer.track);
-        } else if (consumer) {
+        } else if (consumer?.track) {
             stream.addTrack(consumer.track);
         }
 

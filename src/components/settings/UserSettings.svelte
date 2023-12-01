@@ -1,10 +1,10 @@
 <script lang="ts">
+    import SettingsCategoryAccount from "src/components/settings/SettingsCategoryAccount.svelte";
+    import SettingsCategoryAppearance from "src/components/settings/SettingsCategoryAppearance.svelte";
+    import SettingsCategoryMyBots from "src/components/settings/SettingsCategoryMyBots.svelte";
+    import { userSettingsOpen } from "src/lib/stores";
     import { fly } from "svelte/transition";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
-    import { userSettingsOpen } from "../../lib/stores";
-    import SettingsCategoryAccount from "./SettingsCategoryAccount.svelte";
-    import SettingsCategoryMyBots from "./SettingsCategoryMyBots.svelte";
-    import SettingsCategoryAppearance from "./SettingsCategoryAppearance.svelte";
 
     let category = "my-account";
 </script>

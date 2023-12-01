@@ -1,20 +1,20 @@
 <script lang="ts">
-    import { currentChannel, currentGuild, localUser, showInErrorModal } from "../../lib/stores";
+    import { currentChannel, localUser, showInErrorModal } from "src/lib/stores";
 
     import dayjs from "dayjs";
+    import AttachmentUploadIndicator from "src/components/text/AttachmentUploadIndicator.svelte";
+    import MessageAttachButton, {
+        type PendingUpload,
+    } from "src/components/text/MessageAttachButton.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { Message, TextChannel } from "src/lib/channel";
+    import { getErrorMessage } from "src/lib/util";
     import { onMount } from "svelte";
     import { flip } from "svelte/animate";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
-    import { authFetch } from "../../lib/auth";
-    import type { Message, TextChannel } from "../../lib/channel";
-    import AttachmentUploadIndicator from "./AttachmentUploadIndicator.svelte";
-    import MessageAttachButton, {
-        type PendingUpload,
-    } from "./MessageAttachButton.svelte";
-    import { getErrorMessage } from "../../lib/util";
 
-    let value;
+    let value: string;
     let sendButton: HTMLDivElement;
 
     // bound to the MessageAttachButton component
@@ -87,9 +87,9 @@
             id: "zvelte-pending",
             content,
             author: {
-                id: $localUser.id,
-                avatar: $localUser.avatar,
-                username: $localUser.name,
+                id: $localUser!.id,
+                avatar: $localUser!.avatar,
+                username: $localUser!.name,
                 // TODO: resolve nickname here, maybe through guild Member
             },
             createdAt: dayjs(),

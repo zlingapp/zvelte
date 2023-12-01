@@ -1,8 +1,8 @@
 <script lang="ts">
+    import { currentInstance, ensureHaveValidTokens } from "src/lib/auth";
+    import { eventSocketSend } from "src/lib/socket";
+    import { apiTokens, eventSocket } from "src/lib/stores";
     import { onMount } from "svelte";
-    import { currentInstance, ensureHaveValidTokens } from "../lib/auth";
-    import { eventSocketSend } from "../lib/socket";
-    import { apiTokens, eventSocket } from "../lib/stores";
 
     export let socketDisconnected = true;
     let socketReconnectAttempt = 0;

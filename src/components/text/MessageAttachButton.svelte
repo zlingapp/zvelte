@@ -25,7 +25,7 @@
     let input: HTMLInputElement;
     export let pendingUploads: PendingUpload[] = [];
 
-    async function inputChanged(event) {
+    async function inputChanged(event: any) {
         let newFiles: File[] = [...event.target.files];
         // clear input files
         event.target.value = "";

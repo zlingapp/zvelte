@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { authFetch, urlRelativeToApiBase } from "../../lib/auth";
-    import { localUser } from "../../lib/stores";
-    import IconUpload from "../base/IconUpload.svelte";
+    import IconUpload from "src/components/base/IconUpload.svelte";
+    import { authFetch, urlRelativeToApiBase } from "src/lib/auth";
+    import { localUser } from "src/lib/stores";
 
     async function setAvatar({ url }: { url: string }) {
-        $localUser.avatar = url;
+        $localUser!.avatar = url;
         
         const resp = await authFetch("/settings/avatar", {
             method: "POST",
@@ -21,11 +21,13 @@
             return;
         }
     }
+
+    $: localUser_ = $localUser!; // because typescript is dumb
 </script>
 
 <section>
     <h2>My Account</h2>
-    <IconUpload onChange={setAvatar} defaultImage={urlRelativeToApiBase($localUser.avatar).toString()} />
+    <IconUpload onChange={setAvatar} defaultImage={urlRelativeToApiBase(localUser_.avatar).toString()} />
 </section>
 
 <style></style>

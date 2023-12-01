@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { fade, slide } from "svelte/transition";
-    import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize'
+    import { fade } from "svelte/transition";
+    import SvgSpinnersRingResize from '~icons/svg-spinners/ring-resize';
 </script>
 
 <div class="loading-screen" out:fade={{delay: 500, duration: 200}}>

@@ -1,23 +1,20 @@
 <script lang="ts">
+    import Button from "src/components/base/Button.svelte";
+    import ButtonWithTick from "src/components/base/ButtonWithTick.svelte";
+    import IconUpload from "src/components/base/IconUpload.svelte";
+    import Modal from "src/components/base/Modal.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import Avatar from "src/components/users/Avatar.svelte";
+    import { USERNAME_REGEX, authFetch } from "src/lib/auth";
+    import type { PublicUserInfo } from "src/lib/channel";
+    import type { UploadedFile } from "src/lib/upload";
     import { onMount } from "svelte";
-    import { USERNAME_REGEX, authFetch } from "../../lib/auth";
-    import { localUser } from "../../lib/stores";
-    import IconUpload from "../base/IconUpload.svelte";
-    import Avatar from "../users/Avatar.svelte";
-    import Button from "../base/Button.svelte";
-    import Modal from "../base/Modal.svelte";
-    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import type { UploadedFile } from "../../lib/upload";
-    import BotTokenCopy from "../base/ButtonWithTick.svelte";
-    import CopyButton from "../base/ButtonWithTick.svelte";
-    import { fade, fly, slide } from "svelte/transition";
-    import DeleteIcon from "~icons/material-symbols/delete-forever-outline";
     import IcRoundRefresh from "~icons/ic/round-refresh";
-    import Tooltip from "../base/Tooltip.svelte";
     import MaterialSymbolsContentCopyOutlineRounded from "~icons/material-symbols/content-copy-outline-rounded";
-    import ButtonWithTick from "../base/ButtonWithTick.svelte";
+    import DeleteIcon from "~icons/material-symbols/delete-forever-outline";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
-    let bots = [];
+    let bots: { refreshToken: string, user: PublicUserInfo }[] = [];
 
     async function fetchBots() {
         const resp = await authFetch("/bots");
@@ -63,7 +60,7 @@
     });
 
     let isCreateModalVisible = false;
-    let createBotIcon: UploadedFile = null;
+    let createBotIcon: UploadedFile | null = null;
     let createBotName = `Bender`;
     let createLoading = false;
 
@@ -76,7 +73,7 @@
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                avatar: createBotIcon.url,
+                avatar: createBotIcon!.url,
                 username: createBotName,
             }),
         });

@@ -1,10 +1,10 @@
 <script lang="ts">
-    import ContextMenu from "../base/ContextMenu.svelte";
-    import Tooltip from "../base/Tooltip.svelte";
-    import { urlRelativeToApiBase } from "../../lib/auth";
-    import type { PublicUserInfo } from "../../lib/channel";
-    import DmIconContextMenu from "../context-menus/DmIconContextMenu.svelte";
-    import { markDmRead, openDmWith, type UnreadDM } from "../../lib/friends";
+    import ContextMenu from "src/components/base/ContextMenu.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import DmIconContextMenu from "src/components/context-menus/DmIconContextMenu.svelte";
+    import { urlRelativeToApiBase } from "src/lib/auth";
+    import type { PublicUserInfo } from "src/lib/channel";
+    import { markDmRead, openDmWith } from "src/lib/friends";
 
     export let id: string;
     export let user: PublicUserInfo;
@@ -42,6 +42,7 @@
     <DmIconContextMenu slot="menu" {onCopyId} {onMarkRead} />
 </ContextMenu>
 
+<!-- svelte-ignore css-unused-selector -->
 <style>
     @import "./ServerListItems.css";
 

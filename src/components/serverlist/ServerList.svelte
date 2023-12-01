@@ -1,24 +1,22 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { authFetch } from "../../lib/auth";
+    import TopicConsumer from "src/components/TopicConsumer.svelte";
+    import CreateServerIcon from "src/components/serverlist/AddGuildIcon.svelte";
+    import DmIcon from "src/components/serverlist/DmIcon.svelte";
+    import GuildIcon from "src/components/serverlist/GuildIcon.svelte";
+    import HomeIcon from "src/components/serverlist/HomeIcon.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { PublicUserInfo } from "src/lib/channel";
+    import type { UnreadDM } from "src/lib/friends";
+    import type { EventSocketMessage } from "src/lib/socket";
     import {
         dmChannelOpen,
         guilds,
         recentDMs,
-        showInErrorModal,
-        unreadDMs,
-    } from "../../lib/stores";
-    import GuildIcon from "./GuildIcon.svelte";
-    import CreateServerIcon from "./AddGuildIcon.svelte";
-    import type { UploadedFile } from "../../lib/upload";
-    import HomeIcon from "./HomeIcon.svelte";
-    import TopicConsumer from "../TopicConsumer.svelte";
-    import type { EventSocketMessage } from "../../lib/socket";
-    import DmIcon from "./DmIcon.svelte";
-    import type { UnreadDM } from "../../lib/friends";
-    import { flip } from "svelte/animate";
-    import { fade, fly } from "svelte/transition";
-    import type { PublicUserInfo } from "../../lib/channel";
+        unreadDMs
+    } from "src/lib/stores";
+    import type { UploadedFile } from "src/lib/upload";
+    import { onMount } from "svelte";
+    import { fly } from "svelte/transition";
 
     async function fetchGuilds() {
         let resp = await authFetch("/guilds");
@@ -81,7 +79,7 @@
             return;
         }
 
-        unreadDMs.update((obj) => {
+        unreadDMs.update((obj: Record<string, UnreadDM>) => {
             const author = (msg.event as any).author;
 
             if (author.id != userId) {
