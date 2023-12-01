@@ -5,8 +5,10 @@
         USERNAME_REGEX,
         apiFetch,
         currentInstance,
-        tryObtainLocalUser
+        tokenExpiryTimestamp,
+        tryObtainLocalUser,
     } from "src/lib/auth";
+    import { apiTokens, localUser } from "src/lib/stores";
     import { onMount } from "svelte";
     import { link, navigate } from "svelte-routing";
     import IcOutlineClose from "~icons/ic/outline-close";
@@ -88,7 +90,9 @@
                     username,
                     password,
                 }),
-            });channelFailed to connect to ${$currentInstance.url.host}`;
+            });
+        } catch (e) {
+            softError = `Failed to connect to ${$currentInstance.url.host}`;
             return;
         }
 
