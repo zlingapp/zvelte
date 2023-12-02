@@ -20,7 +20,7 @@
     export let instancePickerOpen: boolean = false;
 
     let error: string | null = null;
-    let softError: string | null  = null;
+    let softError: string | null = null;
     let loading: boolean = false;
     let showPassword: boolean = false;
 
@@ -278,6 +278,12 @@
         <div class="pane instances-pane" class:focus={instancePickerOpen}>
             <InstancePicker bind:open={instancePickerOpen} />
         </div>
+        {#if instancePickerOpen}
+            <div
+                class="instances-pane-backdrop"
+                on:click|self={() => (instancePickerOpen = false)}
+            />
+        {/if}
     </div>
 </main>
 
@@ -319,9 +325,12 @@
         backdrop-filter: blur(200px); */
         background-color: var(--bg-1);
 
-        box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
-            rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
-            rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+        box-shadow:
+            rgba(0, 0, 0, 0.09) 0px 2px 1px,
+            rgba(0, 0, 0, 0.09) 0px 4px 2px,
+            rgba(0, 0, 0, 0.09) 0px 8px 4px,
+            rgba(0, 0, 0, 0.09) 0px 16px 8px,
+            rgba(0, 0, 0, 0.09) 0px 32px 16px;
 
         padding: 20px;
         padding-inline: 0;
@@ -330,24 +339,26 @@
     }
 
     .instances-pane {
-        transition: top 0.3s ease-in-out;
+        transition: top 0.3s ease-in-out, bottom 0.3s ease-in-out;
+
         position: absolute;
         top: calc(100% + 16px);
     }
 
     .instances-pane.focus {
-        z-index: 2;
+        z-index: 1;
         top: 10%;
     }
 
-    .instances-pane.focus::before {
+    .instances-pane-backdrop {
         content: "";
-        position: absolute;
-        top: -100vw;
-        left: -100vw;
-        width: 300vw;
-        height: 300vh;
-        z-index: -1;
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 100vw;
+        height: 100vh;
+
         background-color: rgba(0, 0, 0, 0.5);
     }
 
@@ -423,10 +434,11 @@
             height: 100svh;
             width: 100vw;
             border-radius: 0;
+        }
+
+        .pane {
             border: none;
             box-shadow: none;
-
-            margin-left: auto;
         }
 
         .form {
@@ -434,11 +446,14 @@
         }
 
         .instances-pane {
-            top: calc(100% - 200px);
+            top: unset;
+            bottom: 25px;
+            box-shadow: none;
         }
 
         .instances-pane.focus {
-            top: 10%;
+            top: unset;
+            bottom: 25px;
         }
     }
 
@@ -465,7 +480,9 @@
         top: 0;
         bottom: 0;
         color: var(--disabled-text);
-        transition: right 0.2s var(--sproing), transform 0.2s var(--sproing);
+        transition:
+            right 0.2s var(--sproing),
+            transform 0.2s var(--sproing);
         cursor: pointer;
     }
 

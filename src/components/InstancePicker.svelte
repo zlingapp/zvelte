@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "src/components/base/Button.svelte";
-    import Dropdown from "src/components/base/Dropdown.svelte";
+    import DropdownArrow from "src/components/base/DropdownArrow.svelte";
     import Modal from "src/components/base/Modal.svelte";
     import { currentInstance, instances, type Instance } from "src/lib/auth";
     import { slide } from "svelte/transition";
@@ -69,7 +69,10 @@
     }
 
     function removeInstance(instance: Instance): void {
-        instances.update((arr: Instance[]) => arr.filter((i) => i.url != instance.url));
+        $currentInstance = $instances[0];
+        instances.update((arr: Instance[]) =>
+            arr.filter((i) => i.url != instance.url),
+        );
     }
 </script>
 
@@ -86,7 +89,7 @@
             <div class="name">{$currentInstance.name}</div>
             <div class="url">{formatUrl($currentInstance.url)}</div>
         </div>
-        <Dropdown bind:open />
+        <DropdownArrow bind:open />
     </div>
 </div>
 {#if open}
@@ -96,17 +99,21 @@
                 compact
                 outline
                 onClick={() => {
+                    open = false;
                     $currentInstance = instance;
                 }}
             >
                 <div class="instance option">
-                    <ZondiconsNetwork width="20px" height="20px" />
+                    <ZondiconsNetwork
+                        style="min-width: 20px; min-height: 20px"
+                    />
                     <div>
                         <div class="name">{instance.name}</div>
                         <div class="url">{formatUrl(instance.url)}</div>
                     </div>
                     {#if instance.url.toString() != "https://api.zlingapp.com/"}
-                        <div style="margin-left:auto;margin-right:0">
+                        <div style="flex-grow: 1;" />
+                        <div class="remove-button">
                             <Button
                                 compact
                                 onClick={() => removeInstance(instance)}
@@ -175,6 +182,10 @@
 
     .name {
         font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 200px;
     }
 
     .url {
@@ -183,6 +194,12 @@
         font-family: monospace;
         font-weight: normal;
         line-height: 16px;
+
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 200px;
     }
 
     .options {
@@ -191,14 +208,16 @@
         gap: 8px;
         flex-direction: column;
         margin-top: 10px;
-        margin-inline: 60px;
+        margin-inline: 16px;
     }
 
     .option {
         color: var(--text-color);
         text-align: left;
         font-size: 14px;
-        padding: 8px 20px;
+        padding: 8px 10px;
+        flex-grow: 1;
+        width: 300px;
     }
 
     .add-instance {
