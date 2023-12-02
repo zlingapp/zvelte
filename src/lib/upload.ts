@@ -1,4 +1,4 @@
-import { authFetch, authXhr } from "src/lib/auth";
+import { authXhr } from "src/lib/auth";
 
 export const FILESIZE_LIMIT_ICONS = 1_000_000; // 1 MB
 export const FILESIZE_LIMIT_ATTACHMENTS = 250_000_000; // 250 MB

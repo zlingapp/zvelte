@@ -1,7 +1,7 @@
 import type { Consumer, Producer } from "mediasoup-client/lib/types";
-import { get } from "svelte/store";
 import { authFetch } from "src/lib/auth";
 import { voiceChannelTarget, voicePeers } from "src/lib/stores";
+import { get } from "svelte/store";
 
 export enum VoiceState {
     PERMISSION_REQUEST,
@@ -30,7 +30,7 @@ export interface VoiceChannelInfo {
     id: string;
 }
 
-export async function voiceAuthFetch(identity, token, url, init?: RequestInit, expectJson?: boolean) {
+export async function voiceAuthFetch(identity: string, token: string, url: string, init?: RequestInit, expectJson?: boolean) {
     if (init == null) {
         init = {}
     }

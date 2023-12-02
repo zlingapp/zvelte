@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { editingThemeId, themes } from "src/lib/stores";
-
     import Modal from "src/components/base/Modal.svelte";
+    import { editingThemeId, themes } from "src/lib/stores";
     import type { Theme } from "src/lib/theme";
 
     $: currentTheme = $themes.find((x) => x.id == $editingThemeId);

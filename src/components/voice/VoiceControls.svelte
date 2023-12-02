@@ -1,14 +1,13 @@
 <script lang="ts">
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import VoiceLatencyIcon from "src/components/voice/VoiceLatencyIcon.svelte";
+    import VoiceMemberDuplicateTag from "src/components/voice/VoiceMemberDuplicateTag.svelte";
     import {
         voiceChannelCurrent,
         voiceChannelTarget,
         voicePeers,
         voiceState,
     } from "src/lib/stores";
-
-    import Tooltip from "src/components/base/Tooltip.svelte";
-    import VoiceLatencyIcon from "src/components/voice/VoiceLatencyIcon.svelte";
-    import VoiceMemberDuplicateTag from "src/components/voice/VoiceMemberDuplicateTag.svelte";
     import { VoiceState, disconnectFromVoice, isPeerDuplicate } from "src/lib/voice";
     import { onMount } from "svelte";
     import DisconnectIcon from "~icons/majesticons/phone-missed-call";

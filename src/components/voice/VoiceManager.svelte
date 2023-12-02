@@ -266,8 +266,8 @@
         );
 
         let already_in_vc = await voiceAuthFetch(
-            identity,
-            token,
+            identity!,
+            token!,
             "/voice/peers"
         );
 
@@ -288,8 +288,8 @@
         // voice_status = "ST Creating..."; // ST = Send Transport
         send_transport = device!.createSendTransport(
             await voiceAuthFetch(
-                identity,
-                token,
+                identity!,
+                token!,
                 `/voice/transport/create?type=send`,
                 { method: "POST" }
             )
@@ -301,8 +301,8 @@
             async ({ dtlsParameters }, callback, errback) => {
                 try {
                     await voiceAuthFetch(
-                        identity,
-                        token,
+                        identity!,
+                        token!,
                         `/voice/transport/connect?type=send`,
                         {
                             method: "POST",
@@ -350,8 +350,8 @@
                 try {
                     console.log("Requesting producer...");
                     const { id } = await voiceAuthFetch(
-                        identity,
-                        token,
+                        identity!,
+                        token!,
                         `/voice/produce`,
                         {
                             method: "POST",
@@ -377,8 +377,8 @@
     async function initRecvTransport() {
         recv_transport = device!.createRecvTransport(
             await voiceAuthFetch(
-                identity,
-                token,
+                identity!,
+                token!,
                 `/voice/transport/create?type=recv`,
                 { method: "POST" }
             )
@@ -390,8 +390,8 @@
             async ({ dtlsParameters }, callback, errback) => {
                 try {
                     await voiceAuthFetch(
-                        identity,
-                        token,
+                        identity!,
+                        token!,
                         `/voice/transport/connect?type=recv`,
                         {
                             method: "POST",
@@ -528,7 +528,7 @@
         if (peer === undefined) return;
 
         let consumer = await recv_transport!.consume(
-            await voiceAuthFetch(identity, token, "/voice/consume", {
+            await voiceAuthFetch(identity!, token!, "/voice/consume", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,12 +1,11 @@
 import { writable } from 'svelte/store';
 import type { LocalUser, Tokens } from './auth';
-import type { Channel, DMChannel, PublicUserInfo, TextChannel } from './channel';
+import type { DMChannel, PublicUserInfo, TextChannel } from './channel';
+import type { UnreadDM } from './friends';
 import type { Guild } from './guild';
 import { localStorageWritable } from './localStorageStore';
-import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 import type { Theme } from './theme';
-import {defaultTheme} from './theme';
-import type { UnreadDM } from './friends';
+import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 
 // ---- login stuff ---
 export const apiTokens = localStorageWritable<Tokens  | null>("api_token", null);

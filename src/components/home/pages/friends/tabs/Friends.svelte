@@ -1,11 +1,10 @@
 <script lang="ts">
+    import Friend from "src/components/home/pages/friends/Friend.svelte";
     import { authFetch } from "src/lib/auth";
     import type { PublicUserInfo } from "src/lib/channel";
     import { openDmWith } from "src/lib/friends";
-    import { dmChannelOpen, recentDMs, showInErrorModal } from "src/lib/stores";
+    import { recentDMs, showInErrorModal } from "src/lib/stores";
     import { getErrorMessage } from "src/lib/util";
-    import MemberListMember from "src/components/users/MemberListMember.svelte";
-    import Friend from "src/components/home/pages/friends/Friend.svelte";
 
     export let onlineOnly: boolean = false;
     export let friends: PublicUserInfo[];
