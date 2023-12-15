@@ -1,18 +1,18 @@
 <script lang="ts">
-    import Button from "src/components/base/Button.svelte";
-    import MemberListMember from "src/components/users/MemberListMember.svelte";
+    import Button from "src/components/base/controls/Button.svelte";
+    import MemberListMember from "src/components/guild/member-list/MemberListMember.svelte";
     import { openDmWith } from "src/lib/friends";
-    import { dmChannelOpen, recentDMs, unreadDMs } from "src/lib/stores";
+    import { currentDmChannel, recentDms, unreadDms } from "src/lib/stores";
     import IcBaselineClose from "~icons/ic/baseline-close";
     import IcBaselinePeople from "~icons/ic/baseline-people";
 
-    $: friendsOpen = $dmChannelOpen == null;
+    $: friendsOpen = $currentDmChannel == null;
 
-    $: readDMs = $recentDMs.filter((dmUser) => !(dmUser.id in $unreadDMs));
+    $: readDMs = $recentDms.filter((dmUser) => !(dmUser.id in $unreadDms));
 </script>
 
 <div class="home-sidebar">
-    <Button left compact grow onClick={() => ($dmChannelOpen = null)}>
+    <Button left compact nobg grow onClick={() => ($currentDmChannel = null)}>
         <div class="home-category" class:active={friendsOpen}>
             <IcBaselinePeople />
             <span>Friends</span>
@@ -21,7 +21,7 @@
 
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <label>Direct Messages</label>
-    {#each Object.entries($unreadDMs) as [id, unread]}
+    {#each Object.entries($unreadDms) as [id, unread]}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div class="dm-button" on:click={() => openDmWith(unread.user)}>
             <MemberListMember member={unread.user} />
@@ -35,7 +35,7 @@
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
             class="dm-button"
-            class:current={$dmChannelOpen?.id == dmUser.id}
+            class:current={$currentDmChannel?.id == dmUser.id}
             on:click={() => openDmWith(dmUser)}
         >
             <MemberListMember member={dmUser} />
@@ -43,12 +43,12 @@
             <div
                 class="dm-close-button"
                 on:click={() => {
-                    $recentDMs = $recentDMs.filter(
+                    $recentDms = $recentDms.filter(
                         (user) => user.id != dmUser.id,
                     );
 
-                    if ($dmChannelOpen?.id == dmUser.id) {
-                        $dmChannelOpen = null;
+                    if ($currentDmChannel?.id == dmUser.id) {
+                        $currentDmChannel = null;
                     }
                 }}
             >

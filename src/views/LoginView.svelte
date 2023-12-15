@@ -1,5 +1,5 @@
 <script lang="ts">
-    import InstancePicker from "src/components/InstancePicker.svelte";
+    import InstancePicker from "src/components/login/InstancePicker.svelte";
     import {
         EMAIL_REGEX,
         USERNAME_REGEX,
@@ -343,6 +343,8 @@
 
         position: absolute;
         top: calc(100% + 16px);
+
+        padding-inline: 35px;
     }
 
     .instances-pane.focus {

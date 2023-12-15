@@ -13,9 +13,7 @@ export const defaultTheme = {
   enabled: true,
   style: `/* Feel free to edit this file to your liking. */
 
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700&display=swap');
-
-:root {
+  :root {
   --text-color: rgba(255, 255, 255, 0.87);
   --bg-0: #232323;
   --bg-1: #1C1C1C;
@@ -27,6 +25,8 @@ export const defaultTheme = {
   --gray: #888b8f;
   --gray-2: #b5bac1;
   --green-btn: #00925f;
+  --green-transparent: #00b5760a;
+  --red-transparent: #c94b440a;
 
   --accent-color: #2764ff;
   --disabled: #888b8f3f;
@@ -34,7 +34,7 @@ export const defaultTheme = {
 
   /* for the pop up text tooltips */
   --tooltip-bg: #000;
-  --tooltip-fg: #fff;
+  --tooltip-fg: var(--text-color);
 
   /* right click menus */
   --context-menu-bg: #111214;
@@ -65,9 +65,23 @@ export const defaultTheme = {
   /* zzz there's no one here */
   --lonely-message-fg: rgba(255, 255, 255, 0.08);
 
-  font-family: 'Source Sans 3', sans-serif;
+  --sproing: cubic-bezier(0, 0, 0.5, 2.5);
+
+  --font: 'Source Sans 3', sans-serif;
+
+  font-family: var(--font);
   line-height: 1.5;
   font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--text-color);
+  background-color: var(--bg-0);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }`};
 
 export function fileStringToTheme(s: string): Theme | null {

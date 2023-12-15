@@ -1,5 +1,5 @@
-import { localStorageWritable } from "src/lib/localStorageStore";
-import { apiTokens, localUser } from "src/lib/stores";
+import { localStorageWritable } from "src/lib/utils/localStorageStore";
+import { apiTokens, localUser, recentDms, unreadDms } from "src/lib/stores";
 import { disconnectFromVoice } from "src/lib/voice";
 import { get } from "svelte/store";
 
@@ -234,6 +234,9 @@ export async function logOut() {
 // call this instead of navigate("/login") to avoid any stores surviving
 function goToLogin() {
     apiTokens.set(null);
+    // TODO: system for synchronizing recent dms with the server!
+    recentDms.set([]);
+    unreadDms.set({});
     location.href = "/login";
 }
 

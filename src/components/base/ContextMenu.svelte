@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { clickOutside } from "src/lib/clickOutside";
+    import { clickOutside } from "src/lib/utils/clickOutside";
     import { contextMenu } from "src/lib/stores";
     import { onMount } from "svelte";
 

@@ -15,7 +15,7 @@
 
     import { authFetch, currentInstance } from "src/lib/auth";
     import {
-        voiceChannelCurrent as currentChannelStore,
+        voiceChannelCurrent as currentGuildChannelStore,
         localUser,
         voiceChannelCurrent,
         voiceChannelTarget,
@@ -37,7 +37,7 @@
     let recv_transport: Transport | null = null;
     let voicePeers: Map<string, Peer> = new Map();
 
-    let currentChannel: VoiceChannelInfo | null = null;
+    let currentGuildChannel: VoiceChannelInfo | null = null;
 
     // list of peers
     $: current_peers = [...voicePeers.values()];
@@ -49,7 +49,7 @@
     // it is crucial that this is done like this, otherwise the stores will not update sometimes
     // also, we don't want the outside to be able to mess up the voicemanager state!
     $: voicePeersStore.set(voicePeers);
-    $: currentChannelStore.set(currentChannel);
+    $: currentGuildChannelStore.set(currentGuildChannel);
 
     // whenever voiceChannelTarget changes, we need to join, leave or switch to a channel
     voiceChannelTarget.subscribe(async (target) => {
@@ -64,12 +64,12 @@
         // if the target is null, we are disconnecting for good
         // we've already called disconnect(), so the work is done!
         if (target === null) {
-            currentChannel = null;
+            currentGuildChannel = null;
             return;
         }
 
         // otherwise, we are joining a channel and need to connect
-        currentChannel = target;
+        currentGuildChannel = target;
         // reset the target to a "no change" state
         $voiceChannelTarget = undefined;
         // do the connection

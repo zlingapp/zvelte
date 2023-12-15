@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Button from "src/components/base/Button.svelte";
+    import Button from "src/components/base/controls/Button.svelte";
     import Modal from "src/components/base/Modal.svelte";
     import { authFetch } from "src/lib/auth";
     import { showInErrorModal } from "src/lib/stores";

@@ -3,23 +3,23 @@
     import VoiceManager from "src/components/voice/VoiceManager.svelte";
 
     import {
-        currentChannel,
+        currentGuildChannel,
         currentGuild,
         localUser,
-        userSettingsOpen,
+        isSettingsMenuOpen,
     } from "src/lib/stores";
 
-    import ChannelList from "src/components/ChannelList.svelte";
-    import EventSocketManager from "src/components/EventSocketManager.svelte";
-    import LoadingScreen from "src/components/LoadingScreen.svelte";
-    import LocalUserControls from "src/components/LocalUserControls.svelte";
+    import ChannelList from "src/components/guild/channel-list/ChannelList.svelte";
+    import EventSocketManager from "src/components/events/EventSocketManager.svelte";
+    import LoadingScreen from "src/components/login/LoadingScreen.svelte";
+    import LocalUserControls from "src/components/settings/LocalUserControls.svelte";
     import HomeContent from "src/components/home/HomeContent.svelte";
     import HomeSidebar from "src/components/home/HomeSidebar.svelte";
     import ErrorModal from "src/components/modals/ErrorModal.svelte";
     import ServerList from "src/components/serverlist/ServerList.svelte";
     import UserSettings from "src/components/settings/UserSettings.svelte";
     import MessageList from "src/components/text/MessageList.svelte";
-    import MemberList from "src/components/users/MemberList.svelte";
+    import MemberList from "src/components/guild/member-list/MemberList.svelte";
     import { ensureLoggedIn } from "src/lib/auth";
     import { onMount } from "svelte";
 
@@ -36,7 +36,7 @@
     <LoadingScreen />
 {/if}
 {#if $localUser}
-    {#if $userSettingsOpen}
+    {#if $isSettingsMenuOpen}
         <UserSettings />
     {/if}
     <div class="wrapper" on:contextmenu|preventDefault>
@@ -66,8 +66,8 @@
             </div>
 
             <section class="content">
-                {#if $currentChannel}
-                    <MessageList channel={$currentChannel}>
+                {#if $currentGuildChannel}
+                    <MessageList channel={$currentGuildChannel}>
                         <div slot="sidebar" class="sidebar">
                             <MemberList />
                         </div>

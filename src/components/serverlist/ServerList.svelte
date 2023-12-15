@@ -1,18 +1,18 @@
 <script lang="ts">
-    import TopicConsumer from "src/components/TopicConsumer.svelte";
-    import CreateServerIcon from "src/components/serverlist/AddGuildIcon.svelte";
-    import DmIcon from "src/components/serverlist/DmIcon.svelte";
-    import GuildIcon from "src/components/serverlist/GuildIcon.svelte";
-    import HomeIcon from "src/components/serverlist/HomeIcon.svelte";
+    import TopicConsumer from "src/components/events/TopicConsumer.svelte";
+    import ServerListAddGuild from "src/components/serverlist/items/ServerListAddGuild.svelte";
+    import ServerListGuild from "src/components/serverlist/items/ServerListGuild.svelte";
+    import ServerListHome from "src/components/serverlist/items/ServerListHome.svelte";
+    import ServerListUnreadDm from "src/components/serverlist/items/ServerListUnreadDm.svelte";
     import { authFetch } from "src/lib/auth";
     import type { PublicUserInfo } from "src/lib/channel";
     import type { UnreadDM } from "src/lib/friends";
     import type { EventSocketMessage } from "src/lib/socket";
     import {
-        dmChannelOpen,
+        currentDmChannel,
         guilds,
-        recentDMs,
-        unreadDMs
+        recentDms,
+        unreadDms,
     } from "src/lib/stores";
     import type { UploadedFile } from "src/lib/upload";
     import { onMount } from "svelte";
@@ -66,7 +66,7 @@
 
         const userId = msg.topic.id;
 
-        recentDMs.update((arr: PublicUserInfo[]) => {
+        recentDms.update((arr: PublicUserInfo[]) => {
             const index = arr.findIndex((u) => u.id === userId);
             if (index !== -1) {
                 const [el] = arr.splice(index, 1);
@@ -75,11 +75,11 @@
             return arr;
         });
 
-        if ($dmChannelOpen?.id == userId) {
+        if ($currentDmChannel?.id == userId) {
             return;
         }
 
-        unreadDMs.update((obj: Record<string, UnreadDM>) => {
+        unreadDms.update((obj: Record<string, UnreadDM>) => {
             const author = (msg.event as any).author;
 
             if (author.id != userId) {
@@ -99,7 +99,7 @@
         });
     }
 
-    $: unreadDmsList = Object.entries($unreadDMs);
+    $: unreadDmsList = Object.entries($unreadDms);
 </script>
 
 <TopicConsumer
@@ -109,24 +109,28 @@
 />
 
 <div class="server-list outer">
-    <HomeIcon />
+    <ServerListHome />
 
     <div class="divider" />
 
     {#if unreadDmsList.length > 0}
         <div class="server-list" transition:fly={{ duration: 250 }}>
             {#each unreadDmsList as [id, unread] (id)}
-                <DmIcon {id} user={unread.user} unread={unread.count} />
+                <ServerListUnreadDm
+                    {id}
+                    user={unread.user}
+                    unread={unread.count}
+                />
             {/each}
         </div>
         <div class="divider" />
     {/if}
 
     {#each $guilds as guild}
-        <GuildIcon {guild} />
+        <ServerListGuild {guild} />
     {/each}
 
-    <CreateServerIcon {createServer} {joinServer} />
+    <ServerListAddGuild {createServer} {joinServer} />
 </div>
 
 <style>

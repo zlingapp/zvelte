@@ -1,17 +1,17 @@
 <script lang="ts">
     import dayjs, { Dayjs } from "dayjs";
-    import TopicConsumer from "src/components/TopicConsumer.svelte";
-    import MessageCaret from "src/components/text/MessageCaret.svelte";
-    import UiMessage from "src/components/text/UiMessage.svelte";
+    import TopicConsumer from "src/components/events/TopicConsumer.svelte";
+    import MessageCaret from "src/components/text/caret/MessageCaret.svelte";
+    import UiMessage from "src/components/text/message/UiMessage.svelte";
     import { authFetch, urlRelativeToApiBase } from "src/lib/auth";
-    import type { DMChannel, Message, TextChannel } from "src/lib/channel";
+    import type { DmChannel, Message, TextChannel } from "src/lib/channel";
     import {
         eventSocketSubscribe,
         eventSocketUnsubscribe,
         type EventSocketMessage,
     } from "src/lib/socket";
-    import { localUser } from "src/lib/stores";
-    import { tick } from "svelte";
+    import { localUser, pendingOutgoingMessage } from "src/lib/stores";
+    import { onMount, tick } from "svelte";
     import { fly } from "svelte/transition";
     import IcBaselineAlternateEmail from "~icons/ic/baseline-alternate-email";
     import MajesticonsHashtagLine from "~icons/majesticons/hashtag-line";
@@ -19,9 +19,9 @@
     import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
     export let dm: boolean = false;
-    export let channel: TextChannel | DMChannel;
+    export let channel: TextChannel | DmChannel;
 
-    let channelOld: TextChannel | DMChannel;
+    let channelOld: TextChannel | DmChannel;
 
     let messages: Message[] = [];
     let messagesList: HTMLDivElement;
@@ -29,8 +29,6 @@
     let loading = false;
     let nothingOlder = false;
     let typing: Map<string, any> = new Map();
-
-    let pendingOutgoingMessage: Message | null = null;
 
     const MESSAGE_FETCH_LIMIT = 50;
     const CONSIDER_TYPING_STOPPED_AFTER = 5000;
@@ -81,7 +79,7 @@
 
             // check if the old channel was a dm channel
             // if so, don't bother unsubscribing because we can't
-            if ((channelOld as DMChannel)["friend"] === undefined) {
+            if ((channelOld as DmChannel)["friend"] === undefined) {
                 await eventSocketUnsubscribe([
                     { type: "channel", id: channelOld.id },
                 ]);
@@ -114,9 +112,10 @@
             case "message":
                 const message = parseMessage(esm.event as unknown as Message);
 
+                // we just got a message from ourselves that we sent
                 if (message.author.id == $localUser?.id) {
                     // TODO: make a better system for this with a ref value
-                    pendingOutgoingMessage = null;
+                    $pendingOutgoingMessage = null;
                 }
 
                 messages = [...messages, message];
@@ -178,7 +177,7 @@
         loading = true;
         messages = [];
         // reset pending message since we're doing a reset from the beginning
-        pendingOutgoingMessage = null;
+        $pendingOutgoingMessage = null;
 
         let result = await fetchMessageHistory();
         if (result!.length < MESSAGE_FETCH_LIMIT) {
@@ -209,6 +208,14 @@
             loading = false;
         }
     }
+
+    onMount(() => {
+        pendingOutgoingMessage.subscribe((msg) => {
+            // scroll to the bottom whenever a pending message is sent
+            if (msg == null) return;
+            scrollToBottom();
+        });
+    })
 </script>
 
 <TopicConsumer
@@ -287,13 +294,13 @@
                         )}
                     />
                 {/each}
-                {#if pendingOutgoingMessage}
+                {#if $pendingOutgoingMessage}
                     <UiMessage
                         pending
-                        message={pendingOutgoingMessage}
+                        message={$pendingOutgoingMessage}
                         detailed={shouldSeparateMessage(
                             messages[messages.length - 1],
-                            pendingOutgoingMessage,
+                            $pendingOutgoingMessage,
                         )}
                     />
                 {/if}
@@ -301,9 +308,6 @@
             <MessageCaret
                 {dm}
                 {channel}
-                onOutgoingMessage={(msg) => {
-                    pendingOutgoingMessage = msg;
-                }}
             />
             {#if typing.size > 0}
                 <div

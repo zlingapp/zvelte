@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store';
 import type { LocalUser, Tokens } from './auth';
-import type { DMChannel, PublicUserInfo, TextChannel } from './channel';
+import type { DmChannel as DmChannel, Message, PublicUserInfo, TextChannel } from './channel';
 import type { UnreadDM } from './friends';
 import type { Guild } from './guild';
-import { localStorageWritable } from './localStorageStore';
+import { localStorageWritable } from './utils/localStorageStore';
 import type { Theme } from './theme';
 import { VoiceState, type Peer, type VoiceChannelInfo } from './voice';
 
@@ -14,7 +14,18 @@ export const localUser = writable<LocalUser | null>(null);
 // --- guild state ---
 export const guilds = writable<Guild[]>([]);
 export const currentGuild = writable<Guild | null>(null);
-export const currentChannel = writable<TextChannel | null>(null);
+export const currentGuildChannel = writable<TextChannel | null>(null);
+
+// messaging
+export const pendingOutgoingMessage = writable<Message | null>(null);
+
+// --- direct messages ---
+export const currentDmChannel = writable<DmChannel | null>(null);
+
+// map of unread DMs by friend id
+export const unreadDms = localStorageWritable<Record<string, UnreadDM>>("unread_dms", {});
+
+export const recentDms = localStorageWritable<PublicUserInfo[]>("recent_dms", []);
 
 // ---- voice ----
 
@@ -41,17 +52,10 @@ export const contextMenu = writable(false);
 // string to show in an error modal
 export const showInErrorModal = writable<string | null>(null);
 
-export const userSettingsOpen = writable(false);
+export const isSettingsMenuOpen = writable(false);
 
 // list of themes to show in the theme editor
 export const themes = localStorageWritable<Theme[]>("themes", []);
 
 // should the theme editor be open and if so what theme id is it editing
 export const editingThemeId = writable<Theme["id"] | null>(null);
-
-export const dmChannelOpen = writable<DMChannel | null>(null);
-
-// map of unread DMs by friend id
-export const unreadDMs = localStorageWritable<Record<string, UnreadDM>>("unread_dms", {});
-
-export const recentDMs = localStorageWritable<PublicUserInfo[]>("recent_dms", []);

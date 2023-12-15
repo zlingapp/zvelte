@@ -1,8 +1,8 @@
 <script lang="ts">
-    import SettingsCategoryAccount from "src/components/settings/SettingsCategoryAccount.svelte";
-    import SettingsCategoryAppearance from "src/components/settings/SettingsCategoryAppearance.svelte";
-    import SettingsCategoryMyBots from "src/components/settings/SettingsCategoryMyBots.svelte";
-    import { userSettingsOpen } from "src/lib/stores";
+    import UserSettingsAccount from "src/components/settings/categories/UserSettingsAccount.svelte";
+    import UserSettingsAppearance from "src/components/settings/categories/appearance/UserSettingsAppearance.svelte";
+    import UserSettingsMyBots from "src/components/settings/categories/UserSettingsMyBots.svelte";
+    import { isSettingsMenuOpen } from "src/lib/stores";
     import { fly } from "svelte/transition";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
@@ -39,15 +39,15 @@
     </div>
     <div class="category-content">
         {#if category === "my-account"}
-            <SettingsCategoryAccount />
+            <UserSettingsAccount />
         {:else if category == "my-bots"}
-            <SettingsCategoryMyBots />
+            <UserSettingsMyBots />
         {:else if category == "appearance"}
-            <SettingsCategoryAppearance />
+            <UserSettingsAppearance />
         {/if}
     </div>
     <div class="close-group">
-        <button class="close" on:click={() => ($userSettingsOpen = false)}>
+        <button class="close" on:click={() => ($isSettingsMenuOpen = false)}>
             <MaterialSymbolsCloseRounded />
         </button>
         <!-- svelte-ignore a11y-label-has-associated-control -->

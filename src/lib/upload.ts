@@ -40,3 +40,16 @@ export async function uploadFile(
         xhr.send(form);
     });
 }
+
+export interface PendingUpload {
+    // for svelte key blocks
+    randomLocalId: string;
+    // local file
+    file: File;
+    // server-side file, present if upload is complete
+    uploadedFile?: UploadedFile;
+    // progress, 0-100
+    progress: number;
+    // whether the upload has started
+    started: boolean;
+}
