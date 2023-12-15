@@ -10,9 +10,12 @@
         currentGuildChannel,
         currentDmChannel,
         localUser,
-        showInErrorModal
+        showInErrorModal,
     } from "src/lib/stores";
-    import { getErrorMessage } from "src/lib/util";
+    import { getErrorMessage, preEscapeAmp } from "src/lib/util";
+    import { marked } from "marked";
+    import { renderMarkdown } from "src/lib/formatting";
+    import { onMount } from "svelte";
 
     export let message: Message;
     export let detailed: boolean = true;
@@ -39,26 +42,39 @@
         }
 
         let resp = await authFetch(
-            `/${dm ? "friends" : "channels"}/${channelId}/messages/${message.id}`,
+            `/${dm ? "friends" : "channels"}/${channelId}/messages/${
+                message.id
+            }`,
             {
                 method: "DELETE",
-            }
+            },
         );
 
         if (!resp.ok) {
             const errorMessage = await getErrorMessage(resp);
-            $showInErrorModal = `Deleting message failed: ${errorMessage}`
+            $showInErrorModal = `Deleting message failed: ${errorMessage}`;
         }
     }
 
     $: localUser_ = $localUser!; // because typescript is dumb
+
+    let renderedContent: string;
+    onMount(async () => {
+        if (message.content) {
+            renderedContent = await renderMarkdown(message.content);
+        }
+    });
 </script>
 
 <ContextMenu>
     <div class="message" class:detailed>
         {#if detailed}
             <ContextMenu>
-                <img class="avatar" src={urlRelativeToApiBase(message.author.avatar).toString()} alt="avatar" />
+                <img
+                    class="avatar"
+                    src={urlRelativeToApiBase(message.author.avatar).toString()}
+                    alt="avatar"
+                />
             </ContextMenu>
             <div class="header">
                 <span class="username">
@@ -69,15 +85,15 @@
                     ><Tooltip
                         direction="right"
                         text={message.createdAt.format(
-                            "DD/MM/YYYY HH:mm:ss G[M]T+0"
+                            "DD/MM/YYYY HH:mm:ss G[M]T+0",
                         )}>{formattedCreatedAt}</Tooltip
                     ></span
                 >
             </div>
         {/if}
         <div class="content" class:pending>
-            {#if message.content}
-                {message.content}
+            {#if renderedContent}
+                {@html renderedContent}
             {/if}
             {#if !detailed}
                 <span class="time time-inline"
@@ -166,14 +182,15 @@
     .time {
         font-size: 0.75rem;
         line-height: 1.375rem;
-        color:var(--gray);
+        color: var(--gray);
         user-select: none;
     }
 
     .time-inline {
         position: absolute;
+        top: 50%;
         left: 0;
-        transform: translate(calc(-100% - 8px), 2px);
+        transform: translate(calc(-100% - 8px), calc(-50% + 2px));
         opacity: 0;
     }
 

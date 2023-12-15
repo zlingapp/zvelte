@@ -30,3 +30,16 @@ export async function getErrorMessage(resp: Response): Promise<string> {
 
     return errorMessage;
 }
+
+export function escapeHtml(unsafe: string): string {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+export function preEscapeAmp(unsafe: string): string {
+    return unsafe.replaceAll(/&(#?[a-zA-Z0-9]+);/g, "&amp;$1;");
+}

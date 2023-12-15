@@ -25,6 +25,10 @@
   },
   "dependencies": {
     "dayjs": "^1.11.10",
+    "highlight.js": "^11.9.0",
+    "marked": "^11.1.0",
+    "marked-highlight": "^2.1.0",
+    "marked-katex-extension": "^4.0.5",
     "mediasoup-client": "^3.7.0",
     "svelte-routing": "2.6.0"
   }

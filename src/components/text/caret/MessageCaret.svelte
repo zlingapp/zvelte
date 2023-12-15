@@ -12,13 +12,15 @@
     import { authFetch } from "src/lib/auth";
     import type { TextChannel } from "src/lib/channel";
     import { getErrorMessage } from "src/lib/util";
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import { flip } from "svelte/animate";
     import FluentSend20Filled from "~icons/fluent/send-20-filled";
     import TwemojiGrinningFaceWithSmilingEyes from "~icons/twemoji/grinning-face-with-smiling-eyes";
     import type { PendingUpload } from "src/lib/upload";
 
     let value: string;
+    let textArea: HTMLTextAreaElement;
+
     let sendButton: HTMLDivElement;
 
     // bound to the MessageAttachButton component
@@ -37,15 +39,13 @@
         });
     });
 
-    function onKeyUp(e: KeyboardEvent) {
+    async function onKeyUp(e: KeyboardEvent) {
         switch (e.key) {
             case "Enter":
                 if (e.shiftKey) {
-                    value += "\n";
                     break;
                 }
                 sendButton.click();
-                e.preventDefault();
                 break;
             case "Backspace":
                 break;
@@ -65,6 +65,11 @@
                 }
                 break;
         }
+    }
+
+    async function recalculateHeight() {
+        textArea.style.height = "";
+        textArea.style.height = Math.min(textArea.scrollHeight, 500) + "px";
     }
 
     async function sendTyping() {
@@ -181,10 +186,21 @@
             bind:uploadAll={uploadAllAttachments}
             bind:pendingUploads
         />
-        <input
+        <textarea
+            on:keydown={(e) => {
+                if (e.key == "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    textArea.style.height = "";
+                }
+            }}
             on:keyup={onKeyUp}
+            on:input={() => {
+                recalculateHeight();
+            }}
+            bind:this={textArea}
             bind:value
             class="input"
+            rows="1"
             placeholder="Message #{channel.name}"
         />
         <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -205,22 +221,30 @@
 </div>
 
 <style>
-    input {
+    textarea {
         border: none;
+        outline: none;
+        padding: 0;
+        margin: 0;
+
         background: none;
+
         font-size: 16px;
         font-family: inherit;
-        padding-left: 0;
+
         color: var(--message-caret-fg);
         font-weight: 400;
+
+        width: 100%;
+        resize: none;
+        margin-block: 9px;
     }
 
-    input::placeholder {
+    textarea::placeholder {
         color: var(--gray);
     }
 
     .message-caret {
-        height: 44px;
         margin-inline: 16px;
         margin-bottom: 24px;
 

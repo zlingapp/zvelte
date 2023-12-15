@@ -1,119 +1,150 @@
-@import url('source-sans.css');
+@import url("source-sans.css");
 
 /* Whenever you change anything in here, make sure to go change it in src/lib/theme.ts  */
 :root {
-  --text-color: rgba(255, 255, 255, 0.87);
-  --bg-0: #232323;
-  --bg-1: #1C1C1C;
-  --bg-2: #0E0E0E;
+    --text-color: rgba(255, 255, 255, 0.87);
+    --bg-0: #232323;
+    --bg-1: #1c1c1c;
+    --bg-2: #0e0e0e;
 
-  --green: #00b576;
-  --red: #c94b44;
-  --yellow: #ffc800;
-  --gray: #888b8f;
-  --gray-2: #b5bac1;
-  --green-btn: #00925f;
-  --green-transparent: #00b5760a;
-  --red-transparent: #c94b440a;
+    --green: #00b576;
+    --red: #c94b44;
+    --yellow: #ffc800;
+    --gray: #888b8f;
+    --gray-2: #b5bac1;
+    --green-btn: #00925f;
+    --green-transparent: #00b5760a;
+    --red-transparent: #c94b440a;
 
-  --accent-color: #2764ff;
-  --disabled: #888b8f3f;
-  --disabled-text: rgba(255, 255, 255, 0.3);
+    --accent-color: #2764ff;
+    --disabled: #888b8f3f;
+    --disabled-text: rgba(255, 255, 255, 0.3);
 
-  /* for the pop up text tooltips */
-  --tooltip-bg: #000;
-  --tooltip-fg: var(--text-color);
+    /* for the pop up text tooltips */
+    --tooltip-bg: #000;
+    --tooltip-fg: var(--text-color);
 
-  /* right click menus */
-  --context-menu-bg: #111214;
+    /* right click menus */
+    --context-menu-bg: #111214;
 
-  /* categories in settings eg. My Account */
-  --category-hover-bg: rgba(255, 255, 255, 0.05);
+    /* categories in settings eg. My Account */
+    --category-hover-bg: rgba(255, 255, 255, 0.05);
 
-  /* message box */
-  --message-caret-fg: #dbdee1;
-  --message-caret-bg: #2b2b2b;
+    /* message box */
+    --message-caret-fg: #dbdee1;
+    --message-caret-bg: #2b2b2b;
 
-  /* bottom left user drawer */
-  --user-drawer-bg: #141414;
-  
-  /* channels */
-  --channel-fg: #888b8f;
-  --channel-hover-fg: #fff;
-  --channel-hover-bg: #212121;
-  --channel-current-fg: #fff;
-  --channel-current-bg: #2B2B2B;
+    /* bottom left user drawer */
+    --user-drawer-bg: #141414;
 
-  /* background of a message when it's hovered */
-  --message-hover-bg: #262626;
+    /* channels */
+    --channel-fg: #888b8f;
+    --channel-hover-fg: #fff;
+    --channel-hover-bg: #212121;
+    --channel-current-fg: #fff;
+    --channel-current-bg: #2b2b2b;
 
-  /* fade out background of modals */
-  --modal-bg: rgba(0, 0, 0, 0.5);
+    /* background of a message when it's hovered */
+    --message-hover-bg: #262626;
 
-  /* zzz there's no one here */
-  --lonely-message-fg: rgba(255, 255, 255, 0.08);
+    /* fade out background of modals */
+    --modal-bg: rgba(0, 0, 0, 0.5);
 
-  --sproing: cubic-bezier(0, 0, 0.5, 2.5);
+    /* zzz there's no one here */
+    --lonely-message-fg: rgba(255, 255, 255, 0.08);
 
-  --font: 'Source Sans 3', sans-serif;
+    --sproing: cubic-bezier(0, 0, 0.5, 2.5);
 
-  font-family: var(--font);
-  line-height: 1.5;
-  font-weight: 400;
+    --font: "Source Sans 3", sans-serif;
 
-  color-scheme: light dark;
-  color: var(--text-color);
-  background-color: var(--bg-0);
+    font-family: var(--font);
+    line-height: 1.5;
+    font-weight: 400;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+    color-scheme: light dark;
+    color: var(--text-color);
+    background-color: var(--bg-0);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
-  margin: 0;
+    margin: 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
 }
 
 .b {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 p {
-  margin: 0;
+    margin: 0;
 }
 
 a {
-  color: var(--accent-color);
+    color: var(--accent-color);
 }
 
 input {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
 
-  /* background-color: var(--bg-3); */
-  /* backdrop-filter: blur(200px); */
-  background: rgba(255, 255, 255, 0.09);
-  border: 3px solid rgba(255, 255, 255, 0.09);
-  padding: 12px 16px;
-  border-radius: 6px;
+    /* background-color: var(--bg-3); */
+    /* backdrop-filter: blur(200px); */
+    background: rgba(255, 255, 255, 0.09);
+    border: 3px solid rgba(255, 255, 255, 0.09);
+    padding: 12px 16px;
+    border-radius: 6px;
 
-  color: var(--text-color);
+    color: var(--text-color);
 }
 
 input:focus {
-  outline: none;
+    outline: none;
 }
 
 label {
-  color: var(--gray);
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
+    color: var(--gray);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.message-quote {
+    border-left: 4px solid var(--disabled);
+    padding: 4px 8px;
+
+    margin: 4px 0;
+    margin-left: 8px;
+}
+
+.hljs {
+    padding: 0;
+    margin: 0;
+    border-radius: 6px;
+}
+
+pre {
+    margin-block: 8px;
+    padding: 0;
+}
+
+code:not(.hljs) {
+    background-color: var(--bg-1);
+    padding: 4px 8px;
+    margin: 0;
+    border-radius: 6px;
 }
