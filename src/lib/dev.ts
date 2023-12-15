@@ -1,4 +1,4 @@
-import { showInErrorModal } from "./stores";
+import { showInErrorModal } from "src/lib/stores";
 
 export function error(err: string) {
     showInErrorModal.set(err);

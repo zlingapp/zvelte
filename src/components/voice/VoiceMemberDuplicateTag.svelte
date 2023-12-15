@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Tooltip from "../base/Tooltip.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
 
-    export let text;
+    export let text: string;
     export let is_me = false;
     export let tooltipDirection: any = "right";
 </script>

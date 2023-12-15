@@ -2,11 +2,9 @@
     export let onCopyId: () => void;
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="cm-action" on:click={onCopyId}>
-    Copy ID
-</div>
+<div class="cm-action" on:click={onCopyId}>Copy ID</div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style>
     @import "../base/ContextMenu.css";
 </style>

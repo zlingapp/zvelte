@@ -1,6 +1,6 @@
 import type { Unsubscriber } from "svelte/store";
-import { eventSocket } from "./stores";
-import type { Message, PublicUserInfo } from "./channel";
+import { eventSocket } from "src/lib/stores";
+import type { Message, PublicUserInfo } from "src/lib/channel";
 
 export interface EventSocketMessage {
     topic: {
@@ -12,35 +12,35 @@ export interface EventSocketMessage {
 
 export type Event =
     | {
-        type: "channelListUpdate";
-    }
+          type: "channelListUpdate";
+      }
     | {
-        type: "memberListUpdate";
-    }
+          type: "memberListUpdate";
+      }
     | ({
-        type: "message";
-    } & Message)
+          type: "message";
+      } & Message)
     | {
-        type: "deleteMessage";
-        id: string;
-    }
+          type: "deleteMessage";
+          id: string;
+      }
     | {
-        type: "typing";
-        user: PublicUserInfo;
-    }
+          type: "typing";
+          user: PublicUserInfo;
+      }
     | {
-        type: "friendRequestUpdate";
-        state: "sent" | "accepted";
-        user: PublicUserInfo;
-    }
+          type: "friendRequestUpdate";
+          state: "sent" | "accepted";
+          user: PublicUserInfo;
+      }
     | {
-        type: "friendRequestRemove";
-        user: PublicUserInfo;
-    }
+          type: "friendRequestRemove";
+          user: PublicUserInfo;
+      }
     | {
-        type: "friendRemove";
-        user: PublicUserInfo;
-    };
+          type: "friendRemove";
+          user: PublicUserInfo;
+      };
 
 export type TopicType = "channel" | "dm_channel" | "guild" | "user";
 export interface Topic {
@@ -57,13 +57,14 @@ export async function eventSocketSend(data: string) {
 // function to wait for the socket to be connected
 async function waitForEventSocket(): Promise<WebSocket> {
     // wait for the socket to exist first
-    let unsubscriber: Unsubscriber;
+    let unsubscriber: Unsubscriber = () => {};
     // subscribe to the event socket store and wait until it's not null
     const socket = await new Promise<WebSocket>((resolve, reject) => {
         unsubscriber = eventSocket.subscribe((socket) => {
             if (socket) resolve(socket);
         });
     });
+
     // cleanup the store subscription
     unsubscriber();
 
@@ -78,13 +79,9 @@ async function waitForEventSocket(): Promise<WebSocket> {
 }
 
 export async function eventSocketSubscribe(topics: Topic[]) {
-    await eventSocketSend(
-        JSON.stringify({ type: "sub", topics })
-    );
+    await eventSocketSend(JSON.stringify({ type: "sub", topics }));
 }
 
 export async function eventSocketUnsubscribe(topics: Topic[]) {
-    await eventSocketSend(
-        JSON.stringify({ type: "unsub", topics })
-    );
+    await eventSocketSend(JSON.stringify({ type: "unsub", topics }));
 }

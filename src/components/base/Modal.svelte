@@ -15,8 +15,8 @@
     let element: HTMLDivElement;
 
     // yes these are null at first but they get set in the $: block
-    let x: number = null;
-    let y: number = null;
+    let x: number | null = null;
+    let y: number | null = null;
 
     let moving = false;
 
@@ -38,9 +38,9 @@
         moving = true;
     }
 
-    function onPointerMove(e) {
+    function onPointerMove(e: MouseEvent) {
         // short-circuit dragging operations if the modal isnt draggable
-        if (!draggable) return;
+        if (!draggable || !x || !y) return;
 
         if (moving) {
             // where we want to move to
@@ -62,7 +62,6 @@
     }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 {#if show}
     <div
         class="backdrop"

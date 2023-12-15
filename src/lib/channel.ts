@@ -1,6 +1,5 @@
 import type { Dayjs } from "dayjs";
-import type { UploadedFile } from "./upload";
-import type { PendingUpload } from "../components/text/MessageAttachButton.svelte";
+import type { UploadedFile, PendingUpload } from "src/lib/upload";
 
 export interface Channel {
     id: string;
@@ -15,7 +14,7 @@ export interface TextChannel extends Channel {
     type: "text";
 }
 
-export interface DMChannel extends TextChannel {
+export interface DmChannel extends TextChannel {
     type: "text";
     friend: PublicUserInfo;
     // todo: set permissions to be a type that only allows read

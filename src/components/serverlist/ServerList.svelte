@@ -1,24 +1,22 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { authFetch } from "../../lib/auth";
+    import TopicConsumer from "src/components/events/TopicConsumer.svelte";
+    import ServerListAddGuild from "src/components/serverlist/items/ServerListAddGuild.svelte";
+    import ServerListGuild from "src/components/serverlist/items/ServerListGuild.svelte";
+    import ServerListHome from "src/components/serverlist/items/ServerListHome.svelte";
+    import ServerListUnreadDm from "src/components/serverlist/items/ServerListUnreadDm.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { PublicUserInfo } from "src/lib/channel";
+    import type { UnreadDM } from "src/lib/friends";
+    import type { EventSocketMessage } from "src/lib/socket";
     import {
-        dmChannelOpen,
+        currentDmChannel,
         guilds,
-        recentDMs,
-        showInErrorModal,
-        unreadDMs,
-    } from "../../lib/stores";
-    import GuildIcon from "./GuildIcon.svelte";
-    import CreateServerIcon from "./AddGuildIcon.svelte";
-    import type { UploadedFile } from "../../lib/upload";
-    import HomeIcon from "./HomeIcon.svelte";
-    import TopicConsumer from "../TopicConsumer.svelte";
-    import type { EventSocketMessage } from "../../lib/socket";
-    import DmIcon from "./DmIcon.svelte";
-    import type { UnreadDM } from "../../lib/friends";
-    import { flip } from "svelte/animate";
-    import { fade, fly } from "svelte/transition";
-    import type { PublicUserInfo } from "../../lib/channel";
+        recentDms,
+        unreadDms,
+    } from "src/lib/stores";
+    import type { UploadedFile } from "src/lib/upload";
+    import { onMount } from "svelte";
+    import { fly } from "svelte/transition";
 
     async function fetchGuilds() {
         let resp = await authFetch("/guilds");
@@ -68,7 +66,7 @@
 
         const userId = msg.topic.id;
 
-        recentDMs.update((arr: PublicUserInfo[]) => {
+        recentDms.update((arr: PublicUserInfo[]) => {
             const index = arr.findIndex((u) => u.id === userId);
             if (index !== -1) {
                 const [el] = arr.splice(index, 1);
@@ -77,11 +75,11 @@
             return arr;
         });
 
-        if ($dmChannelOpen?.id == userId) {
+        if ($currentDmChannel?.id == userId) {
             return;
         }
 
-        unreadDMs.update((obj) => {
+        unreadDms.update((obj: Record<string, UnreadDM>) => {
             const author = (msg.event as any).author;
 
             if (author.id != userId) {
@@ -101,7 +99,7 @@
         });
     }
 
-    $: unreadDmsList = Object.entries($unreadDMs);
+    $: unreadDmsList = Object.entries($unreadDms);
 </script>
 
 <TopicConsumer
@@ -111,24 +109,28 @@
 />
 
 <div class="server-list outer">
-    <HomeIcon />
+    <ServerListHome />
 
     <div class="divider" />
 
     {#if unreadDmsList.length > 0}
         <div class="server-list" transition:fly={{ duration: 250 }}>
             {#each unreadDmsList as [id, unread] (id)}
-                <DmIcon {id} user={unread.user} unread={unread.count} />
+                <ServerListUnreadDm
+                    {id}
+                    user={unread.user}
+                    unread={unread.count}
+                />
             {/each}
         </div>
         <div class="divider" />
     {/if}
 
     {#each $guilds as guild}
-        <GuildIcon {guild} />
+        <ServerListGuild {guild} />
     {/each}
 
-    <CreateServerIcon {createServer} {joinServer} />
+    <ServerListAddGuild {createServer} {joinServer} />
 </div>
 
 <style>

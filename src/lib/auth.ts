@@ -1,10 +1,9 @@
-import { navigate } from "svelte-routing";
-import { get, writable } from "svelte/store";
-import { apiTokens, localUser } from "./stores";
-import { disconnectFromVoice } from "./voice";
-import { localStorageWritable } from "./localStorageStore";
+import { localStorageWritable } from "src/lib/utils/localStorageStore";
+import { apiTokens, localUser, recentDms, unreadDms } from "src/lib/stores";
+import { disconnectFromVoice } from "src/lib/voice";
+import { get } from "svelte/store";
 
-var ensureHaveTokensFuture = null;
+var ensureHaveTokensFuture: Promise<Tokens | undefined | null> | null = null;
 
 export interface Instance {
     name: string;
@@ -37,7 +36,7 @@ export var instances = localStorageWritable<Instance[]>(
         },
     ],
     (stored) => {
-        return JSON.parse(stored).map((instance) => {
+        return JSON.parse(stored).map((instance: Instance) => {
             return {
                 name: instance.name,
                 url: new URL(instance.url),
@@ -216,7 +215,13 @@ export async function ensureLoggedIn() {
 export async function logOut() {
     disconnectFromVoice();
     const tokens = get(apiTokens);
-    if (tokens?.refreshExpires < Date.now() / 1000) {
+
+    if (tokens == null) {
+        goToLogin();
+        return;
+    }
+
+    if (tokens.refreshExpires < Date.now() / 1000) {
         try {
             await authFetch("/auth/logout");
         } catch (error) {
@@ -229,10 +234,13 @@ export async function logOut() {
 // call this instead of navigate("/login") to avoid any stores surviving
 function goToLogin() {
     apiTokens.set(null);
+    // TODO: system for synchronizing recent dms with the server!
+    recentDms.set([]);
+    unreadDms.set({});
     location.href = "/login";
 }
 
-export function tokenExpiryTimestamp(token): number {
+export function tokenExpiryTimestamp(token: string): number {
     const base64url = token.split(".")[1];
 
     const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");

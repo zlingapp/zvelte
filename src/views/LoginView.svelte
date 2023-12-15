@@ -1,26 +1,26 @@
 <script lang="ts">
-    import { link, navigate } from "svelte-routing";
-    import IcOutlineClose from "~icons/ic/outline-close";
-    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
-    import { apiTokens, localUser } from "../lib/stores";
-    import { onMount, tick } from "svelte";
+    import InstancePicker from "src/components/login/InstancePicker.svelte";
     import {
         EMAIL_REGEX,
         USERNAME_REGEX,
-        currentInstance,
         apiFetch,
+        currentInstance,
         tokenExpiryTimestamp,
         tryObtainLocalUser,
-    } from "../lib/auth";
-    import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
+    } from "src/lib/auth";
+    import { apiTokens, localUser } from "src/lib/stores";
+    import { onMount } from "svelte";
+    import { link, navigate } from "svelte-routing";
+    import IcOutlineClose from "~icons/ic/outline-close";
     import MaterialSymbolsVisibilityOffOutlineRounded from "~icons/material-symbols/visibility-off-outline-rounded";
-    import InstancePicker from "../components/InstancePicker.svelte";
+    import MaterialSymbolsVisibilityOutlineRounded from "~icons/material-symbols/visibility-outline-rounded";
+    import SvgSpinnersRingResize from "~icons/svg-spinners/ring-resize";
 
     export let register: boolean = false;
     export let instancePickerOpen: boolean = false;
 
-    let error: string = null;
-    let softError: string = null;
+    let error: string | null = null;
+    let softError: string | null = null;
     let loading: boolean = false;
     let showPassword: boolean = false;
 
@@ -211,8 +211,10 @@
                     <input
                         value={password}
                         on:change={(e) => {
-                            password = e.target["value"];
-                            validate();
+                            if (e.target instanceof HTMLInputElement) {
+                                password = e.target["value"];
+                                validate();
+                            }
                         }}
                         on:input={(e) => (softError = null)}
                         name="password"
@@ -276,6 +278,12 @@
         <div class="pane instances-pane" class:focus={instancePickerOpen}>
             <InstancePicker bind:open={instancePickerOpen} />
         </div>
+        {#if instancePickerOpen}
+            <div
+                class="instances-pane-backdrop"
+                on:click|self={() => (instancePickerOpen = false)}
+            />
+        {/if}
     </div>
 </main>
 
@@ -317,9 +325,12 @@
         backdrop-filter: blur(200px); */
         background-color: var(--bg-1);
 
-        box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
-            rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
-            rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+        box-shadow:
+            rgba(0, 0, 0, 0.09) 0px 2px 1px,
+            rgba(0, 0, 0, 0.09) 0px 4px 2px,
+            rgba(0, 0, 0, 0.09) 0px 8px 4px,
+            rgba(0, 0, 0, 0.09) 0px 16px 8px,
+            rgba(0, 0, 0, 0.09) 0px 32px 16px;
 
         padding: 20px;
         padding-inline: 0;
@@ -328,24 +339,28 @@
     }
 
     .instances-pane {
-        transition: top 0.3s ease-in-out;
+        transition: top 0.3s ease-in-out, bottom 0.3s ease-in-out;
+
         position: absolute;
         top: calc(100% + 16px);
+
+        padding-inline: 35px;
     }
 
     .instances-pane.focus {
-        z-index: 2;
+        z-index: 1;
         top: 10%;
     }
 
-    .instances-pane.focus::before {
+    .instances-pane-backdrop {
         content: "";
-        position: absolute;
-        top: -100vw;
-        left: -100vw;
-        width: 300vw;
-        height: 300vh;
-        z-index: -1;
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 100vw;
+        height: 100vh;
+
         background-color: rgba(0, 0, 0, 0.5);
     }
 
@@ -421,10 +436,11 @@
             height: 100svh;
             width: 100vw;
             border-radius: 0;
+        }
+
+        .pane {
             border: none;
             box-shadow: none;
-
-            margin-left: auto;
         }
 
         .form {
@@ -432,11 +448,14 @@
         }
 
         .instances-pane {
-            top: calc(100% - 200px);
+            top: unset;
+            bottom: 25px;
+            box-shadow: none;
         }
 
         .instances-pane.focus {
-            top: 10%;
+            top: unset;
+            bottom: 25px;
         }
     }
 
@@ -463,7 +482,9 @@
         top: 0;
         bottom: 0;
         color: var(--disabled-text);
-        transition: right 0.2s var(--sproing), transform 0.2s var(--sproing);
+        transition:
+            right 0.2s var(--sproing),
+            transform 0.2s var(--sproing);
         cursor: pointer;
     }
 

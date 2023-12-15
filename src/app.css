@@ -1,7 +1,6 @@
-/* @import url('https://fonts.cdnfonts.com/css/whitney-2'); */
-/* @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700&display=swap');
+@import url('source-sans.css');
 
+/* Whenever you change anything in here, make sure to go change it in src/lib/theme.ts  */
 :root {
   --text-color: rgba(255, 255, 255, 0.87);
   --bg-0: #232323;

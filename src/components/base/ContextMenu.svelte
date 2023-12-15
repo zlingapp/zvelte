@@ -1,13 +1,13 @@
 <script lang="ts">
+    import { clickOutside } from "src/lib/utils/clickOutside";
+    import { contextMenu } from "src/lib/stores";
     import { onMount } from "svelte";
-    import { clickOutside } from "../../lib/clickOutside";
-    import { contextMenu } from "../../lib/stores";
 
     let open = false;
     let x = 0;
     let y = 0;
 
-    function onContext(e) {
+    function onContext(e: MouseEvent) {
         // this doesn't really mean anything, it's just to trigger the store event lol
         $contextMenu = !$contextMenu;
 
@@ -20,7 +20,7 @@
         open = false;
     }
 
-    function ensureNotOffscreen(node) {
+    function ensureNotOffscreen(node: HTMLElement) {
         const rect = node.getBoundingClientRect();
 
         if (rect.right > window.innerWidth) {

@@ -1,4 +1,4 @@
-import type { Channel } from "./channel";
+import type { Channel } from "src/lib/channel";
 
 export interface Guild {
     id: string,

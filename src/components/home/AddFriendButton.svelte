@@ -1,13 +1,13 @@
 <script lang="ts">
-    import Button from "../base/Button.svelte";
+    import Button from "src/components/base/controls/Button.svelte";
+    import Modal from "src/components/base/Modal.svelte";
+    import { authFetch } from "src/lib/auth";
+    import { showInErrorModal } from "src/lib/stores";
+    import { getErrorMessage } from "src/lib/util";
     import IcRoundPersonAdd from "~icons/ic/round-person-add";
-    import Modal from "../base/Modal.svelte";
-    import { authFetch } from "../../lib/auth";
-    import { showInErrorModal } from "../../lib/stores";
-    import { getErrorMessage } from "../../lib/util";
 
     let modalOpen = false;
-    let userName: string;
+    let username: string;
 
     export let addFriendCallback = () => {};
 
@@ -15,8 +15,7 @@
         modalOpen = true;
     }
 
-    async function addFriend(username) {
-        userName = "";
+    async function addFriend() {
         const resp = await authFetch("/friends/requests", {
             method: "POST",
             headers: {
@@ -24,6 +23,8 @@
             },
             body: JSON.stringify({ username }),
         });
+
+        username = ""; // reset input
 
         if (resp.ok) {
             // sent or already exists
@@ -57,7 +58,7 @@
             <input
                 type="text"
                 style="font-family: monospace;"
-                bind:value={userName}
+                bind:value={username}
             />
         </svelte:fragment>
 
@@ -67,7 +68,7 @@
                 grow
                 onClick={async () => {
                     modalOpen = false;
-                    await addFriend(userName);
+                    await addFriend();
                 }}
             >
                 Add

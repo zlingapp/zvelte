@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { showInErrorModal } from "../../lib/stores";
-    import Button from "../base/Button.svelte";
-
-    import Modal from "../base/Modal.svelte";
+    import Button from "src/components/base/controls/Button.svelte";
+    import Modal from "src/components/base/Modal.svelte";
+    import { showInErrorModal } from "src/lib/stores";
 
     function onClose() {
         showInErrorModal.set(null);

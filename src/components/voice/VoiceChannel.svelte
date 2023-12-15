@@ -1,12 +1,12 @@
 <script lang="ts">
-    import MajesticonsMicrophone from "~icons/majesticons/microphone";
+    import VoiceMember from "src/components/voice/VoiceMember.svelte";
     import {
         voiceChannelCurrent,
         voiceChannelTarget,
         voicePeers,
-    } from "../../lib/stores";
-    import { isPeerDuplicate } from "../../lib/voice";
-    import VoiceMember from "./VoiceMember.svelte";
+    } from "src/lib/stores";
+    import { isPeerDuplicate } from "src/lib/voice";
+    import MajesticonsMicrophone from "~icons/majesticons/microphone";
 
     export let name: string = "Voice Channel";
     export let id: string;

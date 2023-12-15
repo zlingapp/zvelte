@@ -1,5 +1,5 @@
-import type { PublicUserInfo } from "./channel";
-import { currentChannel, currentGuild, dmChannelOpen, recentDMs, unreadDMs } from "./stores";
+import type { PublicUserInfo } from "src/lib/channel";
+import { currentGuildChannel, currentGuild, currentDmChannel, recentDms, unreadDms } from "src/lib/stores";
 
 export interface FriendRequest {
     direction: "incoming" | "outgoing";
@@ -14,16 +14,16 @@ export interface UnreadDM {
 /// transition into a DM channel with a friend
 export function openDmWith(friend: PublicUserInfo) {
     currentGuild.set(null);
-    currentChannel.set(null);
-    dmChannelOpen.set({
+    currentGuildChannel.set(null);
+    currentDmChannel.set({
         id: friend.id,
         friend: friend,
         type: "text",
         name: friend.username.split("#")[0],
-        permissions: null,
+        permissions: {},
     });
 
-    recentDMs.update((arr: PublicUserInfo[]) => {
+    recentDms.update((arr: PublicUserInfo[]) => {
         // add to the top of the list if not already there
         const index = arr.findIndex((u) => u.id === friend.id);
         if (index == -1) {
@@ -36,7 +36,7 @@ export function openDmWith(friend: PublicUserInfo) {
 }
 
 export function markDmRead(id: string) {
-    unreadDMs.update((obj) => {
+    unreadDms.update((obj: Record<string, UnreadDM>) => {
         delete obj[id];
         return obj;
     })

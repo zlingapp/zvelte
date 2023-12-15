@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Router, Link, Route } from "svelte-routing";
-    import MainView from "./views/MainView.svelte";
-    import LoginView from "./views/LoginView.svelte";
-    import { themes } from "./lib/stores";
-    import ThemeEditor from "./components/modals/ThemeEditor.svelte";
+    import ThemeEditor from "src/components/modals/ThemeEditor.svelte";
+    import { themes } from "src/lib/stores";
+    import LoginView from "src/views/LoginView.svelte";
+    import MainView from "src/views/MainView.svelte";
+    import { Route, Router } from "svelte-routing";
 </script>
 
 <Router>

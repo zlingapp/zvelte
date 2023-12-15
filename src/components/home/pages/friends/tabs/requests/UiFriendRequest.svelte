@@ -1,0 +1,96 @@
+<script lang="ts">
+    import Button from "src/components/base/controls/Button.svelte";
+    import Tooltip from "src/components/base/Tooltip.svelte";
+    import MemberListMember from "src/components/guild/member-list/MemberListMember.svelte";
+    import { authFetch } from "src/lib/auth";
+    import type { FriendRequest } from "src/lib/friends";
+    import { showInErrorModal } from "src/lib/stores";
+    import { getErrorMessage } from "src/lib/util";
+    import IcBaselineCheck from "~icons/ic/baseline-check";
+    import IcBaselineClose from "~icons/ic/baseline-close";
+
+    export let request: FriendRequest;
+    export let callback = () => {};
+
+    async function accept() {
+        const resp = await authFetch(`/friends/requests`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: request.user.id,
+            }),
+        });
+
+        if (!resp.ok) {
+            const errorMessage = getErrorMessage(resp);
+            $showInErrorModal = `Failed to accept friend request: ${errorMessage}`;
+            return;
+        }
+
+        callback();
+    }
+
+    async function deny() {
+        const resp = await authFetch(`/friends/requests/${request.user.id}`, {
+            method: "DELETE",
+        });
+
+        if (!resp.ok) {
+            const errorMessage = getErrorMessage(resp);
+            $showInErrorModal = `Failed to deny friend request: ${errorMessage}`;
+            return;
+        }
+
+        callback();
+    }
+</script>
+
+<div class="request">
+    <MemberListMember fullUsername member={request.user} />
+    <span style="flex-grow: 1;" />
+    {#if request.direction == "incoming"}
+        <Tooltip text="Accept {request.user.username}'s friend request">
+            <Button
+                green
+                compact
+                nobg
+                extraStyle="background-color: var(--green-transparent);"
+                onClick={accept}
+            >
+                <IcBaselineCheck style="line-height: 0;" />
+            </Button>
+        </Tooltip>
+    {/if}
+    <Tooltip
+        text={request.direction == "incoming"
+            ? `Deny ${request.user.username}'s friend request`
+            : `Cancel request to ${request.user.username}`}
+    >
+        <Button
+            danger
+            compact
+            nobg
+            extraStyle="background-color: var(--red-transparent);"
+            onClick={deny}
+        >
+            <IcBaselineClose />
+        </Button>
+    </Tooltip>
+</div>
+
+<style>
+    .request {
+        display: flex;
+        align-items: center;
+
+        max-width: 350px;
+
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 6px;
+
+        background-color: var(--bg-1);
+    }
+</style>

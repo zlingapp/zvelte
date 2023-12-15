@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { editingThemeId, themes } from "../../lib/stores";
-
-    import Modal from "../base/Modal.svelte";
+    import Modal from "src/components/base/Modal.svelte";
+    import { editingThemeId, themes } from "src/lib/stores";
+    import type { Theme } from "src/lib/theme";
 
     $: currentTheme = $themes.find((x) => x.id == $editingThemeId);
 
-    function onTextareaInput(event) {
-        themes.update((themesArray) => {
+    function onTextareaInput(event: any) {
+        themes.update((themesArray: Theme[]) => {
             const themeIndex = themesArray.findIndex(
                 (theme) => theme.id == $editingThemeId
             );
 
-            themesArray[themeIndex].style = event.target.value;
+            themesArray[themeIndex].style = (event.target as HTMLInputElement).value;
 
             return themesArray;
         });
@@ -27,13 +27,13 @@
     dimmed={false}
 >
     <svelte:fragment slot="title"
-        >Style Editor: {currentTheme.name}</svelte:fragment
+        >Style Editor: {currentTheme?.name}</svelte:fragment
     >
     <svelte:fragment slot="content">
         <div style="color: var(--green); margin-bottom: 5px;">
             Your changes are saved automatically.
         </div>
-        {#if !currentTheme.enabled}
+        {#if !currentTheme?.enabled}
             <div style="color: var(--yellow); margin-bottom: 5px;">
                 Warning: This theme is not currently enabled!
             </div>
@@ -41,7 +41,7 @@
         <textarea
             spellcheck="false"
             class="theme-edit-area"
-            value={currentTheme.style}
+            value={currentTheme?.style}
             on:input={onTextareaInput}
         />
     </svelte:fragment>
